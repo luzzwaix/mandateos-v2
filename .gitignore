@@ -11,6 +11,12 @@
 *wallet*.json
 *secret*.json
 /id.json
+**/id.json
+**/keypair.json
+*.keypair.json
+/keys/
+/wallets/
+/.solana/
 /.config/
 *.pem
 *.key

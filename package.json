@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "description": "Recursive capital authority on Solana",
-  "engines": { "node": ">=20.18" },
+  "engines": {
+    "node": ">=20.18"
+  },
   "scripts": {
     "test": "npm run test:local",
     "test:local": "node scripts/local-test.mjs",
