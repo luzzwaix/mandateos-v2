@@ -12,4 +12,4 @@ The wedge is recursive capital authority. Core semantics must not be silently re
 - Support classic SPL Token only for this MVP. Never accept vault-to-itself transfers as spending or reclaim.
 - Do not broaden into generic IAM, governance, Arena, frontend, or integrations without explicit instruction.
 - Never commit keys, wallet JSON, credentials, secrets, `.env`, build output, or local ledgers. Local tests use isolated generated wallets and an ignored working copy.
-- Before checkpointing: `cargo fmt --all -- --check`, `cargo check --locked`, `npm run typecheck`, `npm run test:local` when the Linux Solana toolchain is available. Never describe unexecuted validator tests as passing.
+- Before checkpointing: `cargo fmt --all -- --check`, `cargo check --locked`, `npm run typecheck`, `npm run test:local` with the supported Windows or Linux toolchain. Never describe unexecuted validator tests as passing.

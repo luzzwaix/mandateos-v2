@@ -23,7 +23,7 @@ On laptop #1, Node v24.14.0, npm 11.9.0, Rust/Cargo 1.89.0 (Windows GNU), Anchor
 - Rust/TypeScript/Markdown formatting and tracked-file secret/build-output checks: passed.
 - `anchor build`: passed from the repository root and isolated localnet workspace; compiled SBF binary and IDL produced.
 - `npm run test:local -- --reuse .localnet/run-1790889668255/workspace`: passed, six batches of eight tests, **48 validator tests passed / zero failed**.
-- Default fresh-key `npm run test:local` reproduction check: see the final verification update below.
+- Default fresh-key `npm run test:local`: passed, exit 0; a fresh SBF build and IDL generation followed by **48 validator tests passed / zero failed**, six batches of eight tests. Generated workspace: `.localnet/run-1790891476978/workspace` (ignored).
 
 The Rust tests exercise actual protocol validation and serialization helpers, not token transfers or Solana runtime rollback. `tests/mandateos.ts` invokes real deployed program instructions on a local validator and checks exact Anchor error codes. Its scenario, amounts, and assertions are deterministic; addresses and signing keys are freshly generated for isolation.
 
@@ -180,8 +180,8 @@ Never commit private keys, seed phrases, keypair JSON, CLI config/credentials, `
 
 ## Next milestone
 
-First complete any outstanding Core build/validator verification listed below. Once Core acceptance is green: **Arena Lite + real frontend integration** using `create_bounty`, `submit_result`, and `settle_bounty`, without redesigning mandate accounting.
+Core acceptance is green. The next task is **Arena Lite + real frontend integration** using `create_bounty`, `submit_result`, and `settle_bounty`, without redesigning mandate accounting.
 
 ## Final verification update
 
-Core verification is green: 48 real-validator tests and 16 Rust tests passed. The default fresh-key reproduction command is being checked before the final checkpoint; its exact observed result will be recorded here.
+Core verification is green: **48 real-validator tests and 16 Rust tests passed**, for 64 passing tests. The default fresh-key `npm run test:local` completed with exit 0 on laptop #1. Its fresh generated deployment ID was `9xbj1yFvnRrGc2gntpyttpLf1NefswsFQ2XwfbUN1wP`; its private key and all other generated material remain ignored. Both the required recursive scenario and failed-token-CPI rollback passed on the compiled SBF program. No outstanding Core verification blocker remains with the supported runner.
