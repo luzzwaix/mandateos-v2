@@ -1,0 +1,30 @@
+{
+  "name": "mandateos-v2",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Recursive capital authority on Solana",
+  "engines": { "node": ">=20.18" },
+  "scripts": {
+    "test": "npm run test:local",
+    "test:local": "node scripts/local-test.mjs",
+    "test:integration": "ts-mocha -p tsconfig.json -t 120000 tests/mandateos.ts",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write tests scripts docs README.md AGENTS.md package.json tsconfig.json",
+    "format:check": "prettier --check tests scripts docs README.md AGENTS.md package.json tsconfig.json"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "0.32.1",
+    "@solana/spl-token": "0.4.14",
+    "@solana/web3.js": "1.98.4"
+  },
+  "devDependencies": {
+    "@types/chai": "4.3.20",
+    "@types/mocha": "10.0.10",
+    "@types/node": "24.0.0",
+    "chai": "4.5.0",
+    "mocha": "11.7.5",
+    "prettier": "3.6.2",
+    "ts-mocha": "11.1.0",
+    "typescript": "5.9.3"
+  }
+}
