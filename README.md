@@ -1,43 +1,139 @@
-# MandateOS V2 Core
+# MandateOS
 
 **Don't give agents wallets. Give them mandates.**
 
-MandateOS lets organizations delegate capital authority recursively without sharing treasury keys. One organization has one SPL Token vault. Mandates represent bounded authority; spending updates the full lineage, and revoking one branch invalidates all descendants without walking them.
+MandateOS is recursive capital authority for autonomous organizations on Solana. An organization keeps tokens in one program-controlled vault, delegates bounded authority down an agent tree, and cuts an entire branch with one revocation transaction. Arena Lite reserves treasury capital for external work and pays one verified winner.
 
-Core exposes exactly `create_organization`, `deposit`, `delegate`, `spend`, `revoke_branch`, and `reclaim`. Rust logic is separated into state, instructions, lineage validation, errors, and events. See [the protocol](docs/PROTOCOL.md) and [two-laptop handoff](docs/HANDOFF.md).
+![Real localnet Capital Cascade](docs/images/capital-cascade.png)
 
-## Local setup
+## The problem
 
-Use Node 20.18+, Rust 1.89.0, Anchor 0.32.1, Solana/Agave 2.3.0, and SBF platform tools v1.52. Versions and both dependency lockfiles are pinned. Native Windows also needs Visual Studio 2022 Build Tools with the x64 C++ tools. On Windows with those prerequisites, Node, and Git installed:
+AI agents increasingly need authority to spend capital. Giving an agent a treasury key is unsafe. Flat spending limits break when agents delegate work to other agents.
+
+## The primitive
+
+```text
+Human / one treasury
+└── Research agent  $400
+    └── Data agent  $150
+        └── Scraper $50
+
+Revoke Research
+→ Research revoked; Data and Scraper blocked
+→ unused capital returns to Root authority
+→ Root can reclaim tokens from the shared vault
+```
+
+Agents control signing keys, never the treasury key. Delegation moves accounting authority; tokens stay in the vault until an authorized payment or reclaim.
+
+## Why Solana
+
+Fast, low-cost transactions make delegation and revocation usable during agent execution. PDA authority controls the SPL vault without distributing its key. Transaction atomicity keeps payout and accounting consistent, including failed token transfers. Classic SPL Token accounts let organizations pay ordinary token recipients and Arena winners.
+
+## Product
+
+- **Core Organizations:** create, deposit, recursively delegate, spend, revoke branches and reclaim. Complete ancestor validation enforces authority at every depth.
+- **Capital console:** a real Next.js desktop surface with a recursive capital tree, selected-mandate actions, wallet connection and decoded on-chain activity.
+- **Arena Lite:** fund a bounty from Root available capital, collect one 32-byte commitment per agent, and let its trusted verifier settle one winner.
+
+Arena's verifier is a trusted signer. A result commitment proves which hash an agent submitted; it does not prove useful work. Participant keys can also control mandates, but Arena eligibility is independent of branch authority. Open bounties have no cancellation path in this MVP; unavailable verifiers can leave rewards reserved.
+
+![Actual Arena settlement](docs/images/arena-settlement.png)
+
+## Demo
+
+Start the validator and web console using the commands below. Click **Initialize local demo** and select the disposable wallet file printed by the runner. The file is read locally into tab memory; it is never uploaded, embedded in the bundle or persisted by the app. Import only that generated test wallet.
+
+Setup sends real transactions: create a six-decimal demo SPL mint, fund Root with 1,000, delegate Research 400, Data 150, Search 100 and Scraper 50, then spend 10 from Scraper.
+
+1. Root initially has 600 available; Research has 390 remaining.
+2. Click **Revoke Research**. Wait for confirmation: Research becomes revoked, Data/Search/Scraper become blocked, and Root available rises to 990.
+3. Click **Attempt descendant payment**. A real Scraper payment is broadcast and recorded as failed with `AncestorRevoked`; inspect its signature and logs.
+4. Open **Arena Lite**. Create a 25-token bounty, submit Research and Search commitments, then select Research as winner.
+5. Observe the confirmed payout and settlement event. Root has 965 available; total spending is 35.
+6. Select Root → Reclaim → 965. The vault becomes zero; the owner receives 965.
+
+[Recorded public RPC proof](docs/demo-proof.json) and [verification details](docs/VERIFICATION.md) document the completed browser flow. These addresses/signatures belong to an ephemeral **LOCALNET**, not devnet. Explorer custom-RPC links require that original validator to remain running.
+
+## Architecture
+
+```text
+Next.js static console / injected wallet or disposable LOCALNET signer
+       │ real Anchor client + generated IDL
+       ▼
+Solana MandateOS program
+├── Organization PDA ─── one classic SPL vault
+├── Mandate PDAs ─────── Root → agent → delegated agent
+└── Bounty + Submission PDAs ─── trusted verifier → winner SPL account
+```
+
+Rust remains modular: state, instructions, lineage validation, errors and events. The six Core instructions and existing Core account layouts are preserved. Arena adds only three instructions and two account types. The browser uses direct RPC; there is no database, authentication service, indexer or application backend. See [protocol/accounting](docs/PROTOCOL.md).
+
+## Security invariants
+
+**80 tests executed successfully: 48 existing Core validator tests, 16 Arena validator tests and 16 Rust tests.** The suites cover complete canonical lineage, ancestor revocation, reserved child and bounty capital, authorization, token ownership/mints, duplicate submissions/settlement, checked accounting and atomic rollback on failed token CPI.
+
+Root remaining equals funded minus spent minus reclaimed. Bounty creation reduces only Root available, keeping escrow in the same vault; settlement reduces Root remaining and records spending atomically with payout. Reclaim cannot consume active child or bounty reservations.
+
+This is an **unaudited hackathon MVP**. Controllers may choose arbitrary correct-mint recipients. Mint/freeze and upgrade authorities retain their configured powers. Pinned legacy client dependencies have audit advisories; no production-security claim is made.
+
+## Build
+
+Use Node 20.18+, Rust 1.89.0, Anchor 0.32.1, Agave 2.3.0 and SBF tools v1.52. Native Windows additionally needs Git Bash and Visual Studio 2022 x64 C++ build tools. The Windows setup installs user-local official tools and SDK import libraries without changing global PATH.
 
 ```powershell
+git clone --branch submission-v1 https://github.com/luzzwaix/mandateos-v2.git
+Set-Location mandateos-v2
 .\scripts\setup-windows.ps1
 npm ci
-npm run typecheck
+npm --prefix web ci
+npm run build:program
 npm run test:local
 ```
 
-The setup installs official binaries and Microsoft SDK import libraries under your user profile without changing global PATH. It uses a directory junction to avoid Solana's privileged Windows symlink installer and supplies the extensionless paths its toolchain check expects. WSL2/Ubuntu is also supported; exact setup is in HANDOFF. Initial setup downloads platform tools (~568 MB on Windows).
+On Linux/WSL, install those pinned tools first and omit the PowerShell setup command. The supported test runner creates isolated ignored wallets/deployments and leaves tracked source IDs unchanged. Native Windows runs eight independent real validator banks to avoid its snapshot symlink limitation.
 
-## Build and test
+In terminal A, from the repository root:
 
-```text
+```powershell
+npm run demo:local
+```
+
+It prints the funded disposable wallet path and actual program address. It creates `web/.env.local` with public localnet settings if absent; existing settings are preserved. Ensure the RPC and program match before starting the browser.
+
+In terminal B:
+
+```powershell
+npm --prefix web run dev
+```
+
+Open [the local console](http://127.0.0.1:3000). Setup takes roughly two minutes on this native Windows configuration. Each confirmed action takes about eight seconds because slots are slowed to extend the recording window.
+
+Native Agave 2.3 Windows still stops at snapshot slot 100 without symlink privileges. The runner reports that real environment failure and preserves the ledger. Start a fresh run and initialize a new organization for another recording; use WSL2 or a symlink-capable shell for uninterrupted sessions. The passing test runner avoids this limitation through isolated batches.
+
+Final checks:
+
+```powershell
 cargo fmt --all -- --check
 cargo check --locked
 cargo test --locked --lib
-anchor build
+cargo clippy --locked --all-targets -- -D warnings
 npm run typecheck
-npm run test:local
+npm run format:check
+npm run check:secrets
+npm --prefix web run typecheck
+npm --prefix web run lint
+npm --prefix web run build
+npm --prefix web start
 ```
 
-The Windows setup sets the GNU Rust toolchain for this shell because an incomplete Visual Studio SDK cannot link regular host builds. `npm run test:local` sets tool paths automatically, creates fresh wallets and a fresh deployment ID in an ignored working copy, and runs `anchor build`. On Windows it starts the real validator in log mode and runs `anchor test --skip-build --skip-local-validator --skip-deploy`; on Linux it runs `anchor test --skip-build`. It never needs your personal wallet or devnet and leaves tracked source unchanged. The checked-in program ID is a public source identifier, not a published deployment; no corresponding deployment private key is committed. Use the supported runner to avoid the Windows validator's privileged log symlink.
+The last command previews the production **static export** at port 3000; stop the development server first. Build output is `web/out`. Public environment settings are compiled into the frontend, so rebuild after changing them.
 
-## Acceptance scenario
+## Status
 
-A normal local six-decimal SPL mint funds Root with 1000 tokens. Root delegates Research 400; Research delegates Data 150; Data delegates Scraper 50. Scraper spends 10. Revoking Research returns its unused 390 to Root, leaving Root available/remaining at 990/990. A subsequent Scraper spend fails in program validation. Root reclaims 990, leaving the vault empty.
+- **LOCALNET:** compiled program, all tests, browser Capital Cascade, real failed descendant payment, Arena payout and reclaim verified.
+- **DEVNET:** not deployed. CLI selects mainnet-beta and its configured wallet file is absent; no funded local devnet wallet was available.
+- **Frontend:** production export verified; deployment-ready, not publicly hosted. Configure an actual reachable RPC/deployed program before publishing.
+- **Repository:** private GitHub repository, submission work on `submission-v1`, original `main` and `core-v0.1.0` preserved.
 
-The validator suite covers this scenario, authorization, depth, ancestor substitution/ordering/ownership/type, reserved capital, wrong mints, zero amounts, revocation, and failed-CPI rollback. Rust tests independently exercise the actual lineage and serialization helpers. Execution results and limitations are recorded in HANDOFF; written tests are not counted as passing until executed.
-
-Current verified status: `anchor build` passes, all 48 validator tests and all 16 Rust tests pass, and strict Clippy, TypeScript type checking, and formatting pass. Windows validator tests use six fresh banks to avoid Agave's privileged snapshot symlink. See HANDOFF for execution evidence and setup details.
-
-Next planned layer: **Arena Lite + real frontend integration**, after Core acceptance is green. Arena is not implemented.
+See [two-laptop handoff](docs/HANDOFF.md) for exact clone/update routines and [deployment](docs/DEPLOYMENT.md) for frontend hosting and devnet continuation.

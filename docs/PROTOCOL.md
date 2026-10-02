@@ -16,6 +16,8 @@ All PDA derivations use the current deployment's program ID:
 | Vault        | `b"vault"`, organization public key                                                                        |
 | Root         | `b"mandate"`, organization public key, `b"root"`                                                           |
 | Child        | `b"mandate"`, organization public key, direct parent public key, child index (`u64`, 8-byte little endian) |
+| Bounty       | `b"bounty"`, organization public key, bounty ID (`u64`, 8-byte little endian)                              |
+| Submission   | `b"submission"`, bounty public key, agent public key                                                       |
 
 Organization stores its authority, mint, vault, Root, ID, maximum depth, funding/spending/reclaim counters, and PDA bumps. Its PDA is the vault's token authority and signs checked SPL Token transfers.
 
@@ -43,7 +45,7 @@ Root.self_available <= Root.subtree_remaining
 vault.amount >= Root.subtree_remaining
 ```
 
-The vault equality holds if all funding goes through `deposit`. SPL Token allows third parties to transfer tokens directly to the vault; those unsolicited tokens are untracked surplus and cannot be withdrawn through this MVP. For each effective active node, remaining capital equals its available balance plus its effective active direct children's remaining capital. Stored balances in an invalidated subtree are historical and must never be summed as live authority.
+The vault equality holds if all funding goes through `deposit`. SPL Token allows third parties to transfer tokens directly to the vault; those unsolicited tokens are untracked surplus and cannot be withdrawn through this MVP. For each effective active non-Root node, remaining capital equals its available balance plus its effective active direct children's remaining capital. Root also includes all Open bounty rewards in that equality. Stored balances in an invalidated subtree are historical and must never be summed as live authority.
 
 ## Complete lineage validation
 
@@ -83,4 +85,23 @@ After revocation a Scraper spend of 1 fails with `AncestorRevoked`. The vault fi
 
 The organization authority may reclaim unreserved Root capital and revoke any valid active branch. Controllers may spend their available allocation to any correct-mint token account outside the vault; there is no recipient policy or proof of useful work. Controllers pay rent for child mandates. Keys are not recovered or rotated by this MVP. The mint issuer retains any SPL mint/freeze powers it configured and can cause transfers to fail. The deployment upgrade authority, if retained, can change program behavior. No security audit or production readiness is claimed.
 
-Six public instructions and six compact activity events are present. There is no backend, database, indexer, governance, policy DSL, production frontend, or Arena. The next phase may add `create_bounty`, `submit_result`, and `settle_bounty` around existing mandate spending; there are no speculative Arena accounts in Core.
+## Arena Lite
+
+Three additional public instructions preserve the six Core instructions and existing Organization/Mandate account layouts. Tokens remain in the same shared SPL vault.
+
+- `create_bounty`: organization authority signs; positive reward must fit Root self-available. Subtract reward from Root available only. Root remaining and vault tokens stay unchanged, reserving the reward against spending/delegation/reclaim without consuming active child allocations.
+- `submit_result`: agent signs, bounty must be Open, unique agent/bounty PDA stores exactly a 32-byte commitment and timestamp. Checked submission count increments. No arbitrary result body is stored.
+- `settle_bounty`: configured verifier signs, canonical Bounty/Submission belong to the organization and each other, bounty is Open, winner token account belongs to the submitted agent and uses the organization's mint. Subtract reward from Root remaining; increase Root direct spent and organization total spent. Record winner/status/time and atomically transfer reward using organization PDA authority. Any CPI failure rolls everything back.
+
+Bounty stores organization, creator, verifier, ID, reward, Open/Settled status, winner, submission count, creation/settlement timestamps and bump. Submission stores bounty, agent, hash, timestamp and bump. Settlement is final and cannot be repeated; submissions cannot follow settlement. No account closes or cancellation instruction are provided.
+
+```text
+Root.subtree_remaining
+  = Root.self_available
+  + sum(effective active direct-child subtree_remaining)
+  + sum(Open bounty rewards)
+```
+
+The verifier is trusted. If unavailable, its bounty can remain reserved indefinitely. Hashes establish commitments, not correctness. Arena participant identities may match mandate controllers, as the demo does; participation is not a mandate-authorized spending operation, and revoking a branch does not cancel its keys' independent Arena eligibility.
+
+Events `BountyCreated`, `ResultSubmitted` and `BountySettled` join the six Core events. Nine instructions and nine events are exposed in the real generated IDL. The frontend decodes accounts/events directly through RPC. Bounty titles and friendly mandate names are client presentation; only hash commitments and protocol state are on-chain. No reputation system, marketplace, backend or database is implemented.

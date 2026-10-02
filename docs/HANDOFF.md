@@ -1,187 +1,143 @@
 # Two-laptop handoff
 
-## Git checkpoint
+## Checkpoint and repository
 
-- Branch: `main`.
-- Core checkpoint commit: `4edca98` (`feat: implement recursive mandate capital authority and lineage validation`).
-- Final tests/docs checkpoint: tag `core-v0.1.0`; resolve its exact commit with `git rev-parse core-v0.1.0`.
-- Check current checkout with `git log -1 --oneline` and `git status --short --branch`.
-- No remote was configured during this session. No push was performed.
+- Branch: `submission-v1`. Original `main` remains at `8391db2`, tagged `core-v0.1.0`.
+- Private remote: https://github.com/luzzwaix/mandateos-v2.git
+- Latest submission commit: resolve the release tag with `git rev-parse submission-v1.0.0`; inspect the checkout with `git log -1 --oneline`.
+- Arena checkpoint: `4ebb266`.
+- Both dependency lockfiles and the generated public frontend IDL are tracked. Wallets, ledgers, deployment keys, local environment and build output are ignored.
 
-## Completed functionality
+## Laptop #2: exact quick start
 
-Six Anchor instructions, one shared classic SPL Token vault per organization, deterministic recursive mandates, complete canonical lineage validation, checked spending and ancestor serialization, O(depth) branch revocation, Root-only reclaim, compact events, and explicit errors. Arena and frontend are not implemented.
-
-## Verification evidence
-
-On laptop #1, Node v24.14.0, npm 11.9.0, Rust/Cargo 1.89.0 (Windows GNU), Anchor 0.32.1, and Solana/Agave 2.3.0 are available. Rust, Anchor, and Solana were initially absent; official binaries and user-local Rust were installed without changing the personal Solana wallet or global PATH.
-
-- `cargo +1.89.0-x86_64-pc-windows-gnu check --locked`: passed.
-- `cargo +1.89.0-x86_64-pc-windows-gnu test --locked --lib`: 16 passed, zero failed.
-- `npm run typecheck`: passed.
-- `cargo +1.89.0-x86_64-pc-windows-gnu clippy --locked --all-targets -- -D warnings`: passed.
-- Rust/TypeScript/Markdown formatting and tracked-file secret/build-output checks: passed.
-- `anchor build`: passed from the repository root and isolated localnet workspace; compiled SBF binary and IDL produced.
-- `npm run test:local -- --reuse .localnet/run-1790889668255/workspace`: passed, six batches of eight tests, **48 validator tests passed / zero failed**.
-- Default fresh-key `npm run test:local`: passed, exit 0; a fresh SBF build and IDL generation followed by **48 validator tests passed / zero failed**, six batches of eight tests. Generated workspace: `.localnet/run-1790891476978/workspace` (ignored).
-
-The Rust tests exercise actual protocol validation and serialization helpers, not token transfers or Solana runtime rollback. `tests/mandateos.ts` invokes real deployed program instructions on a local validator and checks exact Anchor error codes. Its scenario, amounts, and assertions are deterministic; addresses and signing keys are freshly generated for isolation.
-
-The packaged Windows Solana SBF SDK's `syscalls.txt` is empty, so SBF post-processing warns about standard Solana syscalls. The real validator executed the program's PDA, token CPI, and log syscalls successfully. This warning is SDK metadata, not an observed program runtime failure. The pinned legacy Anchor/SPL and Mocha dependency trees also have `npm audit` advisories; no incompatible force downgrade was applied. This is an unaudited local MVP, not a production client release.
-
-Initial Windows setup diagnosis: WSL is not installed, the session is non-administrator, and `wsl --install --no-distribution` returned exit 1. Visual Studio has the C++ linker but no usable Windows SDK import libraries: native MSVC host compilation failed with `LNK1181: cannot open input file kernel32.lib`. GNU Rust avoids that host linker problem. Official Windows Anchor and Agave binaries are installed under `%LOCALAPPDATA%\MandateOS\toolchains`; `scripts/setup-windows.ps1` reproduces that setup.
-
-Native SBF builds need the MSVC host linker even when regular Cargo uses GNU Rust. The setup fetches Microsoft's `Microsoft.Windows.SDK.CPP.x64` 10.0.26100.4202 import libraries into the same user-local tool directory and sets process-local `LIB`. It also pre-extracts platform tools, creates an unprivileged SDK directory junction, and copies `rustc.exe`/`cargo.exe` to extensionless names expected by Agave 2.3's toolchain check. These changes avoid the observed installer error 1314 and false corrupted-toolchain check without a Windows SDK system installation.
-
-## Connect GitHub from laptop #1
-
-Run in the project directory after creating an empty GitHub repository named `mandateos-v2` under your account. Substitute your GitHub handle; do not paste tokens into URLs:
+GitHub access to this private repository, Git, Node 20.18+, Git Bash and Visual Studio 2022 x64 C++ tools are prerequisites on native Windows. Laptop #1 already has them. Setup downloads official user-local binaries/platform tools and Microsoft SDK import libraries; the first download can be substantial.
 
 ```powershell
-git remote add origin https://github.com/YOUR_GITHUB_HANDLE/mandateos-v2.git
-git push -u origin main
-git push origin core-v0.1.0
-```
-
-If GitHub CLI is installed and authenticated, an alternative is:
-
-```powershell
-gh repo create mandateos-v2 --private --source . --remote origin --push
-git push origin core-v0.1.0
-```
-
-These commands are for the user to run later; this session did not publish anything.
-
-## Laptop #2: clone or pull, then run tests
-
-PowerShell, with Git and Node 20.18+ installed:
-
-Native Windows additionally requires Visual Studio 2022 Build Tools with the x64 C++ compiler/linker. Laptop #1 already had those tools. If laptop #2 lacks them, install with the following command and accept the Windows installer prompt, or use the WSL alternative below:
-
-```powershell
-winget install --id Microsoft.VisualStudio.2022.BuildTools --exact --override "--wait --passive --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
-```
-
-```powershell
-git clone https://github.com/YOUR_GITHUB_HANDLE/mandateos-v2.git
+git clone --branch submission-v1 https://github.com/luzzwaix/mandateos-v2.git
 Set-Location mandateos-v2
-git switch main
 .\scripts\setup-windows.ps1
 npm ci
-node -v
-npm -v
-rustc --version
-cargo --version
-solana --version
-anchor --version
+npm --prefix web ci
+npm run build:program
+npm run test:local
+npm run demo:local
+```
+
+Leave the final command running. In another terminal at the same repository root:
+
+```powershell
+npm --prefix web run dev
+```
+
+Open http://127.0.0.1:3000, click Initialize local demo, and select the **generated disposable wallet** path printed by the demo runner. It reads locally into browser memory and signs actual localnet transactions. Never select a personal wallet. Reloading clears the in-memory demo keys/labels; initialize a fresh organization or open an existing public organization with a real wallet.
+
+The demo runner funds its generated owner through validator genesis, so it does not depend on the native Windows faucet. Controller keys are generated in tab memory. Root receives 1,000 six-decimal demo tokens; Research 400 → Data 150 → Scraper 50, with Search 100 alongside Data, and initial Scraper spending of 10.
+
+## Public environment
+
+The runner copies the **actual built IDL** to the frontend and creates public-only `web/.env.local` when missing. It preserves an existing file: check its RPC/program settings when switching validators.
+
+Manual alternative:
+
+```powershell
+Copy-Item web/.env.example web/.env.local
+```
+
+An empty `NEXT_PUBLIC_MANDATEOS_PROGRAM_ID` uses the generated IDL address. Set an explicit address only to a real deployment with matching instructions. The optional organization PDA is public. Local disposable signing requires localhost RPC plus `NEXT_PUBLIC_ENABLE_LOCAL_DEMO=true`. Set it to false for a hosted build. Never put RPC credentials in a `NEXT_PUBLIC_*` variable: browser configuration is public.
+
+`npm run build:program` runs Anchor build and synchronizes the root IDL. Default `npm run demo:local` loads that compiled SBF at the same public address. Test runner program IDs are fresh, ignored and independent; do not copy a test ID into a frontend targeting the default demo.
+
+## Existing clone / update routine
+
+Before working on either laptop:
+
+```powershell
+git status --short --branch
+git switch submission-v1
+git pull --ff-only origin submission-v1
+npm ci
+npm --prefix web ci
+```
+
+After work and verification:
+
+```powershell
+git status
+git add PATHS_YOU_CHANGED
+git diff --cached
+git commit -m "Describe the verified change"
+git push origin submission-v1
+```
+
+Pull before editing on the other laptop. Do not independently edit divergent, unpulled branches on both machines. A non-fast-forward pull is a real conflict to resolve; do not force-push over another laptop.
+
+## Verification routines
+
+After Windows setup in the current PowerShell shell:
+
+```powershell
 cargo fmt --all -- --check
 cargo check --locked
 cargo test --locked --lib
+cargo clippy --locked --all-targets -- -D warnings
 npm run typecheck
+npm run build:program
 npm run test:local
+npm run format:check
+npm run check:secrets
+npm --prefix web run typecheck
+npm --prefix web run lint
+npm --prefix web run build
 ```
 
-For an existing clean clone:
+Stop the demo validator before validator tests; both use port 8899. The supported runner creates an isolated ignored working copy, fresh test wallets and deployment ID. Windows executes eight fresh banks of eight cases, with every scenario intact inside its own bank; Linux uses `anchor test --skip-build`. No validation or token CPI is mocked.
 
-```powershell
-Set-Location mandateos-v2
-git switch main
-git pull --ff-only origin main
-.\scripts\setup-windows.ps1
-npm ci
-npm run test:local
-```
-
-The Windows setup only changes PATH, `LIB`, and `RUSTUP_TOOLCHAIN` in that PowerShell process. The Node test runner resolves user-local Windows tools and the installed Visual Studio linker automatically in later shells. Raw host Cargo commands in a fresh shell may need `cargo +1.89.0-x86_64-pc-windows-gnu ...` or rerunning setup. Git Bash must be installed, as Anchor executes its test script through `bash`.
-
-The runner builds with `anchor build` (SBF version is pinned in Cargo workspace metadata). On Linux it then executes `anchor test --skip-build`. On Windows it starts the real validator with `--log --reset`, loads the compiled SBF program at genesis, and executes `anchor test --skip-build --skip-local-validator --skip-deploy`. This avoids another Agave Windows error 1314: its default logger creates a privileged file symlink, while `--log` streams logs to a regular file. No instruction validation is mocked or bypassed. The runner resets only its verified local workspace ledger and terminates its validator afterward.
-
-Agave's Windows snapshot service also attempts a privileged symlink at slot 100 and stops the validator on error 1314. The first unbatched run completed the mandatory scenario and 20 other tests before that process failure; subsequent RPC failures were environmental. The Windows runner therefore schedules all 48 independent cases across six fresh validator batches (eight cases each). Every full scenario remains intact within one bank and every negative test still invokes actual on-chain validation. Linux runs all cases together. Batching avoids the snapshot failure rather than changing protocol code or using mocked validation.
-
-Every fresh run generates its own provider wallet and deployment keypair inside `.localnet/run-*/workspace` and updates only that ignored copy's public program ID. No devnet wallet is used. Source remains portable even when the two laptops use different local program IDs.
-
-To re-run validator tests after debugging in the printed working copy:
+To rerun an already-built debug workspace:
 
 ```powershell
 npm run test:local -- --reuse .localnet/run-TIMESTAMP/workspace
 ```
 
-This re-runs the existing compiled program and copied tests on a fresh ledger. To test the latest tracked source, run `npm run test:local` again from the repository root. Plain `anchor test` with its default Windows validator startup requires Windows symlink privileges; the supported runner avoids that requirement.
+This tests that copied source/binary. Use the default fresh command to test current tracked source. Host Cargo uses GNU Rust because laptop #1's MSVC SDK was incomplete. Setup applies PATH, LIB and RUSTUP_TOOLCHAIN only to its shell; a fresh raw-Cargo shell needs setup again. The Node build/test wrappers locate user-local tools themselves.
 
-## WSL2/Ubuntu alternative
+All **64 validator tests + 16 Rust tests passed** this session. See [verification evidence](VERIFICATION.md), including actual browser signatures, token balances and saved screenshots.
 
-If native Windows Solana is blocked, install Ubuntu 24.04 from an **administrator PowerShell**, then restart if Windows requests it:
+## Windows validator limitation
+
+Agave 2.3's log symlink is avoided with `--log`. Its snapshot service still attempts a privileged symlink at slot 100 and terminates RPC with error 1314. The interactive demo uses 512 ticks per slot, providing roughly a 13-minute native recording window on laptop #1, with about eight seconds per confirmation. Timing depends on the machine.
+
+The runner reports the blocker, stops its own validator and preserves the ignored ledger. It does not replay fake transactions or silently reset state. For another recording, stop the old runner, run `npm run demo:local` again, and initialize with its new disposable wallet. For long sessions use WSL2/Linux or Windows symlink privileges. No machine security settings were changed in this session.
+
+## WSL2 / Linux alternative
+
+WSL is absent and this session is non-administrator; native Windows was used. Install Ubuntu from an administrator PowerShell if needed:
 
 ```powershell
 wsl --install -d Ubuntu-24.04
 ```
 
-Open Ubuntu and finish its first-run local username/password setup. Inside Ubuntu, use a Linux home-directory clone (do not reuse Windows `node_modules`):
+Inside Ubuntu use a Linux home-directory clone, separate from Windows node_modules. Install build-essential, pkg-config, libssl-dev, libudev-dev, curl, Git, bzip2, Node 22, Rust 1.89.0, Agave 2.3.0 and Anchor 0.32.1 from their official sources. Then:
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y build-essential pkg-config libssl-dev libudev-dev curl git bzip2
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.89.0
-. "$HOME/.cargo/env"
-sh -c "$(curl -sSfL https://release.anza.xyz/v2.3.0/install)"
-export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
-mkdir -p "$HOME/.local/bin"
-curl -fL https://github.com/solana-foundation/anchor/releases/download/v0.32.1/anchor-0.32.1-x86_64-unknown-linux-gnu -o "$HOME/.local/bin/anchor"
-chmod +x "$HOME/.local/bin/anchor"
-export PATH="$HOME/.local/bin:$PATH"
-curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-export NVM_DIR="$HOME/.nvm"
-. "$NVM_DIR/nvm.sh"
-nvm install 22
-git clone https://github.com/YOUR_GITHUB_HANDLE/mandateos-v2.git
+git clone --branch submission-v1 https://github.com/luzzwaix/mandateos-v2.git
 cd mandateos-v2
 npm ci
-node -v
-npm -v
-rustc --version
-cargo --version
-solana --version
-anchor --version
+npm --prefix web ci
+npm run build:program
 npm run test:local
+npm run demo:local
+# another terminal in the same clone
+npm --prefix web run dev
 ```
 
-Installer references: [Solana local setup](https://solana.com/docs/intro/installation), [Anchor 0.32.1 compatibility](https://www.anchor-lang.com/docs/updates/release-notes/0-32-1), [Rust Windows toolchains](https://rust-lang.github.io/rustup/installation/windows.html). All Linux setup commands are a continuation recipe; they have not been run in this Windows session.
+Linux continuation commands were not executed on this Windows laptop. Tool references: [Solana setup](https://solana.com/docs/intro/installation), [Anchor 0.32.1](https://www.anchor-lang.com/docs/updates/release-notes/0-32-1).
 
-## Devnet wallets stay machine-local
+## Devnet and wallets
 
-Local tests require no personal or devnet wallet. Neither laptop's devnet credentials are copied by the repository. No devnet program has been deployed by this session.
+No devnet deployment was attempted: CLI currently points to mainnet-beta, and its configured `%USERPROFILE%\.config\solana\id.json` does not exist. No funded devnet wallet is available. [Deployment continuation](DEPLOYMENT.md) explains the exact steps.
 
-If laptop #2 already has its own wallet, select its existing local keypair **outside the repository** (replace this example filename with the actual local path):
+Each laptop keeps its own signing and deployment material outside Git. A clone never supplies a personal or upgrade-authority wallet. Never commit Solana keypair JSON, recovery phrases, private keys, credential-bearing RPC URLs, `.env.local`, deployment authority or ledgers. Generated local demo wallets are disposable and already ignored.
 
-```powershell
-$machineWallet = Join-Path $env:USERPROFILE '.config\solana\id.json'
-Test-Path -LiteralPath $machineWallet
-solana config set --url https://api.devnet.solana.com --keypair $machineWallet
-solana address --keypair $machineWallet
-solana balance
-```
+## Founder action
 
-If it has no wallet, generate a new wallet locally; the command is interactive and its recovery phrase is private:
-
-```powershell
-$walletDirectory = Join-Path $env:USERPROFILE '.config\solana'
-New-Item -ItemType Directory -Path $walletDirectory -Force
-$machineWallet = Join-Path $walletDirectory 'mandateos-devnet.json'
-solana-keygen new --outfile $machineWallet
-solana config set --url https://api.devnet.solana.com --keypair $machineWallet
-solana address --keypair $machineWallet
-solana airdrop 2
-solana balance
-```
-
-`solana-keygen new` must not overwrite an existing wallet. Keep recovery phrases and any encrypted key backup outside Git. Airdrops depend on devnet faucet availability. Windows and WSL have separate home directories and Solana configurations; select the wallet inside the environment you actually use.
-
-Never commit private keys, seed phrases, keypair JSON, CLI config/credentials, `.env` secrets, deployment authority material, or local test/build output. `.gitignore` excludes those standard locations and filename patterns. Both Cargo and npm lockfiles are committed; generated keys are not. Future devnet deployment must create/select a machine-local program deployment keypair, set the public program ID deliberately, and preserve the upgrade authority securely outside Git. The Core source ID is not a deployed devnet address.
-
-## Next milestone
-
-Core acceptance is green. The next task is **Arena Lite + real frontend integration** using `create_bounty`, `submit_result`, and `settle_bounty`, without redesigning mandate accounting.
-
-## Final verification update
-
-Core verification is green: **48 real-validator tests and 16 Rust tests passed**, for 64 passing tests. The default fresh-key `npm run test:local` completed with exit 0 on laptop #1. Its fresh generated deployment ID was `9xbj1yFvnRrGc2gntpyttpLf1NefswsFQ2XwfbUN1wP`; its private key and all other generated material remain ignored. Both the required recursive scenario and failed-token-CPI rollback passed on the compiled SBF program. No outstanding Core verification blocker remains with the supported runner.
+Record the Capital Cascade → failed descendant payment → Arena winner payout using a fresh local demo. On native Windows, start the recording promptly after setup. The repo is private by explicit request; provide judges access or deliberately publish it before submitting its URL.
