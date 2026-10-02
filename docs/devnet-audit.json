@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-10-02T14:17:44.723Z",
+  "rpc": "https://api.devnet.solana.com",
+  "genesis": "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG",
+  "networkVerified": true,
+  "program": "CvRjAHwEQbawsH5otEPDjD7dp8S89yWrqano6XSatf63",
+  "slot": 506663935,
+  "exists": false,
+  "executable": false,
+  "publishedIdl": null,
+  "localIdl": {
+    "address": "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG",
+    "instructions": [
+      "create_bounty",
+      "create_organization",
+      "delegate",
+      "deposit",
+      "reclaim",
+      "revoke_branch",
+      "settle_bounty",
+      "spend",
+      "submit_result"
+    ]
+  },
+  "requiredInstructions": [
+    "create_root",
+    "reserve_child",
+    "spend",
+    "revoke_branch",
+    "reclaim_budget"
+  ],
+  "compatible": false,
+  "transactionsEnabled": false
+}

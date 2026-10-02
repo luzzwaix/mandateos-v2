@@ -522,17 +522,6 @@ h1 > span {
   stroke: #5b6461;
   stroke-dasharray: 3 4;
 }
-.capital-flow {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2;
-  stroke-dasharray: 12 88;
-  stroke-dashoffset: 100;
-  animation: capital-down 700ms ease-out forwards;
-}
-.capital-flow.revoke {
-  animation-name: capital-up;
-}
 .tree-node {
   position: absolute;
   width: 178px;
@@ -644,11 +633,11 @@ h1 > span {
   color: #b9c2be;
 }
 .authority-collapsed {
-  animation: authority-collapse 420ms ease-out both;
+  animation: authority-collapse 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
   animation-delay: var(--cascade-delay);
 }
 .authority-created {
-  animation: authority-create 350ms ease-out both;
+  animation: delegation-split 350ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .tree-legend {
   display: flex;
@@ -884,16 +873,11 @@ h1 > span {
 .empty-workspace > p {
   color: var(--muted);
   font-size: 11px;
-  margin: 20px 0 12px;
-}
-.concept-label {
-  font-size: 9px;
-  letter-spacing: 0.07em;
-  color: var(--muted);
+  margin: 12px 0 0;
 }
 .concept-revoke {
   border-top: 1px solid var(--line);
-  padding-top: 16px;
+  padding-top: 12px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -916,12 +900,36 @@ h1 > span {
   min-height: 32px;
 }
 .transaction-lifecycle {
-  height: 26px;
+  min-height: 32px;
   display: flex;
   align-items: center;
   gap: 8px;
   color: var(--muted);
   font-size: 10px;
+}
+.transaction-lifecycle > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.transaction-lifecycle a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+.transaction-lifecycle.confirmed {
+  color: var(--accent);
+}
+.transaction-lifecycle.error {
+  color: var(--red);
+}
+.transaction-lifecycle.confirmed,
+.transaction-lifecycle.error,
+.transaction-lifecycle.pending,
+.transaction-lifecycle.awaiting-signature {
+  animation: transaction-morph 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .transaction-lifecycle.pending {
   color: var(--accent);
@@ -1252,42 +1260,12 @@ footer > span {
     transform: rotate(360deg);
   }
 }
-@keyframes capital-down {
-  from {
-    stroke-dashoffset: 100;
-    opacity: 1;
-  }
-  to {
-    stroke-dashoffset: 0;
-    opacity: 0;
-  }
-}
-@keyframes capital-up {
-  from {
-    stroke-dashoffset: 0;
-    opacity: 1;
-  }
-  to {
-    stroke-dashoffset: 100;
-    opacity: 0;
-  }
-}
 @keyframes authority-collapse {
   from {
     border-color: #91b99b;
     background: #23372a;
   }
   to {
-  }
-}
-@keyframes authority-create {
-  from {
-    opacity: 0;
-    transform: translateX(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
   }
 }
 @keyframes settlement-paid {
@@ -1567,6 +1545,186 @@ footer > span {
     margin: 0 6px;
   }
 }
+
+/* Institutional motion: one bounded entrance, then confirmed capital/state feedback. */
+.shutter-heading {
+  position: relative;
+  overflow: clip;
+  isolation: isolate;
+}
+.shutter-heading::before,
+.shutter-heading::after,
+.tree-enter .authority-graph::before,
+.tree-enter .authority-graph::after,
+.tree-enter .concept-graph::before,
+.tree-enter .concept-graph::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  z-index: 3;
+  pointer-events: none;
+  background: var(--bg);
+  animation: shutter-left 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.shutter-heading::before,
+.tree-enter .authority-graph::before,
+.tree-enter .concept-graph::before {
+  left: 0;
+}
+.shutter-heading::after,
+.tree-enter .authority-graph::after,
+.tree-enter .concept-graph::after {
+  right: 0;
+  animation-name: shutter-right;
+}
+.tree-enter .authority-graph,
+.tree-enter .concept-graph {
+  overflow: clip;
+  perspective: 1000px;
+  animation: tree-camera 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.tree-enter .tree-node,
+.tree-enter .concept-node {
+  animation: tree-assembly 350ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--assembly-delay, 0ms);
+}
+.capital-pulse {
+  fill: var(--accent);
+  opacity: 0;
+  animation: pulse-visible 800ms linear both;
+}
+.connector-split {
+  stroke-dasharray: 100;
+  animation: connector-split 350ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.connector-collapse {
+  animation: connector-collapse 250ms ease-out both;
+}
+@keyframes shutter-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-102%);
+  }
+}
+@keyframes shutter-right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(102%);
+  }
+}
+@keyframes tree-camera {
+  from {
+    transform: perspective(1000px) rotateY(-1.5deg) translateX(-6px);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes tree-assembly {
+  from {
+    opacity: 0.55;
+    transform: translate3d(-8px, 3px, -14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pulse-visible {
+  0%,
+  8% {
+    opacity: 0;
+  }
+  15%,
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes connector-split {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes connector-collapse {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.65;
+  }
+}
+@keyframes delegation-split {
+  from {
+    opacity: 0.55;
+    clip-path: inset(0 100% 0 0);
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0);
+    transform: none;
+  }
+}
+@keyframes transaction-morph {
+  from {
+    opacity: 0.6;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 600px) {
+  .tree-enter .authority-graph,
+  .tree-enter .concept-graph {
+    animation: none;
+    perspective: none;
+  }
+  .tree-enter .tree-node,
+  .tree-enter .concept-node {
+    animation-name: tree-assembly-mobile;
+  }
+  .transaction-lifecycle {
+    flex-wrap: wrap;
+  }
+  .transaction-lifecycle > span {
+    max-width: 100%;
+  }
+}
+@keyframes tree-assembly-mobile {
+  from {
+    opacity: 0.65;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shutter-heading::before,
+  .shutter-heading::after,
+  .tree-enter .authority-graph::before,
+  .tree-enter .authority-graph::after,
+  .tree-enter .concept-graph::before,
+  .tree-enter .concept-graph::after,
+  .capital-pulse {
+    display: none;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1664,7 +1822,7 @@ footer > span {
 }
 .concept-scroll {
   overflow-x: auto;
-  margin: 16px -8px 12px;
+  margin: 12px -8px 12px;
   padding: 0 8px;
 }
 .concept-graph {

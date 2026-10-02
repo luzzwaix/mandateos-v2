@@ -81,10 +81,25 @@ export interface Activity {
 }
 export interface CapitalTransition {
   key: number;
-  kind: "delegate" | "revoke" | "settle";
+  kind: "delegate" | "revoke" | "settle" | "spend" | "reclaim";
   target: string;
   parent?: string;
   descendants: string[];
   amount: string;
   signature?: string;
 }
+export interface TransactionState {
+  phase:
+    | "idle"
+    | "working"
+    | "awaiting-signature"
+    | "pending"
+    | "confirmed"
+    | "error";
+  title: string;
+  signature?: string;
+  message?: string;
+}
+export type TransactionObserver = (
+  progress: Pick<TransactionState, "phase" | "signature">,
+) => void;

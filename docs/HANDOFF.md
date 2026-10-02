@@ -1,5 +1,11 @@
 # Two-laptop handoff
 
+## Current Devnet-only frontend refinement
+
+The current console targets `https://api.devnet.solana.com`, requested program `CvRjAHwEQbawsH5otEPDjD7dp8S89yWrqano6XSatf63`. The account and matching IDL are absent; its five-instruction ABI differs from this repository's Core. Transactions and local disposable signing are disabled. See [MOTION-DEVNET.md](MOTION-DEVNET.md) and the public [audit report](devnet-audit.json). No private key is needed to inspect or resolve the public program/IDL mismatch.
+
+For this frontend pass: copy `web/.env.example` to ignored `web/.env.local`, then run `npm --prefix web run dev`. `npm --prefix web run build` and `npm --prefix web start` build and preview the static production output. Existing protocol tests still use the supported isolated local-validator runner. The localnet setup/recording instructions below belong to release `submission-v1.0.3`; they do not enable localnet in the current Devnet-only console. The existing hosted Vercel preview also remains at that earlier checkpoint.
+
 ## Checkpoint and repository
 
 - Branch: `submission-v1`. Original `main` remains at `8391db2`, tagged `core-v0.1.0`.
@@ -11,6 +17,25 @@
 - Both dependency lockfiles and the generated public frontend IDL are tracked. Wallets, ledgers, deployment keys, local environment and build output are ignored.
 
 ## Laptop #2: exact quick start
+
+Current Devnet-only console:
+
+```powershell
+git clone --branch submission-v1 https://github.com/luzzwaix/mandateos-v2.git
+Set-Location mandateos-v2
+npm ci
+npm --prefix web ci
+Copy-Item web/.env.example web/.env.local
+node scripts/audit-devnet.mjs
+npm --prefix web run build
+npm --prefix web start
+```
+
+The audit currently exits 2 with the documented missing-program/IDL blocker. The frontend still builds and opens with truthful blocked-state feedback. Signing keys remain machine-local; never send them in chat or commit them.
+
+## Historical localnet release routine
+
+The following recording routine requires checking out `submission-v1.0.3`; it does not apply to the current Devnet-only frontend.
 
 GitHub access to this private repository, Git, Node 20.18+, Git Bash and Visual Studio 2022 x64 C++ tools are prerequisites on native Windows. Laptop #1 already has them. Setup downloads official user-local binaries/platform tools and Microsoft SDK import libraries; the first download can be substantial.
 

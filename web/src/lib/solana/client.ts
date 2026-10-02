@@ -20,7 +20,12 @@ import {
   submissionPda,
   vaultPda,
 } from "./pdas";
-import { programFor } from "./program";
+import {
+  assertCompatibleIdl,
+  DEVNET_GENESIS,
+  PROGRAM_ADDRESS,
+  programFor,
+} from "./program";
 import type {
   Activity,
   BountyAccount,
@@ -30,6 +35,7 @@ import type {
   SigningWallet,
   Snapshot,
   SubmissionAccount,
+  TransactionObserver,
 } from "./types";
 
 interface AccountApi<T> {
@@ -51,7 +57,10 @@ export class ProtocolRejection extends Error {
 }
 export class MandateClient {
   readonly program: Program;
-  constructor(readonly wallet?: SigningWallet) {
+  constructor(
+    readonly wallet?: SigningWallet,
+    private readonly observe?: TransactionObserver,
+  ) {
     this.program = programFor(wallet);
   }
   get rpc() {
@@ -66,14 +75,24 @@ export class MandateClient {
     };
   }
   async verifyDeployment() {
-    const info = await this.rpc.getAccountInfo(this.program.programId);
+    const [genesis, info, slot] = await Promise.all([
+      this.rpc.getGenesisHash(),
+      this.rpc.getAccountInfo(new PublicKey(PROGRAM_ADDRESS), "confirmed"),
+      this.rpc.getSlot("confirmed"),
+    ]);
+    if (genesis !== DEVNET_GENESIS)
+      throw new Error(
+        "Wrong network: this console only permits Solana Devnet. No transaction will be sent.",
+      );
     if (!info?.executable)
       throw new Error(
-        "Program is not deployed at this RPC/address. Start the local demo validator or configure a deployed program.",
+        "Devnet program account not found. Transactions are disabled until this public program address is deployed and its matching IDL is available.",
       );
-    return this.rpc.getSlot("confirmed");
+    assertCompatibleIdl();
+    return slot;
   }
   async load(address: PublicKey): Promise<Snapshot> {
+    await this.verifyDeployment();
     const organization = await this.accounts.organization.fetch(address);
     const filter = [{ memcmp: { offset: 8, bytes: address.toBase58() } }];
     const [nodes, bounties, mint, vault] = await Promise.all([
@@ -130,17 +149,43 @@ export class MandateClient {
     return result;
   }
   async send(tx: Transaction): Promise<string> {
+    await this.verifyDeployment();
     if (!this.wallet) throw new Error("Connect a signing wallet first");
+    const allowed = this.program.idl.instructions
+      .filter((instruction) =>
+        [
+          "create_root",
+          "reserve_child",
+          "spend",
+          "revoke_branch",
+          "reclaim_budget",
+        ].includes(instruction.name),
+      )
+      .map((instruction) => Buffer.from(instruction.discriminator));
+    for (const instruction of tx.instructions) {
+      if (
+        instruction.programId.equals(this.program.programId) &&
+        !allowed.some((discriminator) =>
+          instruction.data.subarray(0, 8).equals(discriminator),
+        )
+      )
+        throw new Error(
+          "Instruction is outside the five authorized Devnet operations",
+        );
+    }
     const latest = await this.rpc.getLatestBlockhash("confirmed");
     tx.feePayer = this.wallet.publicKey;
     tx.recentBlockhash = latest.blockhash;
+    this.observe?.({ phase: "awaiting-signature" });
     const signed = await this.wallet.signTransaction(tx);
+    this.observe?.({ phase: "pending" });
     // Broadcasting with preflight disabled records genuine rejected demo payments
     // in the ledger, rather than stopping at client simulation.
     const signature = await this.rpc.sendRawTransaction(signed.serialize(), {
       skipPreflight: true,
       maxRetries: 3,
     });
+    this.observe?.({ phase: "pending", signature });
     const result = await this.rpc.confirmTransaction(
       { ...latest, signature },
       "confirmed",
@@ -159,9 +204,11 @@ export class MandateClient {
         parsed?.error.errorCode.code,
       );
     }
+    this.observe?.({ phase: "confirmed", signature });
     return signature;
   }
   private signer() {
+    assertCompatibleIdl();
     if (!this.wallet) throw new Error("Connect a wallet");
     return this.wallet.publicKey;
   }

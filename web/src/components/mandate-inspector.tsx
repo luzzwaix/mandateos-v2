@@ -25,13 +25,21 @@ export default function MandateInspector({ state }: { state: ConsoleState }) {
         <h2>Control the branch.</h2>
         <p>Select a mandate to spend, delegate or revoke its authority.</p>
         <div className="inspector-empty-rule">
-          <b>Fund → Delegate → Revoke</b>
-          <span>One treasury. Every agent bounded.</span>
+          <b>
+            {state.canTransact
+              ? "One treasury. Every agent bounded."
+              : "Waiting for a verified Devnet deployment"}
+          </b>
+          <span>
+            {state.canTransact
+              ? "The selected controller signs each capital operation."
+              : "A compatible public IDL is required before any capital operation."}
+          </span>
         </div>
       </aside>
     );
   const status = effectiveStatus(node, s);
-  const unit = demo ? "USDC" : "TOKENS";
+  const unit = demo ? "TEST TOKENS" : "TOKENS";
   const isRoot = node.account.depth === 0;
   const name =
     labels[node.publicKey.toBase58()] ??
@@ -177,7 +185,7 @@ export default function MandateInspector({ state }: { state: ConsoleState }) {
             </label>
             <button
               className="button full"
-              disabled={!!busy || !state.wallet}
+              disabled={!!busy || !state.wallet || !state.canTransact}
               onClick={() => void execute()}
             >
               {action === "delegate" ? (
@@ -193,7 +201,7 @@ export default function MandateInspector({ state }: { state: ConsoleState }) {
           {!isRoot && (
             <button
               className="button danger full"
-              disabled={!!busy || !state.wallet}
+              disabled={!!busy || !state.wallet || !state.canTransact}
               onClick={() =>
                 void run("Revoke branch", () =>
                   forSigner(

@@ -4,16 +4,20 @@ import { ArrowUpRight, Check, ShieldX, LoaderCircle } from "lucide-react";
 import { explorer } from "@/lib/solana/program";
 import { short } from "@/lib/solana/pdas";
 import type { Activity } from "@/lib/solana/types";
+import type { TransactionState } from "@/lib/solana/types";
+import Reveal from "./reveal";
 export default function ActivityFeed({
   activity,
   busy,
+  transaction,
 }: {
   activity: Activity[];
   busy: string;
+  transaction: TransactionState;
 }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <section className="activity-panel">
+    <Reveal className="activity-panel">
       <div className="section-line">
         <h2>On-chain activity</h2>
         <button
@@ -25,14 +29,48 @@ export default function ActivityFeed({
         </button>
       </div>
       <div
-        className={`transaction-lifecycle ${busy ? "pending" : ""}`}
+        className={`transaction-lifecycle ${transaction.phase}`}
         aria-live="polite"
       >
-        {busy ? (
+        {busy && transaction.phase !== "confirmed" ? (
           <>
             <LoaderCircle size={13} className="spin" />
             <strong>{busy}</strong>
-            <span>Awaiting confirmation</span>
+            <span>
+              {transaction.phase === "awaiting-signature"
+                ? "Awaiting signature"
+                : transaction.phase === "pending"
+                  ? "Pending · awaiting network"
+                  : "Working"}
+            </span>
+          </>
+        ) : transaction.phase === "confirmed" && transaction.signature ? (
+          <>
+            <Check size={13} />
+            <strong>Confirmed</strong>
+            <span>{transaction.title}</span>
+            <a
+              href={explorer(transaction.signature)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              View transaction <ArrowUpRight size={12} />
+            </a>
+          </>
+        ) : transaction.phase === "error" ? (
+          <>
+            <ShieldX size={13} />
+            <strong>Error</strong>
+            <span>{transaction.message}</span>
+            {transaction.signature && (
+              <a
+                href={explorer(transaction.signature)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View failed transaction <ArrowUpRight size={12} />
+              </a>
+            )}
           </>
         ) : (
           <>
@@ -75,6 +113,6 @@ export default function ActivityFeed({
           </div>
         ))}
       </div>
-    </section>
+    </Reveal>
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-import type { CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
 import { ArrowRight, LockKeyhole } from "lucide-react";
 import { formatUnits, short } from "@/lib/solana/pdas";
 import type {
@@ -9,6 +9,31 @@ import type {
   Snapshot,
 } from "@/lib/solana/types";
 import CapitalNumber from "./capital-number";
+
+function CapitalPulse({
+  path,
+  delay = 0.08,
+}: {
+  path: string;
+  delay?: number;
+}) {
+  const motion = useRef<SVGAnimateMotionElement>(null);
+  useEffect(() => {
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
+      motion.current?.beginElementAt(delay);
+  }, [path, delay]);
+  return (
+    <circle r="3" className="capital-pulse">
+      <animateMotion
+        ref={motion}
+        path={path}
+        dur="0.6s"
+        begin="indefinite"
+        fill="freeze"
+      />
+    </circle>
+  );
+}
 
 export function effectiveStatus(
   node: ChainRow<MandateAccount>,
@@ -33,6 +58,7 @@ export default function CapitalTree({
   onSelect,
   unit = "TOKENS",
   transition,
+  entrance = false,
 }: {
   snapshot: Snapshot;
   labels: Record<string, string>;
@@ -40,7 +66,10 @@ export default function CapitalTree({
   onSelect: (id: string) => void;
   unit?: string;
   transition?: CapitalTransition;
+  entrance?: boolean;
 }) {
+  const elements = useRef(new Map<string, HTMLButtonElement>());
+  const previousPositions = useRef(new Map<string, { x: number; y: number }>());
   const root = snapshot.nodes.find((n) =>
     n.publicKey.equals(snapshot.organization.rootMandate),
   );
@@ -64,8 +93,45 @@ export default function CapitalTree({
   const depth = Math.max(...snapshot.nodes.map((n) => n.account.depth), 0);
   const width = 220 * depth + 226;
   const height = Math.max(232, leaf * 120 + 16);
+  const target = snapshot.nodes.find(
+    (n) => n.publicKey.toBase58() === transition?.target,
+  );
+  const spendingPath = new Set<string>();
+  if (transition?.kind === "spend" && target) {
+    let current = target;
+    for (let d = current.account.depth; d > 0; d--) {
+      spendingPath.add(current.publicKey.toBase58());
+      const parent = snapshot.nodes.find((n) =>
+        n.publicKey.equals(current.account.parent),
+      );
+      if (!parent) break;
+      current = parent;
+    }
+  }
+  useLayoutEffect(() => {
+    if (
+      transition?.kind === "delegate" &&
+      !matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      for (const [id, next] of positions) {
+        const old = previousPositions.current.get(id);
+        const element = elements.current.get(id);
+        if (old && element && (old.x !== next.x || old.y !== next.y))
+          element.animate(
+            [
+              {
+                transform: `translate(${old.x - next.x}px, ${old.y - next.y}px)`,
+              },
+              { transform: "none" },
+            ],
+            { duration: 350, easing: "cubic-bezier(.16,1,.3,1)" },
+          );
+      }
+    }
+    previousPositions.current = positions;
+  });
   return (
-    <div className="tree-canvas">
+    <div className={`tree-canvas ${entrance ? "tree-enter" : ""}`}>
       <div className="depth-guide" style={{ minWidth: width, width }}>
         {Array.from({ length: depth + 1 }, (_, d) => (
           <span key={d} style={{ left: 24 + d * 220 }}>
@@ -98,6 +164,17 @@ export default function CapitalTree({
               <path d="M0,0 L5,2.5 L0,5" fill="currentColor" />
             </marker>
           </defs>
+          {transition?.signature &&
+            root &&
+            (transition.kind === "reclaim" ||
+              (transition.kind === "spend" &&
+                transition.target === root.publicKey.toBase58())) &&
+            positions.get(root.publicKey.toBase58()) && (
+              <CapitalPulse
+                key={transition.key}
+                path={`M ${positions.get(root.publicKey.toBase58())!.x} ${positions.get(root.publicKey.toBase58())!.y} H 4`}
+              />
+            )}
           {snapshot.nodes
             .filter((n) => n.account.depth > 0)
             .map((n) => {
@@ -107,26 +184,37 @@ export default function CapitalTree({
               if (!point || !parent) return null;
               const path = `M ${parent.x + 178} ${parent.y} H ${parent.x + 199} V ${point.y} H ${point.x - 4}`;
               const status = effectiveStatus(n, snapshot);
-              const moving =
-                transition?.target === id ||
-                (transition?.kind === "revoke" &&
-                  transition.descendants.includes(id));
+              const moving = transition?.target === id || spendingPath.has(id);
+              const pulsePath =
+                transition?.kind === "revoke"
+                  ? `M ${point.x - 4} ${point.y} H ${parent.x + 199} V ${parent.y} H ${parent.x + 178}`
+                  : path;
+              const cascadeDelay = Math.min(
+                440,
+                Math.max(0, n.account.depth - (target?.account.depth ?? 0)) *
+                  120,
+              );
               return (
                 <g key={id}>
                   <path
                     d={path}
-                    className={`connector ${status}`}
+                    className={`connector ${status} ${transition?.kind === "revoke" && transition.descendants.includes(id) ? "connector-collapse" : ""} ${transition?.kind === "delegate" && transition.target === id ? "connector-split" : ""}`}
+                    pathLength="100"
+                    style={{ animationDelay: `${cascadeDelay}ms` }}
                     markerEnd="url(#capital-arrow)"
                   />
-                  {moving && (
-                    <path
+                  {moving && transition?.signature && (
+                    <CapitalPulse
                       key={transition.key}
-                      d={path}
-                      pathLength="100"
-                      className={`capital-flow ${transition.kind}`}
-                      style={{
-                        animationDelay: `${Math.max(0, n.account.depth - 1) * 120}ms`,
-                      }}
+                      path={pulsePath}
+                      delay={
+                        transition.kind === "spend"
+                          ? Math.min(
+                              0.2,
+                              Math.max(0, n.account.depth - 1) * 0.07,
+                            )
+                          : 0.08
+                      }
                     />
                   )}
                 </g>
@@ -148,6 +236,10 @@ export default function CapitalTree({
           return (
             <button
               key={id}
+              ref={(element) => {
+                if (element) elements.current.set(id, element);
+                else elements.current.delete(id);
+              }}
               aria-label={`Select ${name}`}
               aria-pressed={id === selected}
               className={`tree-node ${isRoot ? "root-node" : ""} ${status} ${id === selected ? "selected" : ""} ${affected ? "authority-collapsed" : ""} ${transition?.kind === "delegate" && transition.target === id ? "authority-created" : ""}`}
@@ -155,7 +247,8 @@ export default function CapitalTree({
                 {
                   left: position.x,
                   top: position.y - 54,
-                  "--cascade-delay": `${Math.max(0, node.account.depth - 1) * 140}ms`,
+                  "--cascade-delay": `${Math.min(440, Math.max(0, node.account.depth - (target?.account.depth ?? 0)) * 120)}ms`,
+                  "--assembly-delay": `${Math.min(120, node.account.depth * 40)}ms`,
                 } as CSSProperties
               }
               onClick={() => onSelect(id)}
@@ -230,13 +323,12 @@ export default function CapitalTree({
 }
 
 /** A labelled explanation, never presented as observed accounts or balances. */
-export function ConceptTree() {
+export function ConceptTree({ entrance = false }: { entrance?: boolean }) {
   return (
     <div
-      className="concept-tree"
+      className={`concept-tree ${entrance ? "tree-enter" : ""}`}
       aria-label="Illustrative capital authority diagram"
     >
-      <span className="concept-label">HOW AUTHORITY FLOWS · ILLUSTRATION</span>
       <div className="concept-scroll">
         <div className="concept-graph">
           <svg width="840" height="220" aria-hidden="true">
@@ -282,7 +374,13 @@ export function ConceptTree() {
             <div
               key={item.name}
               className={`concept-node ${i === 0 ? "concept-root" : ""}`}
-              style={{ left: item.x, top: item.y }}
+              style={
+                {
+                  left: item.x,
+                  top: item.y,
+                  "--assembly-delay": `${Math.min(120, i * 35)}ms`,
+                } as CSSProperties
+              }
             >
               <strong>{item.name}</strong>
               <span>{item.detail}</span>

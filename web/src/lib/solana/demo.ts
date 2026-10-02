@@ -122,12 +122,12 @@ export async function initializeDemo(
     [],
     confirmations,
   );
-  onProgress("Creating organization and funding Root with 1,000 demo USDC");
+  onProgress("Creating organization and funding Root with 1,000 test tokens");
   const created = await client.createOrganization(mint);
   record("Organization created", created.signature);
   let snapshot = await client.load(created.organization);
   record(
-    "Deposited 1,000 demo USDC",
+    "Deposited 1,000 test tokens",
     await client.deposit(snapshot, new BN("1000000000"), source.address),
   );
   snapshot = await client.load(created.organization);

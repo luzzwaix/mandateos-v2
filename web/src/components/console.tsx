@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { BN } from "@coral-xyz/anchor";
 import { Keypair, PublicKey } from "@solana/web3.js";
@@ -24,6 +24,7 @@ import {
   NETWORK,
   PROGRAM_ADDRESS,
   RPC_URL,
+  IDL_COMPATIBLE,
   explorer,
 } from "@/lib/solana/program";
 import { formatUnits, short } from "@/lib/solana/pdas";
@@ -32,9 +33,15 @@ import CapitalNumber from "./capital-number";
 import MandateInspector from "./mandate-inspector";
 import Arena from "./arena";
 import ActivityFeed from "./activity";
+import Reveal from "./reveal";
 
 export default function Console() {
   const state = useConsole();
+  const [entrance, setEntrance] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => setEntrance(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
   const [tab, setTab] = useState<"capital" | "arena">("capital");
   const [walletMenu, setWalletMenu] = useState(false);
   const [loadAddress, setLoadAddress] = useState("");
@@ -196,7 +203,7 @@ export default function Console() {
       </header>
       <div className="workspace-heading">
         <div>
-          <h1>
+          <h1 className={entrance ? "shutter-heading" : ""}>
             DON’T GIVE AGENTS WALLETS.
             <br />
             <span>GIVE THEM MANDATES.</span>
@@ -243,7 +250,7 @@ export default function Console() {
         <span>Unused capital returns</span>
       </div>
       {how && (
-        <section className="how-panel">
+        <Reveal className="how-panel">
           <div>
             <b>01 / FUND</b>
             <p>One treasury remains under organizational control.</p>
@@ -262,7 +269,7 @@ export default function Console() {
               receive treasury keys.
             </p>
           </div>
-        </section>
+        </Reveal>
       )}
       {manage && (
         <section className="organization-bar">
@@ -299,7 +306,7 @@ export default function Console() {
           </label>
           <button
             className="button"
-            disabled={!!busy || !wallet || !mint}
+            disabled={!!busy || !wallet || !mint || !state.canTransact}
             onClick={() =>
               void run("Create organization", async () => {
                 const result = await state.client.createOrganization(
@@ -338,7 +345,7 @@ export default function Console() {
           {
             label: "RESERVED",
             value: reserved,
-            context: "Agent branches + open bounties",
+            context: "Capital delegated to agent branches",
           },
           {
             label: "SPENT",
@@ -362,7 +369,7 @@ export default function Console() {
               ) : (
                 <CapitalNumber value={stat.value} decimals={s?.decimals ?? 6} />
               )}
-              <small>{demo ? "USDC" : "TOKENS"}</small>
+              <small>{demo ? "TEST TOKENS" : "TOKENS"}</small>
             </strong>
             {stat.hero && state.released && (
               <em>+{state.released} returned to Root</em>
@@ -383,6 +390,12 @@ export default function Console() {
           </button>
           <button
             className={tab === "arena" ? "active" : ""}
+            disabled={!IDL_COMPATIBLE}
+            title={
+              !IDL_COMPATIBLE
+                ? "Arena is outside the requested five-instruction Devnet protocol"
+                : undefined
+            }
             onClick={() => setTab("arena")}
           >
             <Trophy size={15} /> Arena Lite{" "}
@@ -393,9 +406,7 @@ export default function Console() {
         </div>
         <div className="live-status">
           <span title={RPC_URL}>
-            {health.startsWith("LIVE")
-              ? health
-              : "RPC / deployment unavailable"}
+            {health.startsWith("LIVE") ? health : "Deployment blocked"}
           </span>
           <button
             className="icon-button"
@@ -410,12 +421,9 @@ export default function Console() {
         </div>
       </div>
       {!health.startsWith("LIVE") && (
-        <details className="rpc-notice">
+        <details className="rpc-notice" open>
           <summary>
-            {NETWORK === "LOCALNET"
-              ? "Localnet node required to load live capital"
-              : "Connect to the configured RPC to load live capital"}{" "}
-            <span>Connection details</span>
+            Devnet transactions unavailable <span>Deployment / IDL check</span>
           </summary>
           <p>{health}</p>
           <small>
@@ -437,7 +445,7 @@ export default function Console() {
               <span>
                 {s
                   ? `${s.nodes.length} MANDATES · MAX DEPTH ${s.organization.maxDepth}`
-                  : "ONE SHARED SPL VAULT"}
+                  : "ILLUSTRATION · NO LIVE ACCOUNTS"}
               </span>
             </div>
             {s ? (
@@ -446,12 +454,13 @@ export default function Console() {
                 labels={labels}
                 selected={state.selected}
                 onSelect={state.setSelected}
-                unit={demo ? "USDC" : "TOKENS"}
+                unit={demo ? "TEST TOKENS" : "TOKENS"}
                 transition={state.transition}
+                entrance={entrance}
               />
             ) : (
               <div className="empty-workspace">
-                <ConceptTree />
+                <ConceptTree entrance={entrance} />
                 <p>Open an organization to see its live capital tree.</p>
                 {LOCAL_DEMO && (
                   <button
@@ -496,13 +505,13 @@ export default function Console() {
                     <>
                       <strong>
                         {revoked
-                          ? `${state.released || (cascadeTransition ? formatUnits(cascadeTransition.amount, s!.decimals) : "Unused")} USDC returned to Root`
+                          ? `${state.released || (cascadeTransition ? formatUnits(cascadeTransition.amount, s!.decimals) : "Unused")} TOKENS returned to Root`
                           : "Watch the Capital Cascade"}
                       </strong>
                       <p>
                         {revoked
                           ? `${cascadeTransition?.descendants.length ?? 3} descendant mandates blocked · treasury authority recovered`
-                          : `Revoke Research → descendants blocked → ${research && s ? formatUnits(research.account.subtreeRemaining, s.decimals) : "unused"} USDC returns.`}
+                          : `Revoke Research → descendants blocked → ${research && s ? formatUnits(research.account.subtreeRemaining, s.decimals) : "unused"} TOKENS returns.`}
                       </p>
                     </>
                   )}
@@ -578,9 +587,17 @@ export default function Console() {
       ) : (
         <Arena state={state} />
       )}
-      <ActivityFeed activity={state.activity} busy={busy} />
+      <ActivityFeed
+        activity={state.activity}
+        busy={busy}
+        transaction={state.transaction}
+      />
       <footer>
-        <span>SOLANA PROGRAM · 80 TESTS PASSING · REAL ANCHOR ACTIONS</span>
+        <span>
+          {state.canTransact
+            ? "SOLANA DEVNET · REAL ANCHOR ACTIONS"
+            : "DEVNET CONFIGURED · DEPLOYMENT NOT VERIFIED"}
+        </span>
         {s ? (
           <button
             className="copy-address"
@@ -603,7 +620,7 @@ export default function Console() {
           {demo
             ? "Disposable keys stay in this browser tab"
             : "Direct wallet → Solana"}{" "}
-          · trusted Arena verifier
+          · balances follow network confirmation
         </span>
       </footer>
     </main>

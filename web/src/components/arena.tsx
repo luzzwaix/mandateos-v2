@@ -97,7 +97,7 @@ export default function Arena({ state }: { state: ConsoleState }) {
           <Fingerprint size={30} />
           <h3>No funded tasks yet</h3>
           <p>
-            Create the demo bounty for 25 demo USDC. Submit two commitments,
+            Create the demo bounty for 25 test tokens. Submit two commitments,
             then select a winner.
           </p>
         </div>
@@ -135,7 +135,7 @@ export default function Arena({ state }: { state: ConsoleState }) {
               </span>
               <div className="bounty-reward">
                 <strong>{formatUnits(b.account.reward, s.decimals)}</strong>
-                <small>{demo ? "DEMO USDC" : "TOKEN"} REWARD</small>
+                <small>{demo ? "TEST TOKENS" : "TOKEN"} REWARD</small>
               </div>
             </div>
             <div className="bounty-meta">
@@ -242,12 +242,12 @@ export default function Arena({ state }: { state: ConsoleState }) {
                         {settling && (
                           <span className="reward-transfer" aria-hidden="true">
                             +{formatUnits(b.account.reward, s.decimals)}{" "}
-                            {demo ? "USDC" : "TOKENS"} →
+                            {demo ? "TOKENS" : "TOKENS"} →
                           </span>
                         )}
                         <Check size={14} /> VERIFIED / PAID{" "}
                         {formatUnits(b.account.reward, s.decimals)}{" "}
-                        {demo ? "USDC" : "TOKENS"}
+                        {demo ? "TOKENS" : "TOKENS"}
                       </span>
                     ) : (
                       !settled && (
@@ -280,7 +280,7 @@ export default function Arena({ state }: { state: ConsoleState }) {
                 <Check size={16} />
                 <strong>
                   {formatUnits(b.account.reward, s.decimals)}{" "}
-                  {demo ? "USDC" : "TOKENS"} SETTLED
+                  {demo ? "TOKENS" : "TOKENS"} SETTLED
                 </strong>
                 <span>VERIFIED ON-CHAIN</span>
                 {settlement?.signature && (

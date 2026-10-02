@@ -9,6 +9,8 @@ import type {
   CapitalTransition,
   SigningWallet,
   Snapshot,
+  TransactionState,
+  TransactionObserver,
 } from "./solana/types";
 
 export function useConsole() {
@@ -21,6 +23,13 @@ export function useConsole() {
   const [selected, setSelected] = useState("");
   const [activity, setActivity] = useState<Activity[]>([]);
   const [busy, setBusy] = useState("");
+  const [transaction, setTransaction] = useState<TransactionState>({
+    phase: "idle",
+    title: "",
+  });
+  const reportTransaction = useCallback<TransactionObserver>((progress) => {
+    setTransaction((previous) => ({ ...previous, ...progress }));
+  }, []);
   const [error, setError] = useState("");
   const [rejection, setRejection] = useState<ProtocolRejection>();
   const [health, setHealth] = useState("Connecting to RPC");
@@ -33,13 +42,16 @@ export function useConsole() {
   const transactionRef = useRef<string | undefined>(undefined);
   useEffect(() => {
     if (!transition) return;
-    const timer = setTimeout(() => setTransition(undefined), 1600);
+    const timer = setTimeout(() => setTransition(undefined), 900);
     return () => clearTimeout(timer);
   }, [transition]);
   const adapterRef = useRef<
     Awaited<ReturnType<typeof connectWallet>>["adapter"] | undefined
   >(undefined);
-  const client = useMemo(() => new MandateClient(wallet), [wallet]);
+  const client = useMemo(
+    () => new MandateClient(wallet, reportTransaction),
+    [wallet, reportTransaction],
+  );
   const addActivity = useCallback(
     (a: Activity) =>
       setActivity((prev) =>
@@ -75,6 +87,13 @@ export function useConsole() {
               (old) =>
                 old.publicKey.equals(b.publicKey) && old.account.status.open,
             ),
+        );
+        const spent = next.nodes.find((n) =>
+          previous.nodes.some(
+            (old) =>
+              old.publicKey.equals(n.publicKey) &&
+              n.account.directSpent.gt(old.account.directSpent),
+          ),
         );
         if (revoked) {
           const descendants = new Set([revoked.publicKey.toBase58()]);
@@ -119,6 +138,35 @@ export function useConsole() {
             target: settled.publicKey.toBase58(),
             descendants: [],
             amount: settled.account.reward.toString(),
+            signature: transactionRef.current,
+          });
+        } else if (spent) {
+          const old = previous.nodes.find((n) =>
+            n.publicKey.equals(spent.publicKey),
+          )!;
+          setTransition({
+            key: Date.now(),
+            kind: "spend",
+            target: spent.publicKey.toBase58(),
+            descendants: [],
+            amount: spent.account.directSpent
+              .sub(old.account.directSpent)
+              .toString(),
+            signature: transactionRef.current,
+          });
+        } else if (
+          next.organization.totalReclaimed.gt(
+            previous.organization.totalReclaimed,
+          )
+        ) {
+          setTransition({
+            key: Date.now(),
+            kind: "reclaim",
+            target: next.organization.rootMandate.toBase58(),
+            descendants: [],
+            amount: next.organization.totalReclaimed
+              .sub(previous.organization.totalReclaimed)
+              .toString(),
             signature: transactionRef.current,
           });
         }
@@ -173,12 +221,16 @@ export function useConsole() {
   ) {
     if (busy) return;
     setBusy(title);
+    setTransaction({ phase: "working", title });
     setError("");
     setRejection(undefined);
+    let confirmedSignature: string | undefined;
     try {
       const signature = await task();
+      confirmedSignature = signature || undefined;
       transactionRef.current = signature || undefined;
-      if (signature)
+      if (signature) {
+        setTransaction({ phase: "confirmed", title, signature });
         addActivity({
           title,
           signature,
@@ -186,12 +238,24 @@ export function useConsole() {
           detail: "Transaction confirmed",
           time: new Date().toLocaleTimeString(),
         });
+      } else setTransaction({ phase: "idle", title: "" });
       await refresh(
         address ?? snapshotRef.current?.address.toBase58() ?? organization,
       );
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
-      setError(message);
+      setError(
+        confirmedSignature
+          ? `Transaction confirmed; account refresh failed: ${message}`
+          : message,
+      );
+      if (!confirmedSignature)
+        setTransaction({
+          phase: "error",
+          title,
+          message,
+          signature: e instanceof ProtocolRejection ? e.signature : undefined,
+        });
       if (e instanceof ProtocolRejection) {
         setRejection(e);
         addActivity({
@@ -221,7 +285,7 @@ export function useConsole() {
         throw new Error(
           "This controller's signing key is not in the disposable demo session",
         );
-      return new MandateClient(keypairWallet(pair));
+      return new MandateClient(keypairWallet(pair), reportTransaction);
     }
     if (!wallet?.publicKey.equals(address))
       throw new Error(
@@ -281,6 +345,8 @@ export function useConsole() {
     setSelected,
     activity,
     busy,
+    transaction,
+    canTransact: health.startsWith("LIVE"),
     error,
     rejection,
     health,
