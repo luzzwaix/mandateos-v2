@@ -4,8 +4,10 @@
 
 - Branch: `submission-v1`. Original `main` remains at `8391db2`, tagged `core-v0.1.0`.
 - Private remote: https://github.com/luzzwaix/mandateos-v2.git
-- Latest submission commit: `git log -1 --format=%H submission-v1`; release tag: `submission-v1.0.2`. Inspect the checkout with `git log -1 --oneline`.
+- Latest submission commit: `git log -1 --format=%H submission-v1`; release tag: `submission-v1.0.3`. Inspect the checkout with `git log -1 --oneline`.
 - Arena checkpoint: `4ebb266`.
+- Capital-tree polish and confirmed transaction motion checkpoint: `7f8d0fb`.
+- Vercel preview: https://mandateos-v2-qdi2zz8ve-luzzwaixs-projects.vercel.app · target `preview`, status `Ready`. Hosted signing demo is disabled; RPC remains LOCALNET.
 - Both dependency lockfiles and the generated public frontend IDL are tracked. Wallets, ledgers, deployment keys, local environment and build output are ignored.
 
 ## Laptop #2: exact quick start
@@ -104,7 +106,7 @@ All **64 validator tests + 16 Rust tests passed** this session. See [verificatio
 
 ## Windows validator limitation
 
-Agave 2.3's log symlink is avoided with `--log`. Its snapshot service still attempts a privileged symlink at slot 100 and terminates RPC with error 1314. The interactive demo uses 512 ticks per slot, providing roughly a 13-minute native recording window on laptop #1, with about eight seconds per confirmation. Timing depends on the machine.
+Agave 2.3's log symlink is avoided with `--log`. Its snapshot service can attempt a privileged symlink after slot 100 and terminate RPC with error 1314. The interactive demo uses 512 ticks per slot, providing at least roughly 13 minutes before slot 100 on laptop #1, with about eight seconds per confirmation. The snapshot failure can occur later. Timing depends on the machine.
 
 The runner reports the blocker, stops its own validator and preserves the ignored ledger. It does not replay fake transactions or silently reset state. For another recording, stop the old runner, run `npm run demo:local` again, and initialize with its new disposable wallet. For long sessions use WSL2/Linux or Windows symlink privileges. No machine security settings were changed in this session.
 

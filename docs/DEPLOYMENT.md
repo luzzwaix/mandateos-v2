@@ -2,6 +2,10 @@
 
 ## Static frontend
 
+Ready preview: https://mandateos-v2-qdi2zz8ve-luzzwaixs-projects.vercel.app
+
+Deployment: `dpl_8Zq2YmGaShEc7MYoWELo11jTsHvg`, target `preview`. Vercel's install, Next.js production compilation, TypeScript, static page generation and output deployment completed successfully. CLI inspection returned **Ready**. No request was made to the deployed site to claim a remote browser test; the final application flow was tested locally.
+
 The frontend uses Next.js App Router, TypeScript, Tailwind and Lucide. Its real Anchor client talks directly from the connected browser to Solana. It has no API routes, server actions, database or backend deployment.
 
 ```powershell
@@ -14,7 +18,19 @@ npm --prefix web start
 
 Build produces `web/out`. The last command serves that static directory locally, without `next start` (unsupported for an exported app). Stop any existing port-3000 process first.
 
-Host `web/out` on a static host, or import the private GitHub repository into a Next.js-compatible host such as Vercel. Select branch `submission-v1`, root directory `web`, install `npm ci`, build `npm run build` and static output `out`. No credentials or host account were invented; this session did not publish the site.
+Vercel project: `luzzwaixs-projects/mandateos-v2`. The checked-in `web/vercel.json` uses the static (Other) preset, install `npm ci`, build `npm run build`, output `out`. The application remains Next.js App Router; its browser talks directly to Solana. Do not pair Vercel's server Next.js preset with an overridden `out` directory: that combination compiled but failed looking for a server routes manifest.
+
+For a Git import, select branch `submission-v1` and root directory `web`. Wallets, ledgers, local environment files, dependencies and output are excluded from uploads through `web/.vercelignore`. Vercel project linkage in `.vercel` is machine-local and ignored.
+
+To recreate an authenticated preview from laptop #2:
+
+```powershell
+Set-Location web
+vercel link --yes --project mandateos-v2 --scope luzzwaixs-projects
+vercel deploy --yes --target preview --build-env NEXT_PUBLIC_SOLANA_RPC_URL=http://127.0.0.1:8899 --build-env NEXT_PUBLIC_MANDATEOS_PROGRAM_ID=Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG --build-env NEXT_PUBLIC_ENABLE_LOCAL_DEMO=false
+```
+
+The published build currently points to LOCALNET and disables disposable signing. Without a validator on the visitor's machine, it displays an explicitly illustrative hierarchy and no invented balances. It does not pretend to be a live devnet deployment. Replace the two public deployment values only after actually deploying the program, then rebuild. Existing Vercel preview protection remains enabled.
 
 Set public build variables before building:
 

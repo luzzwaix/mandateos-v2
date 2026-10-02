@@ -4,7 +4,9 @@
 
 MandateOS is recursive capital authority for autonomous organizations on Solana. An organization keeps tokens in one program-controlled vault, delegates bounded authority down an agent tree, and cuts an entire branch with one revocation transaction. Arena Lite reserves treasury capital for external work and pays one verified winner.
 
-![Real localnet Capital Cascade](docs/images/capital-cascade.png)
+[Open the Vercel preview](https://mandateos-v2-qdi2zz8ve-luzzwaixs-projects.vercel.app) · **LOCALNET frontend**. A live validator is required for transactions; the hosted empty state is explicitly illustrative.
+
+![Real localnet capital authority tree](docs/images/capital-tree.png)
 
 ## The problem
 
@@ -48,7 +50,7 @@ Setup sends real transactions: create a six-decimal demo SPL mint, fund Root wit
 
 1. Root initially has 600 available; Research has 390 remaining.
 2. Click **Revoke Research**. Wait for confirmation: Research becomes revoked, Data/Search/Scraper become blocked, and Root available rises to 990.
-3. Click **Attempt descendant payment**. A real Scraper payment is broadcast and recorded as failed with `AncestorRevoked`; inspect its signature and logs.
+3. Click **Attempt blocked payment**. A real Scraper payment is broadcast and recorded as failed with `AncestorRevoked`; inspect its signature and logs.
 4. Open **Arena Lite**. Create a 25-token bounty, submit Research and Search commitments, then select Research as winner.
 5. Observe the confirmed payout and settlement event. Root has 965 available; total spending is 35.
 6. Select Root → Reclaim → 965. The vault becomes zero; the owner receives 965.
@@ -109,7 +111,7 @@ npm --prefix web run dev
 
 Open [the local console](http://127.0.0.1:3000). Setup takes roughly two minutes on this native Windows configuration. Each confirmed action takes about eight seconds because slots are slowed to extend the recording window.
 
-Native Agave 2.3 Windows still stops at snapshot slot 100 without symlink privileges. The runner reports that real environment failure and preserves the ledger. Start a fresh run and initialize a new organization for another recording; use WSL2 or a symlink-capable shell for uninterrupted sessions. The passing test runner avoids this limitation through isolated batches.
+Native Agave 2.3 Windows can stop during snapshot archiving without symlink privileges (observed error 1314). Failure can occur after slot 100; it is not a fixed timer. The runner reports the failure and preserves the ledger. Start a fresh run and initialize a new organization for another recording; use WSL2 or a symlink-capable shell for uninterrupted sessions. The passing test runner avoids this limitation through isolated batches.
 
 Final checks:
 
@@ -133,7 +135,7 @@ The last command previews the production **static export** at port 3000; stop th
 
 - **LOCALNET:** compiled program, all tests, browser Capital Cascade, real failed descendant payment, Arena payout and reclaim verified.
 - **DEVNET:** not deployed. CLI selects mainnet-beta and its configured wallet file is absent; no funded local devnet wallet was available.
-- **Frontend:** production export verified; deployment-ready, not publicly hosted. Configure an actual reachable RPC/deployed program before publishing.
+- **Frontend:** production export verified and deployed to the Vercel preview above. The hosted build disables disposable signing and points to LOCALNET. A standalone live public demo still requires a reachable deployed program.
 - **Repository:** private GitHub repository, submission work on `submission-v1`, original `main` and `core-v0.1.0` preserved.
 
 See [two-laptop handoff](docs/HANDOFF.md) for exact clone/update routines and [deployment](docs/DEPLOYMENT.md) for frontend hosting and devnet continuation.
