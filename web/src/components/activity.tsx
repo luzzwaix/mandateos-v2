@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { ArrowUpRight, Check, ShieldX, LoaderCircle } from "lucide-react";
 import { explorer } from "@/lib/solana/program";
 import { short } from "@/lib/solana/pdas";
@@ -10,51 +11,70 @@ export default function ActivityFeed({
   activity: Activity[];
   busy: string;
 }) {
+  const [expanded, setExpanded] = useState(false);
   return (
     <section className="activity-panel">
       <div className="section-line">
         <h2>On-chain activity</h2>
-        <span>CONFIRMED EVENTS & TRANSACTIONS</span>
+        <button
+          className="text-button"
+          aria-expanded={expanded}
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? "Show recent" : `View history (${activity.length})`}
+        </button>
       </div>
-      {busy && (
-        <div className="activity-row pending">
-          <LoaderCircle size={16} className="spin" />
-          <div>
+      <div
+        className={`transaction-lifecycle ${busy ? "pending" : ""}`}
+        aria-live="polite"
+      >
+        {busy ? (
+          <>
+            <LoaderCircle size={13} className="spin" />
             <strong>{busy}</strong>
-            <small>Waiting for wallet / validator confirmation</small>
+            <span>Awaiting confirmation</span>
+          </>
+        ) : (
+          <>
+            <Check size={13} />
+            <span>
+              {activity.length
+                ? "State synchronized with confirmed transactions"
+                : "Confirmed transactions will appear here"}
+            </span>
+          </>
+        )}
+      </div>
+      <div className={`activity-list ${expanded ? "expanded" : ""}`}>
+        {activity.slice(0, expanded ? 30 : 3).map((a, i) => (
+          <div
+            key={`${a.signature}-${i}`}
+            className={`activity-row ${a.status}`}
+          >
+            {a.status === "rejected" ? (
+              <ShieldX size={14} />
+            ) : (
+              <Check size={14} />
+            )}
+            <div>
+              <strong>{a.title}</strong>
+              <small>{a.detail}</small>
+            </div>
+            <time>{a.time}</time>
+            {a.signature && (
+              <a
+                href={explorer(a.signature)}
+                target="_blank"
+                rel="noreferrer"
+                title={a.signature}
+              >
+                {short(a.signature)}
+                <ArrowUpRight size={12} />
+              </a>
+            )}
           </div>
-          <span>Pending</span>
-        </div>
-      )}
-      {!activity.length && !busy && (
-        <p className="empty-activity">
-          Confirmed transactions will appear here. No simulated activity.
-        </p>
-      )}
-      {activity.slice(0, 9).map((a, i) => (
-        <div key={`${a.signature}-${i}`} className={`activity-row ${a.status}`}>
-          {a.status === "rejected" ? (
-            <ShieldX size={16} />
-          ) : (
-            <Check size={16} />
-          )}
-          <div>
-            <strong>{a.title}</strong>
-            <small>{a.detail}</small>
-          </div>
-          <time>{a.time}</time>
-          {a.signature && (
-            <a
-              href={explorer(a.signature)}
-              target="_blank"
-              rel="noreferrer"
-              title={a.signature}
-            >
-              {short(a.signature)} <ArrowUpRight size={12} />
-            </a>
-          )}
-        </div>
-      ))}
+        ))}
+      </div>
     </section>
   );
 }

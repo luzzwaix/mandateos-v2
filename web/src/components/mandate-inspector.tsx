@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import {
-  ArrowUpRight,
   GitBranch,
   Send,
   Ban,
@@ -23,11 +22,12 @@ export default function MandateInspector({ state }: { state: ConsoleState }) {
   if (!s || !node)
     return (
       <aside className="inspector">
-        <ShieldCheck size={24} />
-        <h2>Bounded authority.</h2>
-        <p>
-          Select a mandate to inspect its capital and control its authority.
-        </p>
+        <h2>Control the branch.</h2>
+        <p>Select a mandate to spend, delegate or revoke its authority.</p>
+        <div className="inspector-empty-rule">
+          <b>Fund → Delegate → Revoke</b>
+          <span>One treasury. Every agent bounded.</span>
+        </div>
       </aside>
     );
   const status = effectiveStatus(node, s);
@@ -79,46 +79,38 @@ export default function MandateInspector({ state }: { state: ConsoleState }) {
   }
   return (
     <aside className="inspector">
-      <div className="eyebrow">SELECTED MANDATE</div>
       <div className="inspector-title">
         <h2>{name}</h2>
         <span className={`status ${status}`}>{status}</span>
       </div>
-      <p className="mono small">
-        {short(node.publicKey)} <ArrowUpRight size={12} />
+      <p className="small inspector-address">
+        Depth {node.account.depth} · {short(node.account.controller)}
       </p>
-      <dl className="details">
-        <div>
-          <dt>Controller</dt>
-          <dd title={node.account.controller.toBase58()}>
-            {short(node.account.controller)}
-          </dd>
-        </div>
-        <div>
-          <dt>Depth</dt>
-          <dd>
-            {node.account.depth} / {s.organization.maxDepth}
-          </dd>
-        </div>
-        <div>
-          <dt>Available</dt>
-          <dd>
-            {formatUnits(node.account.selfAvailable, s.decimals)} {unit}
-          </dd>
-        </div>
-        <div>
-          <dt>Subtree remaining</dt>
-          <dd>
-            {formatUnits(node.account.subtreeRemaining, s.decimals)} {unit}
-          </dd>
-        </div>
-        <div>
-          <dt>Direct spent</dt>
-          <dd>
-            {formatUnits(node.account.directSpent, s.decimals)} {unit}
-          </dd>
-        </div>
-      </dl>
+      <details className="inspector-history">
+        <summary>Account details</summary>
+        <dl className="details">
+          <div>
+            <dt>Signing wallet</dt>
+            <dd title={node.account.controller.toBase58()}>
+              {short(node.account.controller)}
+            </dd>
+          </div>
+          {!isRoot && (
+            <div>
+              <dt>Allocated budget</dt>
+              <dd>
+                {formatUnits(node.account.initialBudget, s.decimals)} {unit}
+              </dd>
+            </div>
+          )}
+          <div>
+            <dt>Direct spent</dt>
+            <dd>
+              {formatUnits(node.account.directSpent, s.decimals)} {unit}
+            </dd>
+          </div>
+        </dl>
+      </details>
       {status === "blocked" ? (
         <div className="notice blocked">
           <Ban size={16} />
@@ -166,12 +158,12 @@ export default function MandateInspector({ state }: { state: ConsoleState }) {
             </label>
             <label>
               {action === "delegate"
-                ? "Child controller public key"
+                ? "Agent wallet address"
                 : action === "spend"
                   ? "Destination token account"
                   : action === "deposit"
-                    ? "Source token account (optional ATA)"
-                    : "Destination token account (optional ATA)"}
+                    ? "Source token account (optional)"
+                    : "Destination token account (optional)"}
               <input
                 aria-label="Action address"
                 value={address}

@@ -23,6 +23,7 @@
 *.keypair.json
 /keys/
 /wallets/
+**/.vercel/
 /.solana/
 /.config/
 *.pem

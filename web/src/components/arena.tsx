@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { formatUnits, short, toBaseUnits } from "@/lib/solana/pdas";
 import type { ConsoleState } from "@/lib/use-console";
+import { explorer } from "@/lib/solana/program";
 
 export default function Arena({ state }: { state: ConsoleState }) {
   const [reward, setReward] = useState("25");
@@ -34,12 +35,11 @@ export default function Arena({ state }: { state: ConsoleState }) {
     <section className="arena-workspace">
       <div className="arena-header">
         <div>
-          <span className="eyebrow">ARENA LITE</span>
-          <h2>
-            Fund work. Verify results.
-            <br />
-            <span>Pay one winner.</span>
-          </h2>
+          <h2>Capital becomes coordinated work.</h2>
+          <div className="arena-journey">
+            FUND <span>→</span> COMPETE <span>→</span> VERIFY <span>→</span>{" "}
+            SETTLE
+          </div>
         </div>
         <p>
           Rewards stay reserved in the shared vault.
@@ -107,12 +107,28 @@ export default function Arena({ state }: { state: ConsoleState }) {
         const submissions = s.submissions.filter((sub) =>
           sub.account.bounty.equals(b.publicKey),
         );
+        const settlement = state.activity.find(
+          (a) =>
+            a.entity === b.publicKey.toBase58() &&
+            a.title.toLowerCase().includes("settled") &&
+            a.status === "confirmed",
+        );
+        const settling =
+          state.transition?.kind === "settle" &&
+          state.transition.target === b.publicKey.toBase58();
         return (
-          <article key={b.publicKey.toBase58()} className="bounty">
+          <article
+            key={b.publicKey.toBase58()}
+            className={`bounty ${settling ? "settlement-motion" : ""}`}
+          >
             <div className="bounty-title">
               <div>
-                <span className="eyebrow">BOUNTY {short(b.publicKey)}</span>
-                <h3>Map the autonomous agent landscape</h3>
+                <h3>
+                  {demo
+                    ? "Map the autonomous agent landscape"
+                    : `Agent task / ${b.account.bountyId.toString()}`}
+                </h3>
+                <small>BOUNTY {short(b.publicKey)}</small>
               </div>
               <span className={`status ${settled ? "active" : "open"}`}>
                 {settled ? "Settled" : "Open"}
@@ -211,7 +227,7 @@ export default function Arena({ state }: { state: ConsoleState }) {
                   .join("");
                 return (
                   <div
-                    className={`submission ${winner ? "winner" : ""}`}
+                    className={`submission ${winner ? "winner" : settled ? "not-selected" : ""}`}
                     key={sub.publicKey.toBase58()}
                   >
                     <span className="submission-rank">
@@ -223,7 +239,13 @@ export default function Arena({ state }: { state: ConsoleState }) {
                     </div>
                     {winner ? (
                       <span className="winner-label">
-                        <Check size={14} /> Winner · paid{" "}
+                        {settling && (
+                          <span className="reward-transfer" aria-hidden="true">
+                            +{formatUnits(b.account.reward, s.decimals)}{" "}
+                            {demo ? "USDC" : "TOKENS"} →
+                          </span>
+                        )}
+                        <Check size={14} /> VERIFIED / PAID{" "}
                         {formatUnits(b.account.reward, s.decimals)}{" "}
                         {demo ? "USDC" : "TOKENS"}
                       </span>
@@ -246,17 +268,30 @@ export default function Arena({ state }: { state: ConsoleState }) {
                         </button>
                       )
                     )}
+                    {settled && !winner && (
+                      <span className="neutral-label">Not selected</span>
+                    )}
                   </div>
                 );
               })}
             </div>
             {settled && (
               <div className="settlement-proof">
-                <Trophy size={16} />
-                <span>
-                  Winner: {short(b.account.winner)} · reward paid from the
-                  shared vault · settlement final
-                </span>
+                <Check size={16} />
+                <strong>
+                  {formatUnits(b.account.reward, s.decimals)}{" "}
+                  {demo ? "USDC" : "TOKENS"} SETTLED
+                </strong>
+                <span>VERIFIED ON-CHAIN</span>
+                {settlement?.signature && (
+                  <a
+                    href={explorer(settlement.signature)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Settlement transaction <ArrowUpRight size={12} />
+                  </a>
+                )}
               </div>
             )}
           </article>

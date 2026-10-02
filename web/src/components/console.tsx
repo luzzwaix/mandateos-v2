@@ -12,7 +12,6 @@ import {
   Trophy,
   RefreshCw,
   ShieldX,
-  Circle,
   LoaderCircle,
   Plus,
   X,
@@ -28,7 +27,8 @@ import {
   explorer,
 } from "@/lib/solana/program";
 import { formatUnits, short } from "@/lib/solana/pdas";
-import CapitalTree from "./capital-tree";
+import CapitalTree, { ConceptTree } from "./capital-tree";
+import CapitalNumber from "./capital-number";
 import MandateInspector from "./mandate-inspector";
 import Arena from "./arena";
 import ActivityFeed from "./activity";
@@ -41,6 +41,7 @@ export default function Console() {
   const [mint, setMint] = useState("");
   const [manage, setManage] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [how, setHow] = useState(false);
   const demoImport = useRef<HTMLInputElement>(null);
   async function importDemo(file: File) {
     try {
@@ -74,8 +75,6 @@ export default function Console() {
   const root = s?.nodes.find((n) =>
     n.publicKey.equals(s.organization.rootMandate),
   );
-  const amount = (value?: BN | bigint) =>
-    value === undefined ? "—" : formatUnits(value, s?.decimals ?? 6);
   const reserved = root
     ? new BN(
         (
@@ -91,6 +90,9 @@ export default function Console() {
     demo &&
     s?.nodes.find((n) => n.account.controller.equals(demo.scraper.publicKey));
   const revoked = !!research?.account.status.revoked;
+  const cascadeTransition = research
+    ? state.revocations[research.publicKey.toBase58()]
+    : undefined;
   async function cascade() {
     if (!s || !research) return;
     const reclaimed = formatUnits(
@@ -130,7 +132,7 @@ export default function Console() {
           MANDATE<span>OS</span>
           <em>V2</em>
         </Link>
-        <p>Don’t give agents wallets. Give them mandates.</p>
+        <span className="product-label">RECURSIVE CAPITAL AUTHORITY</span>
         <div className="header-controls">
           <span className="network">
             <i
@@ -144,6 +146,7 @@ export default function Console() {
             <button
               className="button subtle"
               onClick={() => setWalletMenu(!walletMenu)}
+              aria-expanded={walletMenu}
             >
               <Wallet size={15} />
               {wallet
@@ -193,18 +196,25 @@ export default function Console() {
       </header>
       <div className="workspace-heading">
         <div>
-          <span className="eyebrow">
-            CAPITAL CONTROL / ORGANIZATION CONSOLE
-          </span>
-          <h1>Authority has a hierarchy.</h1>
+          <h1>
+            DON’T GIVE AGENTS WALLETS.
+            <br />
+            <span>GIVE THEM MANDATES.</span>
+          </h1>
           <p>
-            One treasury. Recursive budgets. A single transaction to cut the
-            branch.
+            Recursive capital authority for autonomous organizations on Solana.
           </p>
         </div>
         <div className="workspace-actions">
           <button className="button subtle" onClick={() => setManage(!manage)}>
             <Plus size={14} /> Organizations
+          </button>
+          <button
+            className="text-button"
+            aria-expanded={how}
+            onClick={() => setHow(!how)}
+          >
+            How it works
           </button>
           {LOCAL_DEMO && (
             <button
@@ -219,6 +229,41 @@ export default function Console() {
           )}
         </div>
       </div>
+      <div className="authority-journey" aria-label="MandateOS in one sequence">
+        <b>Treasury</b>
+        <ArrowRight size={12} />
+        <span>Bounded capital</span>
+        <ArrowRight size={12} />
+        <span>Agents sub-delegate</span>
+        <ArrowRight size={12} />
+        <b>Revoke one branch</b>
+        <ArrowRight size={12} />
+        <span>Descendants blocked</span>
+        <ArrowRight size={12} />
+        <span>Unused capital returns</span>
+      </div>
+      {how && (
+        <section className="how-panel">
+          <div>
+            <b>01 / FUND</b>
+            <p>One treasury remains under organizational control.</p>
+          </div>
+          <div>
+            <b>02 / DELEGATE</b>
+            <p>
+              Agents receive bounded capital authority and can delegate portions
+              of it.
+            </p>
+          </div>
+          <div>
+            <b>03 / REVOKE</b>
+            <p>
+              Disable a branch and recover its unused capital. Agents never
+              receive treasury keys.
+            </p>
+          </div>
+        </section>
+      )}
       {manage && (
         <section className="organization-bar">
           <label>
@@ -279,27 +324,51 @@ export default function Console() {
       )}
       <section className="treasury-strip" aria-label="Treasury summary">
         {[
-          { label: "TOTAL FUNDED", value: amount(s?.organization.totalFunded) },
+          {
+            label: "TOTAL FUNDED",
+            value: s?.organization.totalFunded,
+            context: "Deposited into the treasury",
+          },
           {
             label: "ROOT AVAILABLE",
-            value: amount(root?.account.selfAvailable),
+            value: root?.account.selfAvailable,
             hero: true,
+            context: "Ready to spend or delegate",
           },
-          { label: "RESERVED", value: amount(reserved) },
-          { label: "SPENT", value: amount(s?.organization.totalSpent) },
-          { label: "RECLAIMED", value: amount(s?.organization.totalReclaimed) },
+          {
+            label: "RESERVED",
+            value: reserved,
+            context: "Agent branches + open bounties",
+          },
+          {
+            label: "SPENT",
+            value: s?.organization.totalSpent,
+            context: "Payments + settled rewards",
+          },
+          {
+            label: "RECLAIMED",
+            value: s?.organization.totalReclaimed,
+            context: "Withdrawn by the organization",
+          },
         ].map((stat) => (
           <div
             className={`treasury-stat ${stat.hero ? "highlight" : ""} ${stat.hero && state.released ? "capital-returned" : ""}`}
             key={stat.label}
           >
             <span>{stat.label}</span>
-            <strong key={stat.value}>
-              {stat.value}
-              <small>{demo ? "DEMO USDC" : "TOKENS"}</small>
+            <strong>
+              {stat.value === undefined ? (
+                "—"
+              ) : (
+                <CapitalNumber value={stat.value} decimals={s?.decimals ?? 6} />
+              )}
+              <small>{demo ? "USDC" : "TOKENS"}</small>
             </strong>
             {stat.hero && state.released && (
               <em>+{state.released} returned to Root</em>
+            )}
+            {!(stat.hero && state.released) && (
+              <small className="metric-context">{stat.context}</small>
             )}
           </div>
         ))}
@@ -341,13 +410,18 @@ export default function Console() {
         </div>
       </div>
       {!health.startsWith("LIVE") && (
-        <div className="rpc-notice">
-          <Circle size={12} />
-          <span>{health}</span>
+        <details className="rpc-notice">
+          <summary>
+            {NETWORK === "LOCALNET"
+              ? "Localnet node required to load live capital"
+              : "Connect to the configured RPC to load live capital"}{" "}
+            <span>Connection details</span>
+          </summary>
+          <p>{health}</p>
           <small>
             RPC: {RPC_URL} · program {short(PROGRAM_ADDRESS)}
           </small>
-        </div>
+        </details>
       )}
       {state.error && !state.rejection && (
         <div role="alert" className="error-banner">
@@ -359,7 +433,7 @@ export default function Console() {
         <div className="capital-layout">
           <section className="tree-section">
             <div className="section-line">
-              <h2>Recursive capital authority</h2>
+              <h2>Capital authority</h2>
               <span>
                 {s
                   ? `${s.nodes.length} MANDATES · MAX DEPTH ${s.organization.maxDepth}`
@@ -373,26 +447,12 @@ export default function Console() {
                 selected={state.selected}
                 onSelect={state.setSelected}
                 unit={demo ? "USDC" : "TOKENS"}
+                transition={state.transition}
               />
             ) : (
               <div className="empty-workspace">
-                <div className="empty-tree">
-                  <Layers3 size={26} />
-                  <span />
-                  <GitBranch size={23} />
-                  <span />
-                  <GitBranch size={23} />
-                </div>
-                <h2>
-                  The treasury stays put.
-                  <br />
-                  Authority flows down.
-                </h2>
-                <p>
-                  Open an organization or initialize a real local demo.
-                  <br />
-                  Every balance comes from the program’s accounts.
-                </p>
+                <ConceptTree />
+                <p>Open an organization to see its live capital tree.</p>
                 {LOCAL_DEMO && (
                   <button
                     className="button subtle"
@@ -407,17 +467,45 @@ export default function Console() {
             {demo && (
               <div className={`cascade-bar ${revoked ? "completed" : ""}`}>
                 <div>
-                  <span className="eyebrow">CAPITAL CASCADE</span>
-                  <strong>
-                    {revoked
-                      ? "Branch closed. Capital released."
-                      : "Revoke Research. Cut the entire branch."}
-                  </strong>
-                  <p>
-                    {revoked
-                      ? "Data, Search and Scraper are blocked by lineage validation."
-                      : "One transaction returns 390 unused demo USDC to Root."}
-                  </p>
+                  {state.rejection ? (
+                    <div role="alert" className="cascade-rejection">
+                      <h3>PAYMENT REJECTED</h3>
+                      <strong>
+                        {state.rejection.code === "AncestorRevoked"
+                          ? "Ancestor mandate revoked."
+                          : state.rejection.message}
+                      </strong>
+                      <p>
+                        MandateOS prevented this descendant from using treasury
+                        capital.
+                      </p>
+                      <a
+                        href={explorer(state.rejection.signature)}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Failed transaction {short(state.rejection.signature)}{" "}
+                        <ArrowUpRight size={11} />
+                      </a>
+                      <details>
+                        <summary>Protocol logs</summary>
+                        <pre>{state.rejection.logs.join("\n")}</pre>
+                      </details>
+                    </div>
+                  ) : (
+                    <>
+                      <strong>
+                        {revoked
+                          ? `${state.released || (cascadeTransition ? formatUnits(cascadeTransition.amount, s!.decimals) : "Unused")} USDC returned to Root`
+                          : "Watch the Capital Cascade"}
+                      </strong>
+                      <p>
+                        {revoked
+                          ? `${cascadeTransition?.descendants.length ?? 3} descendant mandates blocked · treasury authority recovered`
+                          : `Revoke Research → descendants blocked → ${research && s ? formatUnits(research.account.subtreeRemaining, s.decimals) : "unused"} USDC returns.`}
+                      </p>
+                    </>
+                  )}
                 </div>
                 <div className="cascade-actions">
                   <button
@@ -447,24 +535,24 @@ export default function Console() {
                         );
                     }}
                   >
-                    Attempt descendant payment <ArrowUpRight size={14} />
+                    Attempt blocked payment <ArrowUpRight size={14} />
                   </button>
                 </div>
               </div>
             )}
-            {state.rejection && (
+            {state.rejection && !demo && (
               <div role="alert" className="rejection-proof">
                 <ShieldX size={23} />
                 <div>
-                  <span className="eyebrow">PAYMENT REJECTED</span>
-                  <h3>
+                  <h3>PAYMENT REJECTED</h3>
+                  <strong>
                     {state.rejection.code === "AncestorRevoked"
                       ? "Ancestor mandate revoked"
                       : state.rejection.message}
-                  </h3>
+                  </strong>
                   <p>
-                    Real transaction attempted. The protocol rejected spending
-                    authority.
+                    MandateOS prevented this descendant from using treasury
+                    capital.
                   </p>
                   <a
                     href={explorer(state.rejection.signature)}
@@ -492,9 +580,7 @@ export default function Console() {
       )}
       <ActivityFeed activity={state.activity} busy={busy} />
       <footer>
-        <span>
-          <Layers3 size={13} /> MANDATEOS / COLOSSEUM MVP
-        </span>
+        <span>SOLANA PROGRAM · 80 TESTS PASSING · REAL ANCHOR ACTIONS</span>
         {s ? (
           <button
             className="copy-address"

@@ -4,7 +4,12 @@ import { Keypair, PublicKey } from "@solana/web3.js";
 import { MandateClient, ProtocolRejection } from "./solana/client";
 import { initializeDemo, type DemoSession } from "./solana/demo";
 import { keypairWallet, connectWallet } from "./solana/wallet";
-import type { Activity, SigningWallet, Snapshot } from "./solana/types";
+import type {
+  Activity,
+  CapitalTransition,
+  SigningWallet,
+  Snapshot,
+} from "./solana/types";
 
 export function useConsole() {
   const [wallet, setWallet] = useState<SigningWallet>();
@@ -20,18 +25,105 @@ export function useConsole() {
   const [rejection, setRejection] = useState<ProtocolRejection>();
   const [health, setHealth] = useState("Connecting to RPC");
   const [released, setReleased] = useState("");
+  const [transition, setTransition] = useState<CapitalTransition>();
+  const [revocations, setRevocations] = useState<
+    Record<string, CapitalTransition>
+  >({});
+  const snapshotRef = useRef<Snapshot | undefined>(undefined);
+  const transactionRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (!transition) return;
+    const timer = setTimeout(() => setTransition(undefined), 1600);
+    return () => clearTimeout(timer);
+  }, [transition]);
   const adapterRef = useRef<
     Awaited<ReturnType<typeof connectWallet>>["adapter"] | undefined
   >(undefined);
   const client = useMemo(() => new MandateClient(wallet), [wallet]);
   const addActivity = useCallback(
-    (a: Activity) => setActivity((prev) => [a, ...prev].slice(0, 30)),
+    (a: Activity) =>
+      setActivity((prev) =>
+        [{ ...a, occurredAt: a.occurredAt ?? Date.now() }, ...prev].slice(
+          0,
+          30,
+        ),
+      ),
     [],
   );
   const refresh = useCallback(
     async (address = organization) => {
       if (!address) return;
       const next = await client.load(new PublicKey(address));
+      const previous = snapshotRef.current;
+      if (previous?.address.equals(next.address) && transactionRef.current) {
+        const revoked = next.nodes.find(
+          (n) =>
+            n.account.status.revoked &&
+            previous.nodes.some(
+              (old) =>
+                old.publicKey.equals(n.publicKey) && old.account.status.active,
+            ),
+        );
+        const created = next.nodes.find(
+          (n) =>
+            !previous.nodes.some((old) => old.publicKey.equals(n.publicKey)),
+        );
+        const settled = next.bounties.find(
+          (b) =>
+            b.account.status.settled &&
+            previous.bounties.some(
+              (old) =>
+                old.publicKey.equals(b.publicKey) && old.account.status.open,
+            ),
+        );
+        if (revoked) {
+          const descendants = new Set([revoked.publicKey.toBase58()]);
+          for (const n of [...next.nodes].sort(
+            (a, b) => a.account.depth - b.account.depth,
+          )) {
+            if (descendants.has(n.account.parent.toBase58()))
+              descendants.add(n.publicKey.toBase58());
+          }
+          descendants.delete(revoked.publicKey.toBase58());
+          const old = previous.nodes.find((n) =>
+            n.publicKey.equals(revoked.publicKey),
+          )!;
+          const revocation: CapitalTransition = {
+            key: Date.now(),
+            kind: "revoke",
+            target: revoked.publicKey.toBase58(),
+            parent: revoked.account.parent.toBase58(),
+            descendants: [...descendants],
+            amount: old.account.subtreeRemaining.toString(),
+            signature: transactionRef.current,
+          };
+          setTransition(revocation);
+          setRevocations((old) => ({
+            ...old,
+            [revocation.target]: revocation,
+          }));
+        } else if (created) {
+          setTransition({
+            key: Date.now(),
+            kind: "delegate",
+            target: created.publicKey.toBase58(),
+            parent: created.account.parent.toBase58(),
+            descendants: [],
+            amount: created.account.initialBudget.toString(),
+            signature: transactionRef.current,
+          });
+        } else if (settled) {
+          setTransition({
+            key: Date.now(),
+            kind: "settle",
+            target: settled.publicKey.toBase58(),
+            descendants: [],
+            amount: settled.account.reward.toString(),
+            signature: transactionRef.current,
+          });
+        }
+      }
+      snapshotRef.current = next;
       setSnapshot(next);
       setSelected((old) =>
         old && next.nodes.some((n) => n.publicKey.toBase58() === old)
@@ -47,7 +139,9 @@ export function useConsole() {
         return [
           ...prev.filter((a) => !a.signature || !persisted.has(a.signature)),
           ...observed,
-        ].slice(0, 30);
+        ]
+          .sort((a, b) => (b.occurredAt ?? 0) - (a.occurredAt ?? 0))
+          .slice(0, 30);
       });
     },
     [client, organization],
@@ -63,7 +157,7 @@ export function useConsole() {
         if (!cancelled) setHealth(e instanceof Error ? e.message : String(e));
       }
     };
-    void update();
+    if (!busy) void update();
     const timer = setInterval(() => {
       if (!busy) void update();
     }, 8_000);
@@ -83,6 +177,7 @@ export function useConsole() {
     setRejection(undefined);
     try {
       const signature = await task();
+      transactionRef.current = signature || undefined;
       if (signature)
         addActivity({
           title,
@@ -91,7 +186,9 @@ export function useConsole() {
           detail: "Transaction confirmed",
           time: new Date().toLocaleTimeString(),
         });
-      await refresh(address);
+      await refresh(
+        address ?? snapshotRef.current?.address.toBase58() ?? organization,
+      );
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       setError(message);
@@ -107,6 +204,7 @@ export function useConsole() {
         });
       }
     } finally {
+      transactionRef.current = undefined;
       setBusy("");
     }
   }
@@ -133,6 +231,9 @@ export function useConsole() {
   }
   async function initialize(owner?: Keypair) {
     setReleased("");
+    setTransition(undefined);
+    setRevocations({});
+    snapshotRef.current = undefined;
     await run("Initializing real localnet demo", async () => {
       const session = await initializeDemo(setBusy, addActivity, owner);
       setDemo(session);
@@ -141,6 +242,7 @@ export function useConsole() {
       const ownerClient = new MandateClient(keypairWallet(session.owner));
       const next = await ownerClient.load(session.organization);
       setSnapshot(next);
+      snapshotRef.current = next;
       setSelected(next.organization.rootMandate.toBase58());
     });
   }
@@ -183,6 +285,8 @@ export function useConsole() {
     rejection,
     health,
     released,
+    transition,
+    revocations,
     setReleased,
     refresh,
     run,

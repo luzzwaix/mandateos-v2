@@ -399,6 +399,7 @@ export class MandateClient {
             return [
               {
                 signature: info.signature,
+                occurredAt: info.blockTime ? info.blockTime * 1000 : undefined,
                 title: "Transaction rejected",
                 detail:
                   AnchorError.parse(logs)?.error.errorMessage ??
@@ -411,11 +412,18 @@ export class MandateClient {
               },
             ];
           return [...parser.parseLogs(logs)].map((event) => ({
+            entity:
+              event.data.bounty instanceof PublicKey
+                ? event.data.bounty.toBase58()
+                : undefined,
             signature: info.signature,
+            occurredAt: info.blockTime ? info.blockTime * 1000 : undefined,
             title: event.name
               .replace(/([A-Z])/g, " $1")
               .replace(/_/g, " ")
-              .trim(),
+              .trim()
+              .toLowerCase()
+              .replace(/^./, (c) => c.toUpperCase()),
             detail: `Confirmed in slot ${info.slot}`,
             status: "confirmed" as const,
             time: info.blockTime

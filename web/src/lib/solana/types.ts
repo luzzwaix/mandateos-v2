@@ -70,10 +70,21 @@ export interface Snapshot {
   vaultBalance: bigint;
 }
 export interface Activity {
+  occurredAt?: number;
+  entity?: string;
   signature?: string;
   title: string;
   detail: string;
   status: "confirmed" | "rejected" | "pending";
   time: string;
   logs?: string[];
+}
+export interface CapitalTransition {
+  key: number;
+  kind: "delegate" | "revoke" | "settle";
+  target: string;
+  parent?: string;
+  descendants: string[];
+  amount: string;
+  signature?: string;
 }
