@@ -1,0 +1,1375 @@
+{
+  "address": "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG",
+  "metadata": {
+    "name": "mandateos",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "MandateOS recursive capital authority"
+  },
+  "instructions": [
+    {
+      "name": "create_bounty",
+      "discriminator": [122, 90, 14, 143, 8, 125, 200, 2],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": ["organization"]
+        },
+        {
+          "name": "organization",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111, 114, 103, 97, 110, 105, 122, 97, 116, 105, 111, 110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "organization.authority",
+                "account": "Organization"
+              },
+              {
+                "kind": "account",
+                "path": "organization.organization_id",
+                "account": "Organization"
+              }
+            ]
+          },
+          "relations": ["root"]
+        },
+        {
+          "name": "root",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 97, 110, 100, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "organization"
+              },
+              {
+                "kind": "const",
+                "value": [114, 111, 111, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "bounty",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [98, 111, 117, 110, 116, 121]
+              },
+              {
+                "kind": "account",
+                "path": "organization"
+              },
+              {
+                "kind": "arg",
+                "path": "bounty_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "bounty_id",
+          "type": "u64"
+        },
+        {
+          "name": "reward",
+          "type": "u64"
+        },
+        {
+          "name": "verifier",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "create_organization",
+      "discriminator": [60, 173, 177, 39, 122, 23, 68, 185],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "organization",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111, 114, 103, 97, 110, 105, 122, 97, 116, 105, 111, 110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "arg",
+                "path": "organization_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "root",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 97, 110, 100, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "organization"
+              },
+              {
+                "kind": "const",
+                "value": [114, 111, 111, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "organization"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "organization_id",
+          "type": "u64"
+        },
+        {
+          "name": "max_depth",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "delegate",
+      "discriminator": [90, 147, 75, 178, 85, 88, 4, 137],
+      "accounts": [
+        {
+          "name": "controller",
+          "writable": true,
+          "signer": true,
+          "relations": ["parent"]
+        },
+        {
+          "name": "organization",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111, 114, 103, 97, 110, 105, 122, 97, 116, 105, 111, 110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "organization.authority",
+                "account": "Organization"
+              },
+              {
+                "kind": "account",
+                "path": "organization.organization_id",
+                "account": "Organization"
+              }
+            ]
+          },
+          "relations": ["parent"]
+        },
+        {
+          "name": "parent",
+          "writable": true
+        },
+        {
+          "name": "child",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 97, 110, 100, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "organization"
+              },
+              {
+                "kind": "account",
+                "path": "parent"
+              },
+              {
+                "kind": "arg",
+                "path": "child_index"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "child_controller",
+          "type": "pubkey"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "child_index",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "deposit",
+      "discriminator": [242, 35, 198, 137, 82, 225, 242, 182],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": ["organization"]
+        },
+        {
+          "name": "organization",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111, 114, 103, 97, 110, 105, 122, 97, 116, 105, 111, 110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "organization.authority",
+                "account": "Organization"
+              },
+              {
+                "kind": "account",
+                "path": "organization.organization_id",
+                "account": "Organization"
+              }
+            ]
+          },
+          "relations": ["root"]
+        },
+        {
+          "name": "root",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 97, 110, 100, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "organization"
+              },
+              {
+                "kind": "const",
+                "value": [114, 111, 111, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": ["organization"]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "organization"
+              }
+            ]
+          },
+          "relations": ["organization"]
+        },
+        {
+          "name": "source",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "reclaim",
+      "discriminator": [44, 177, 236, 249, 145, 109, 163, 186],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": ["organization"]
+        },
+        {
+          "name": "organization",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111, 114, 103, 97, 110, 105, 122, 97, 116, 105, 111, 110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "organization.authority",
+                "account": "Organization"
+              },
+              {
+                "kind": "account",
+                "path": "organization.organization_id",
+                "account": "Organization"
+              }
+            ]
+          },
+          "relations": ["root"]
+        },
+        {
+          "name": "root",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 97, 110, 100, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "organization"
+              },
+              {
+                "kind": "const",
+                "value": [114, 111, 111, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": ["organization"]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "organization"
+              }
+            ]
+          },
+          "relations": ["organization"]
+        },
+        {
+          "name": "destination",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "revoke_branch",
+      "discriminator": [230, 147, 123, 107, 149, 55, 87, 119],
+      "accounts": [
+        {
+          "name": "revoker",
+          "signer": true
+        },
+        {
+          "name": "organization",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111, 114, 103, 97, 110, 105, 122, 97, 116, 105, 111, 110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "organization.authority",
+                "account": "Organization"
+              },
+              {
+                "kind": "account",
+                "path": "organization.organization_id",
+                "account": "Organization"
+              }
+            ]
+          },
+          "relations": ["parent", "target"]
+        },
+        {
+          "name": "parent",
+          "writable": true
+        },
+        {
+          "name": "target",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "settle_bounty",
+      "discriminator": [13, 241, 160, 115, 118, 85, 29, 254],
+      "accounts": [
+        {
+          "name": "verifier",
+          "signer": true,
+          "relations": ["bounty"]
+        },
+        {
+          "name": "organization",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111, 114, 103, 97, 110, 105, 122, 97, 116, 105, 111, 110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "organization.authority",
+                "account": "Organization"
+              },
+              {
+                "kind": "account",
+                "path": "organization.organization_id",
+                "account": "Organization"
+              }
+            ]
+          },
+          "relations": ["root", "bounty"]
+        },
+        {
+          "name": "root",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [109, 97, 110, 100, 97, 116, 101]
+              },
+              {
+                "kind": "account",
+                "path": "organization"
+              },
+              {
+                "kind": "const",
+                "value": [114, 111, 111, 116]
+              }
+            ]
+          }
+        },
+        {
+          "name": "bounty",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [98, 111, 117, 110, 116, 121]
+              },
+              {
+                "kind": "account",
+                "path": "organization"
+              },
+              {
+                "kind": "account",
+                "path": "bounty.bounty_id",
+                "account": "Bounty"
+              }
+            ]
+          },
+          "relations": ["submission"]
+        },
+        {
+          "name": "submission",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [115, 117, 98, 109, 105, 115, 115, 105, 111, 110]
+              },
+              {
+                "kind": "account",
+                "path": "bounty"
+              },
+              {
+                "kind": "account",
+                "path": "submission.agent",
+                "account": "Submission"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": ["organization"]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "organization"
+              }
+            ]
+          },
+          "relations": ["organization"]
+        },
+        {
+          "name": "destination",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "spend",
+      "discriminator": [242, 205, 255, 87, 101, 217, 245, 57],
+      "accounts": [
+        {
+          "name": "controller",
+          "signer": true,
+          "relations": ["node"]
+        },
+        {
+          "name": "organization",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111, 114, 103, 97, 110, 105, 122, 97, 116, 105, 111, 110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "organization.authority",
+                "account": "Organization"
+              },
+              {
+                "kind": "account",
+                "path": "organization.organization_id",
+                "account": "Organization"
+              }
+            ]
+          },
+          "relations": ["node"]
+        },
+        {
+          "name": "node",
+          "writable": true
+        },
+        {
+          "name": "mint",
+          "relations": ["organization"]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [118, 97, 117, 108, 116]
+              },
+              {
+                "kind": "account",
+                "path": "organization"
+              }
+            ]
+          },
+          "relations": ["organization"]
+        },
+        {
+          "name": "destination",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "submit_result",
+      "discriminator": [240, 42, 89, 180, 10, 239, 9, 214],
+      "accounts": [
+        {
+          "name": "agent",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "bounty",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [98, 111, 117, 110, 116, 121]
+              },
+              {
+                "kind": "account",
+                "path": "bounty.organization",
+                "account": "Bounty"
+              },
+              {
+                "kind": "account",
+                "path": "bounty.bounty_id",
+                "account": "Bounty"
+              }
+            ]
+          }
+        },
+        {
+          "name": "submission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [115, 117, 98, 109, 105, 115, 115, 105, 111, 110]
+              },
+              {
+                "kind": "account",
+                "path": "bounty"
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "result_hash",
+          "type": {
+            "array": ["u8", 32]
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Bounty",
+      "discriminator": [237, 16, 105, 198, 19, 69, 242, 234]
+    },
+    {
+      "name": "Mandate",
+      "discriminator": [113, 216, 98, 159, 185, 63, 55, 18]
+    },
+    {
+      "name": "Organization",
+      "discriminator": [145, 38, 152, 251, 91, 57, 118, 160]
+    },
+    {
+      "name": "Submission",
+      "discriminator": [58, 194, 159, 158, 75, 102, 178, 197]
+    }
+  ],
+  "events": [
+    {
+      "name": "BountyCreated",
+      "discriminator": [68, 252, 247, 196, 154, 247, 130, 49]
+    },
+    {
+      "name": "BountySettled",
+      "discriminator": [129, 240, 75, 214, 34, 17, 187, 177]
+    },
+    {
+      "name": "BranchRevoked",
+      "discriminator": [222, 234, 95, 144, 124, 248, 254, 222]
+    },
+    {
+      "name": "CapitalReclaimed",
+      "discriminator": [172, 86, 91, 207, 1, 188, 54, 102]
+    },
+    {
+      "name": "Deposited",
+      "discriminator": [111, 141, 26, 45, 161, 35, 100, 57]
+    },
+    {
+      "name": "MandateDelegated",
+      "discriminator": [42, 139, 228, 175, 233, 139, 16, 237]
+    },
+    {
+      "name": "OrganizationCreated",
+      "discriminator": [50, 45, 35, 29, 215, 59, 22, 185]
+    },
+    {
+      "name": "ResultSubmitted",
+      "discriminator": [156, 153, 163, 89, 245, 144, 63, 94]
+    },
+    {
+      "name": "Spent",
+      "discriminator": [43, 51, 164, 100, 191, 244, 174, 98]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Unauthorized",
+      "msg": "The signer is not authorized for this operation"
+    },
+    {
+      "code": 6001,
+      "name": "InsufficientAvailableBudget",
+      "msg": "Amount exceeds this mandate's available budget"
+    },
+    {
+      "code": 6002,
+      "name": "MandateRevoked",
+      "msg": "The mandate is revoked"
+    },
+    {
+      "code": 6003,
+      "name": "AncestorRevoked",
+      "msg": "An ancestor is revoked"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidAncestorPath",
+      "msg": "Expected the complete ordered canonical parent path to Root"
+    },
+    {
+      "code": 6005,
+      "name": "WrongOrganization",
+      "msg": "The mandate belongs to another organization"
+    },
+    {
+      "code": 6006,
+      "name": "MaxDepthExceeded",
+      "msg": "Organization depth must be 1..=4 and delegation cannot exceed it"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidAmount",
+      "msg": "Amount must be greater than zero"
+    },
+    {
+      "code": 6008,
+      "name": "CannotRevokeRoot",
+      "msg": "Root cannot be revoked"
+    },
+    {
+      "code": 6009,
+      "name": "AlreadyRevoked",
+      "msg": "The branch has already been revoked"
+    },
+    {
+      "code": 6010,
+      "name": "ArithmeticOverflow",
+      "msg": "Checked accounting arithmetic failed"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidMint",
+      "msg": "Token mint does not match the organization's mint"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidChildIndex",
+      "msg": "Child index must equal the parent's next child index"
+    },
+    {
+      "code": 6013,
+      "name": "AncestorNotWritable",
+      "msg": "A spending ancestor must be writable"
+    },
+    {
+      "code": 6014,
+      "name": "InvalidDestination",
+      "msg": "The organization vault cannot be a transfer destination"
+    },
+    {
+      "code": 6015,
+      "name": "BountyNotOpen",
+      "msg": "Bounty is already settled"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidWinner",
+      "msg": "The selected winner must own the submitted commitment"
+    }
+  ],
+  "types": [
+    {
+      "name": "Bounty",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "organization",
+            "type": "pubkey"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "verifier",
+            "type": "pubkey"
+          },
+          {
+            "name": "bounty_id",
+            "type": "u64"
+          },
+          {
+            "name": "reward",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "BountyStatus"
+              }
+            }
+          },
+          {
+            "name": "winner",
+            "type": "pubkey"
+          },
+          {
+            "name": "submission_count",
+            "type": "u32"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "settled_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BountyCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "organization",
+            "type": "pubkey"
+          },
+          {
+            "name": "bounty",
+            "type": "pubkey"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "verifier",
+            "type": "pubkey"
+          },
+          {
+            "name": "reward",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BountySettled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "organization",
+            "type": "pubkey"
+          },
+          {
+            "name": "bounty",
+            "type": "pubkey"
+          },
+          {
+            "name": "winner",
+            "type": "pubkey"
+          },
+          {
+            "name": "reward",
+            "type": "u64"
+          },
+          {
+            "name": "destination",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BountyStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Open"
+          },
+          {
+            "name": "Settled"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BranchRevoked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "organization",
+            "type": "pubkey"
+          },
+          {
+            "name": "target",
+            "type": "pubkey"
+          },
+          {
+            "name": "parent",
+            "type": "pubkey"
+          },
+          {
+            "name": "revoked_by",
+            "type": "pubkey"
+          },
+          {
+            "name": "released",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CapitalReclaimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "organization",
+            "type": "pubkey"
+          },
+          {
+            "name": "destination",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Deposited",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "organization",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Mandate",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "organization",
+            "type": "pubkey"
+          },
+          {
+            "name": "parent",
+            "type": "pubkey"
+          },
+          {
+            "name": "controller",
+            "type": "pubkey"
+          },
+          {
+            "name": "depth",
+            "type": "u8"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "MandateStatus"
+              }
+            }
+          },
+          {
+            "name": "initial_budget",
+            "type": "u64"
+          },
+          {
+            "name": "self_available",
+            "type": "u64"
+          },
+          {
+            "name": "subtree_remaining",
+            "type": "u64"
+          },
+          {
+            "name": "direct_spent",
+            "type": "u64"
+          },
+          {
+            "name": "next_child_index",
+            "type": "u64"
+          },
+          {
+            "name": "child_index",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MandateDelegated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "organization",
+            "type": "pubkey"
+          },
+          {
+            "name": "parent",
+            "type": "pubkey"
+          },
+          {
+            "name": "child",
+            "type": "pubkey"
+          },
+          {
+            "name": "controller",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "depth",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MandateStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Revoked"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Organization",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "root_mandate",
+            "type": "pubkey"
+          },
+          {
+            "name": "organization_id",
+            "type": "u64"
+          },
+          {
+            "name": "max_depth",
+            "type": "u8"
+          },
+          {
+            "name": "total_funded",
+            "type": "u64"
+          },
+          {
+            "name": "total_spent",
+            "type": "u64"
+          },
+          {
+            "name": "total_reclaimed",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "vault_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OrganizationCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "organization",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "root",
+            "type": "pubkey"
+          },
+          {
+            "name": "max_depth",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ResultSubmitted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bounty",
+            "type": "pubkey"
+          },
+          {
+            "name": "submission",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "result_hash",
+            "type": {
+              "array": ["u8", 32]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Spent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "organization",
+            "type": "pubkey"
+          },
+          {
+            "name": "mandate",
+            "type": "pubkey"
+          },
+          {
+            "name": "controller",
+            "type": "pubkey"
+          },
+          {
+            "name": "destination",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Submission",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bounty",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "result_hash",
+            "type": {
+              "array": ["u8", 32]
+            }
+          },
+          {
+            "name": "submitted_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}

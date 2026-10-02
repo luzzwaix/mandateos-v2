@@ -1,5 +1,12 @@
 /target/
 /node_modules/
+**/node_modules/
+**/.next/
+**/out/
+**/tsconfig.tsbuildinfo
+/web/next-env.d.ts
+/web/public/demo.json
+/artifacts/
 /.localnet/
 /test-ledger/
 /.anchor/
