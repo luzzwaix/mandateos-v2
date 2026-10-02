@@ -10,6 +10,9 @@
     "test": "npm run test:local",
     "test:local": "node scripts/local-test.mjs",
     "test:integration": "ts-mocha -p tsconfig.json -t 120000 tests/mandateos.ts",
+    "build:program": "node scripts/build-program.mjs",
+    "demo:local": "node scripts/demo-validator.mjs",
+    "check:secrets": "node scripts/check-secrets.mjs",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write tests scripts docs README.md AGENTS.md package.json tsconfig.json",
     "format:check": "prettier --check tests scripts docs README.md AGENTS.md package.json tsconfig.json"

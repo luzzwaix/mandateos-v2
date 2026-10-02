@@ -854,9 +854,7 @@ describe("MandateOS Core — real local validator", () => {
 
   const arena = program.account as unknown as {
     bounty: {
-      fetch(
-        key: PublicKey,
-      ): Promise<{
+      fetch(key: PublicKey): Promise<{
         reward: anchor.BN;
         status: { open?: object; settled?: object };
         winner: PublicKey;
