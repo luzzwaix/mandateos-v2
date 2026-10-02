@@ -4,7 +4,7 @@
 
 - Branch: `submission-v1`. Original `main` remains at `8391db2`, tagged `core-v0.1.0`.
 - Private remote: https://github.com/luzzwaix/mandateos-v2.git
-- Latest submission commit: resolve the release tag with `git rev-parse submission-v1.0.0`; inspect the checkout with `git log -1 --oneline`.
+- Latest submission commit: resolve the release tag with `git rev-parse submission-v1.0.1`; inspect the checkout with `git log -1 --oneline`.
 - Arena checkpoint: `4ebb266`.
 - Both dependency lockfiles and the generated public frontend IDL are tracked. Wallets, ledgers, deployment keys, local environment and build output are ignored.
 

@@ -6,12 +6,12 @@ import {
   openSync,
   readFileSync,
   writeFileSync,
-  cpSync,
 } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Keypair } from "@solana/web3.js";
 import { createServer } from "node:net";
+import { syncIdl } from "./sync-idl.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const workspace = process.argv[2] ? resolve(root, process.argv[2]) : root;
@@ -27,7 +27,7 @@ await new Promise((res, reject) => {
 const idl = JSON.parse(readFileSync(idlFile, "utf8"));
 if (!idl.instructions.some((i) => i.name === "settle_bounty"))
   throw new Error("Build the Arena extension before starting the demo");
-cpSync(idlFile, join(root, "web", "src", "lib", "solana", "mandateos.json"));
+syncIdl(idlFile, join(root, "web", "src", "lib", "solana", "mandateos.json"));
 const envFile = join(root, "web", ".env.local");
 if (!existsSync(envFile))
   writeFileSync(

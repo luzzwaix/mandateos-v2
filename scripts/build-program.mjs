@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { cpSync, existsSync } from "node:fs";
+import { existsSync } from "node:fs";
+import { syncIdl } from "./sync-idl.mjs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -23,7 +24,7 @@ if (result.error || result.status !== 0) {
 }
 const target = join(root, "web", "src", "lib", "solana", "mandateos.json");
 if (existsSync(dirname(target)))
-  cpSync(join(root, "target", "idl", "mandateos.json"), target);
+  syncIdl(join(root, "target", "idl", "mandateos.json"), target);
 console.log(
   "Real built IDL synchronized into web/src/lib/solana/mandateos.json",
 );
