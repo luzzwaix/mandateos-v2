@@ -49,3 +49,29 @@ pub struct CapitalReclaimed {
     pub destination: Pubkey,
     pub amount: u64,
 }
+
+#[event]
+pub struct BountyCreated {
+    pub organization: Pubkey,
+    pub bounty: Pubkey,
+    pub creator: Pubkey,
+    pub verifier: Pubkey,
+    pub reward: u64,
+}
+
+#[event]
+pub struct ResultSubmitted {
+    pub bounty: Pubkey,
+    pub submission: Pubkey,
+    pub agent: Pubkey,
+    pub result_hash: [u8; 32],
+}
+
+#[event]
+pub struct BountySettled {
+    pub organization: Pubkey,
+    pub bounty: Pubkey,
+    pub winner: Pubkey,
+    pub reward: u64,
+    pub destination: Pubkey,
+}

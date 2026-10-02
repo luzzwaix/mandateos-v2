@@ -3,11 +3,17 @@ pub mod delegate;
 pub mod deposit;
 pub mod reclaim;
 pub mod revoke_branch;
+pub mod settle_bounty;
 pub mod spend;
+pub mod submit_result;
 
 pub use create_organization::*;
 pub use delegate::*;
 pub use deposit::*;
 pub use reclaim::*;
 pub use revoke_branch::*;
+pub use settle_bounty::*;
 pub use spend::*;
+pub use submit_result::*;
+pub mod create_bounty;
+pub use create_bounty::*;

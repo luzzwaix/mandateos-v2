@@ -851,4 +851,250 @@ describe("MandateOS Core — real local validator", () => {
       await conservation(f);
     },
   );
+
+  const arena = program.account as unknown as {
+    bounty: {
+      fetch(
+        key: PublicKey,
+      ): Promise<{
+        reward: anchor.BN;
+        status: { open?: object; settled?: object };
+        winner: PublicKey;
+        submissionCount: number;
+      }>;
+    };
+  };
+  const bountyPda = (f: Fixture, id: number) =>
+    PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("bounty"),
+        f.organization.toBuffer(),
+        bn(id).toArrayLike(Buffer, "le", 8),
+      ],
+      program.programId,
+    )[0];
+  const submissionPda = (bounty: PublicKey, agent: PublicKey) =>
+    PublicKey.findProgramAddressSync(
+      [Buffer.from("submission"), bounty.toBuffer(), agent.toBuffer()],
+      program.programId,
+    )[0];
+  function createBounty(f: Fixture, reward = 25, id = 1, authority = payer) {
+    return program.methods
+      .createBounty(bn(id), bn(units(reward)), payer.publicKey)
+      .accountsStrict({
+        authority: authority.publicKey,
+        organization: f.organization,
+        root: f.root.key,
+        bounty: bountyPda(f, id),
+        systemProgram: SystemProgram.programId,
+      })
+      .signers(authority === payer ? [] : [authority])
+      .rpc();
+  }
+  function submit(bounty: PublicKey, agent = payer) {
+    return program.methods
+      .submitResult(Array(32).fill(42))
+      .accountsStrict({
+        agent: agent.publicKey,
+        bounty,
+        submission: submissionPda(bounty, agent.publicKey),
+        systemProgram: SystemProgram.programId,
+      })
+      .signers(agent === payer ? [] : [agent])
+      .rpc();
+  }
+  function settle(
+    f: Fixture,
+    bounty: PublicKey,
+    destination: PublicKey,
+    options: {
+      verifier?: Keypair;
+      agent?: PublicKey;
+      submission?: PublicKey;
+    } = {},
+  ) {
+    const verifier = options.verifier ?? payer;
+    return program.methods
+      .settleBounty()
+      .accountsStrict({
+        verifier: verifier.publicKey,
+        organization: f.organization,
+        root: f.root.key,
+        bounty,
+        submission:
+          options.submission ??
+          submissionPda(bounty, options.agent ?? payer.publicKey),
+        vault: f.vault,
+        mint: f.mint,
+        destination,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers(verifier === payer ? [] : [verifier])
+      .rpc();
+  }
+  async function openBounty() {
+    const f = await fixture(100);
+    await createBounty(f);
+    return { f, bounty: bountyPda(f, 1) };
+  }
+  testCase(
+    "Arena: two submissions settle exactly one winner with conserved reward accounting",
+    async () => {
+      const { f, bounty } = await openBounty();
+      await balances(f.root, 75, 100);
+      await conservation(f);
+      await submit(bounty);
+      await submit(bounty, outsider);
+      const destination = await createAccount(
+        provider.connection,
+        payer,
+        mint,
+        outsider.publicKey,
+        Keypair.generate(),
+      );
+      await settle(f, bounty, destination, { agent: outsider.publicKey });
+      const state = await arena.bounty.fetch(bounty);
+      assert.exists(state.status.settled);
+      assert.equal(state.winner.toBase58(), outsider.publicKey.toBase58());
+      assert.equal(state.submissionCount, 2);
+      assert.equal(
+        (await getAccount(provider.connection, destination)).amount,
+        units(25),
+      );
+      await balances(f.root, 75, 75, 25);
+      assert.equal(
+        (await data.organization.fetch(f.organization)).totalSpent.toString(),
+        units(25).toString(),
+      );
+      await conservation(f);
+    },
+  );
+  testCase("Arena: unauthorized bounty creator rejected", async () => {
+    const f = await fixture(100);
+    await expectedError(createBounty(f, 25, 1, outsider), "Unauthorized");
+  });
+  testCase("Arena: zero reward rejected", async () => {
+    const f = await fixture(100);
+    await expectedError(createBounty(f, 0), "InvalidAmount");
+  });
+  testCase("Arena: cannot reserve active child capital", async () => {
+    const f = await fixture(100);
+    await delegate(f, f.root, units(80));
+    await expectedError(createBounty(f, 25), "InsufficientAvailableBudget");
+    await balances(f.root, 20, 100);
+    await conservation(f);
+  });
+  testCase("Arena: reserved reward cannot be reclaimed", async () => {
+    const { f } = await openBounty();
+    await expectedError(reclaim(f, units(76)), "InsufficientAvailableBudget");
+  });
+  testCase("Arena: reserved reward cannot be delegated", async () => {
+    const { f } = await openBounty();
+    await expectedError(
+      delegate(f, f.root, units(76)),
+      "InsufficientAvailableBudget",
+    );
+  });
+  testCase("Arena: wrong verifier rejected", async () => {
+    const { f, bounty } = await openBounty();
+    await submit(bounty);
+    await expectedError(
+      settle(f, bounty, source, { verifier: outsider }),
+      "Unauthorized",
+    );
+  });
+  testCase("Arena: non-submitter cannot win", async () => {
+    const { f, bounty } = await openBounty();
+    await expectedError(
+      settle(f, bounty, source, { agent: outsider.publicKey }),
+      "AccountNotInitialized",
+    );
+  });
+  testCase(
+    "Arena: payout cannot be redirected away from submitted agent",
+    async () => {
+      const { f, bounty } = await openBounty();
+      await submit(bounty);
+      await expectedError(settle(f, bounty, recipient), "InvalidWinner");
+    },
+  );
+  testCase("Arena: duplicate submission rejected", async () => {
+    const { bounty } = await openBounty();
+    await submit(bounty);
+    try {
+      await submit(bounty);
+      assert.fail("Expected PDA initialization rejection");
+    } catch (error) {
+      assert.match(String(error), /already in use|custom program error: 0x0/i);
+    }
+    assert.equal((await arena.bounty.fetch(bounty)).submissionCount, 1);
+  });
+  testCase("Arena: double settlement rejected", async () => {
+    const { f, bounty } = await openBounty();
+    await submit(bounty);
+    await settle(f, bounty, source);
+    const before = await snapshot(f, [f.root]);
+    await expectedError(settle(f, bounty, source), "BountyNotOpen");
+    assert.equal(await snapshot(f, [f.root]), before);
+  });
+  testCase("Arena: submission after settlement rejected", async () => {
+    const { f, bounty } = await openBounty();
+    await submit(bounty);
+    await settle(f, bounty, source);
+    await expectedError(submit(bounty, outsider), "BountyNotOpen");
+  });
+  testCase("Arena: wrong payout mint rejected", async () => {
+    const { f, bounty } = await openBounty();
+    await submit(bounty);
+    await expectedError(settle(f, bounty, wrongRecipient), "InvalidMint");
+  });
+  testCase("Arena: submission from a different bounty rejected", async () => {
+    const { f, bounty } = await openBounty();
+    await submit(bounty);
+    await createBounty(f, 25, 2);
+    await expectedError(
+      settle(f, bountyPda(f, 2), source, {
+        submission: submissionPda(bounty, payer.publicKey),
+      }),
+      "ConstraintSeeds",
+    );
+  });
+  testCase(
+    "Arena: failed payout rolls back bounty, Root, organization and vault",
+    async () => {
+      const { f, bounty } = await openBounty();
+      await submit(bounty);
+      const frozen = await createAccount(
+        provider.connection,
+        payer,
+        mint,
+        payer.publicKey,
+        Keypair.generate(),
+      );
+      await freezeAccount(provider.connection, payer, frozen, mint, payer);
+      const before = await snapshot(f, [f.root]);
+      try {
+        await settle(f, bounty, frozen);
+        assert.fail("Expected SPL CPI rejection");
+      } catch (error) {
+        assert.match(String(error), /frozen|custom program error: 0x11/i);
+      }
+      assert.equal(await snapshot(f, [f.root]), before);
+      assert.exists((await arena.bounty.fetch(bounty)).status.open);
+    },
+  );
+  testCase(
+    "Arena: multiple bounty reservations remain consistent through reclaim and settlement",
+    async () => {
+      const { f, bounty } = await openBounty();
+      await createBounty(f, 25, 2);
+      await reclaim(f, units(50));
+      await balances(f.root, 0, 50);
+      await submit(bounty);
+      await settle(f, bounty, source);
+      await balances(f.root, 0, 25, 25);
+      await conservation(f);
+      assert.exists((await arena.bounty.fetch(bountyPda(f, 2))).status.open);
+    },
+  );
 });

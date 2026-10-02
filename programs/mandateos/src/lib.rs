@@ -52,4 +52,21 @@ pub mod mandateos {
     pub fn reclaim(ctx: Context<Reclaim>, amount: u64) -> Result<()> {
         instructions::reclaim::handle_reclaim(ctx, amount)
     }
+
+    pub fn create_bounty(
+        ctx: Context<CreateBounty>,
+        bounty_id: u64,
+        reward: u64,
+        verifier: Pubkey,
+    ) -> Result<()> {
+        instructions::create_bounty::handle_create_bounty(ctx, bounty_id, reward, verifier)
+    }
+
+    pub fn submit_result(ctx: Context<SubmitResult>, result_hash: [u8; 32]) -> Result<()> {
+        instructions::submit_result::handle_submit_result(ctx, result_hash)
+    }
+
+    pub fn settle_bounty(ctx: Context<SettleBounty>) -> Result<()> {
+        instructions::settle_bounty::handle_settle_bounty(ctx)
+    }
 }

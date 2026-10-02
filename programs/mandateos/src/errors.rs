@@ -32,4 +32,8 @@ pub enum MandateError {
     AncestorNotWritable,
     #[msg("The organization vault cannot be a transfer destination")]
     InvalidDestination,
+    #[msg("Bounty is already settled")]
+    BountyNotOpen,
+    #[msg("The selected winner must own the submitted commitment")]
+    InvalidWinner,
 }

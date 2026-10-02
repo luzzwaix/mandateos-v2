@@ -28,7 +28,7 @@ export async function runValidatorTests(workspace, env, program, authority) {
   }
   // Agave 2.3 Windows snapshots need symlink privileges at slot 100.
   // Independent test cases run in fresh banks; each complete flow stays intact.
-  const batchCount = 6;
+  const batchCount = 8;
   for (let batchIndex = 0; batchIndex < batchCount; batchIndex++) {
     console.log(`Windows validator batch ${batchIndex + 1}/${batchCount}`);
     const code = await runWindowsBatch(
