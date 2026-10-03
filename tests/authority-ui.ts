@@ -4,6 +4,10 @@ import {
   authorityLedger,
 } from "../web/src/lib/authority-layout";
 import {
+  authorityWorldView,
+  authorityVolume,
+} from "../web/src/lib/authority-world-view";
+import {
   amount,
   authorityPath,
   descendantsOf,
@@ -20,6 +24,54 @@ const u = (n: number) => BigInt(n) * 1_000_000n;
 const node = (m: ReturnType<typeof genesis>, id: string) =>
   m.nodes.find((n) => n.id === id)!;
 describe("Authority Chamber accounting and state selectors", () => {
+  it("projects the original accounts and keeps sibling geometry across construction and revoke", () => {
+    const m = genesis(),
+      before = authorityWorldView(m, "scraper", 864);
+    expect(before.model).eq(m);
+    before.nodes.forEach((p) => expect(p.node).eq(node(m, p.node.id)));
+    for (let count = 1; count <= 6; count++) {
+      const partial = authorityWorldView(genesis(count), "treasury", 864);
+      partial.nodes.forEach((p) => {
+        const expected = before.nodes.find(
+          (item) => item.node.id === p.node.id,
+        )!;
+        expect([p.x, p.y, p.z]).deep.eq([expected.x, expected.y, expected.z]);
+      });
+    }
+    const after = authorityWorldView(revokeDemo(m, "research"), "scraper", 864);
+    expect(after.nodes.find((p) => p.node.id === "operations")).deep.eq(
+      before.nodes.find((p) => p.node.id === "operations"),
+    );
+    expect(after.ancestry).deep.eq(["treasury", "research", "data", "scraper"]);
+  });
+  it("flattens to the existing Command recipe without changing financial objects", () => {
+    const m = genesis(),
+      flat = authorityLayout(m, 960),
+      view = authorityWorldView(m, "scraper", 960, 0);
+    view.nodes.forEach((p) => {
+      expect([p.x, p.y, p.z]).deep.eq([
+        flat.points.get(p.node.id)!.x,
+        flat.points.get(p.node.id)!.y,
+        0,
+      ]);
+      expect(p.node).eq(node(m, p.node.id));
+    });
+  });
+  it("bounds twelve impact wires outside Treasury and Operations", () => {
+    const view = authorityWorldView(genesis(), "research", 864),
+      volume = authorityVolume(view, "research");
+    expect(volume).length(12);
+    const values = volume.flatMap((d) =>
+      d.match(/-?\d+(?:\.\d+)?/g)!.map(Number),
+    );
+    const xs = values.filter((_, i) => i % 2 === 0),
+      ys = values.filter((_, i) => i % 2 === 1);
+    const operations = view.nodes.find((p) => p.node.id === "operations")!;
+    const root = view.nodes.find((p) => p.node.id === "treasury")!;
+    expect(Math.max(...xs)).lessThan(operations.x - operations.width / 2);
+    expect(Math.min(...ys)).greaterThan(root.y + root.height);
+    expect(view.nodes.every((p) => p.status === "active")).eq(true);
+  });
   it("keeps each mobile subtree contiguous before and after a revoke", () => {
     const before = authorityLedger(genesis()).map((n) => n.id);
     expect(before).deep.eq([
