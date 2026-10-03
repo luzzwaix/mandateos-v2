@@ -1,4 +1,4 @@
-import Console from "@/components/console";
+import StoryWorld from "@/components/story-world";
 export default function Page() {
-  return <Console />;
+  return <StoryWorld />;
 }

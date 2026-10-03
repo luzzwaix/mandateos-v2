@@ -95,6 +95,7 @@ export interface TransactionState {
     | "awaiting-signature"
     | "pending"
     | "confirmed"
+    | "unknown"
     | "error";
   title: string;
   signature?: string;

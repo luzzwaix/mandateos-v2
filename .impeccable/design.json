@@ -1,0 +1,508 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-03T04:00:55Z",
+  "title": "Design System: MandateOS V2",
+  "extensions": {
+    "colorMeta": {
+      "world": {
+        "role": "neutral",
+        "displayName": "Mineral Graphite",
+        "tonalRamp": [
+          "oklch(15% 0.0077 182.20)",
+          "oklch(26% 0.0077 182.20)",
+          "oklch(38% 0.0077 182.20)",
+          "oklch(49% 0.0077 182.20)",
+          "oklch(61% 0.0077 182.20)",
+          "oklch(72% 0.0077 182.20)",
+          "oklch(84% 0.0077 182.20)",
+          "oklch(95% 0.0077 182.20)"
+        ]
+      },
+      "field": {
+        "role": "neutral",
+        "displayName": "Graphite Field",
+        "tonalRamp": [
+          "oklch(15% 0.0107 176.27)",
+          "oklch(26% 0.0107 176.27)",
+          "oklch(38% 0.0107 176.27)",
+          "oklch(49% 0.0107 176.27)",
+          "oklch(61% 0.0107 176.27)",
+          "oklch(72% 0.0107 176.27)",
+          "oklch(84% 0.0107 176.27)",
+          "oklch(95% 0.0107 176.27)"
+        ]
+      },
+      "plate": {
+        "role": "neutral",
+        "displayName": "Structural Plate",
+        "tonalRamp": [
+          "oklch(15% 0.0155 169.05)",
+          "oklch(26% 0.0155 169.05)",
+          "oklch(38% 0.0155 169.05)",
+          "oklch(49% 0.0155 169.05)",
+          "oklch(61% 0.0155 169.05)",
+          "oklch(72% 0.0155 169.05)",
+          "oklch(84% 0.0155 169.05)",
+          "oklch(95% 0.0155 169.05)"
+        ]
+      },
+      "bone": {
+        "role": "neutral",
+        "displayName": "Bone",
+        "tonalRamp": [
+          "oklch(15% 0.0125 91.52)",
+          "oklch(26% 0.0125 91.52)",
+          "oklch(38% 0.0125 91.52)",
+          "oklch(49% 0.0125 91.52)",
+          "oklch(61% 0.0125 91.52)",
+          "oklch(72% 0.0125 91.52)",
+          "oklch(84% 0.0125 91.52)",
+          "oklch(95% 0.0125 91.52)"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Warm Light",
+        "tonalRamp": [
+          "oklch(15% 0.0111 89.72)",
+          "oklch(26% 0.0111 89.72)",
+          "oklch(38% 0.0111 89.72)",
+          "oklch(49% 0.0111 89.72)",
+          "oklch(61% 0.0111 89.72)",
+          "oklch(72% 0.0111 89.72)",
+          "oklch(84% 0.0111 89.72)",
+          "oklch(95% 0.0111 89.72)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Sage Gray",
+        "tonalRamp": [
+          "oklch(15% 0.0156 151.71)",
+          "oklch(26% 0.0156 151.71)",
+          "oklch(38% 0.0156 151.71)",
+          "oklch(49% 0.0156 151.71)",
+          "oklch(61% 0.0156 151.71)",
+          "oklch(72% 0.0156 151.71)",
+          "oklch(84% 0.0156 151.71)",
+          "oklch(95% 0.0156 151.71)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Green Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0149 166.35)",
+          "oklch(26% 0.0149 166.35)",
+          "oklch(38% 0.0149 166.35)",
+          "oklch(49% 0.0149 166.35)",
+          "oklch(61% 0.0149 166.35)",
+          "oklch(72% 0.0149 166.35)",
+          "oklch(84% 0.0149 166.35)",
+          "oklch(95% 0.0149 166.35)"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0265 159.35)",
+          "oklch(26% 0.0265 159.35)",
+          "oklch(38% 0.0265 159.35)",
+          "oklch(49% 0.0265 159.35)",
+          "oklch(61% 0.0265 159.35)",
+          "oklch(72% 0.0265 159.35)",
+          "oklch(84% 0.0265 159.35)",
+          "oklch(95% 0.0265 159.35)"
+        ]
+      },
+      "mint": {
+        "role": "primary",
+        "displayName": "Muted Mint",
+        "tonalRamp": [
+          "oklch(15% 0.0570 142.68)",
+          "oklch(26% 0.0570 142.68)",
+          "oklch(38% 0.0570 142.68)",
+          "oklch(49% 0.0570 142.68)",
+          "oklch(61% 0.0570 142.68)",
+          "oklch(72% 0.0570 142.68)",
+          "oklch(84% 0.0570 142.68)",
+          "oklch(95% 0.0570 142.68)"
+        ]
+      },
+      "copper": {
+        "role": "secondary",
+        "displayName": "Copper",
+        "tonalRamp": [
+          "oklch(15% 0.0974 61.26)",
+          "oklch(26% 0.0974 61.26)",
+          "oklch(38% 0.0974 61.26)",
+          "oklch(49% 0.0974 61.26)",
+          "oklch(61% 0.0974 61.26)",
+          "oklch(72% 0.0974 61.26)",
+          "oklch(84% 0.0974 61.26)",
+          "oklch(95% 0.0974 61.26)"
+        ]
+      },
+      "copper-ink": {
+        "role": "secondary",
+        "displayName": "Copper Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0837 56.11)",
+          "oklch(26% 0.0837 56.11)",
+          "oklch(38% 0.0837 56.11)",
+          "oklch(49% 0.0837 56.11)",
+          "oklch(61% 0.0837 56.11)",
+          "oklch(72% 0.0837 56.11)",
+          "oklch(84% 0.0837 56.11)",
+          "oklch(95% 0.0837 56.11)"
+        ]
+      },
+      "red": {
+        "role": "tertiary",
+        "displayName": "Cut Red",
+        "tonalRamp": [
+          "oklch(15% 0.1263 32.25)",
+          "oklch(26% 0.1263 32.25)",
+          "oklch(38% 0.1263 32.25)",
+          "oklch(49% 0.1263 32.25)",
+          "oklch(61% 0.1263 32.25)",
+          "oklch(72% 0.1263 32.25)",
+          "oklch(84% 0.1263 32.25)",
+          "oklch(95% 0.1263 32.25)"
+        ]
+      },
+      "red-ink": {
+        "role": "tertiary",
+        "displayName": "Cut Ink",
+        "tonalRamp": [
+          "oklch(15% 0.1397 31.26)",
+          "oklch(26% 0.1397 31.26)",
+          "oklch(38% 0.1397 31.26)",
+          "oklch(49% 0.1397 31.26)",
+          "oklch(61% 0.1397 31.26)",
+          "oklch(72% 0.1397 31.26)",
+          "oklch(84% 0.1397 31.26)",
+          "oklch(95% 0.1397 31.26)"
+        ]
+      },
+      "brass": {
+        "role": "secondary",
+        "displayName": "Pale Brass",
+        "tonalRamp": [
+          "oklch(15% 0.0487 82.67)",
+          "oklch(26% 0.0487 82.67)",
+          "oklch(38% 0.0487 82.67)",
+          "oklch(49% 0.0487 82.67)",
+          "oklch(61% 0.0487 82.67)",
+          "oklch(72% 0.0487 82.67)",
+          "oklch(84% 0.0487 82.67)",
+          "oklch(95% 0.0487 82.67)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Structural Line",
+        "tonalRamp": [
+          "oklch(15% 0.0175 161.67)",
+          "oklch(26% 0.0175 161.67)",
+          "oklch(38% 0.0175 161.67)",
+          "oklch(49% 0.0175 161.67)",
+          "oklch(61% 0.0175 161.67)",
+          "oklch(72% 0.0175 161.67)",
+          "oklch(84% 0.0175 161.67)",
+          "oklch(95% 0.0175 161.67)"
+        ]
+      },
+      "neutral-edge": {
+        "role": "neutral",
+        "displayName": "Neutral Edge",
+        "tonalRamp": [
+          "oklch(15% 0.0237 156.34)",
+          "oklch(26% 0.0237 156.34)",
+          "oklch(38% 0.0237 156.34)",
+          "oklch(49% 0.0237 156.34)",
+          "oklch(61% 0.0237 156.34)",
+          "oklch(72% 0.0237 156.34)",
+          "oklch(84% 0.0237 156.34)",
+          "oklch(95% 0.0237 156.34)"
+        ]
+      },
+      "selected-plate": {
+        "role": "neutral",
+        "displayName": "Selected Plate",
+        "tonalRamp": [
+          "oklch(15% 0.0160 163.84)",
+          "oklch(26% 0.0160 163.84)",
+          "oklch(38% 0.0160 163.84)",
+          "oklch(49% 0.0160 163.84)",
+          "oklch(61% 0.0160 163.84)",
+          "oklch(72% 0.0160 163.84)",
+          "oklch(84% 0.0160 163.84)",
+          "oklch(95% 0.0160 163.84)"
+        ]
+      },
+      "active-ink": {
+        "role": "primary",
+        "displayName": "Deep Active Green",
+        "tonalRamp": [
+          "oklch(15% 0.0829 155.31)",
+          "oklch(26% 0.0829 155.31)",
+          "oklch(38% 0.0829 155.31)",
+          "oklch(49% 0.0829 155.31)",
+          "oklch(61% 0.0829 155.31)",
+          "oklch(72% 0.0829 155.31)",
+          "oklch(84% 0.0829 155.31)",
+          "oklch(95% 0.0829 155.31)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Story Display",
+        "purpose": "The uppercase product thesis; responsive source overrides narrow the scale."
+      },
+      "headline": {
+        "displayName": "Story Headline",
+        "purpose": "Compact scene explanations with tight leading."
+      },
+      "title": {
+        "displayName": "Instrument Title",
+        "purpose": "Selected mandate and mission identity on bone."
+      },
+      "body": {
+        "displayName": "UI Body",
+        "purpose": "Base interface copy and supporting explanations."
+      },
+      "body-support": {
+        "displayName": "Story Support",
+        "purpose": "The direct two-line proposition beneath the thesis."
+      },
+      "control": {
+        "displayName": "Button Control",
+        "purpose": "Shared primary and instrument button labels."
+      },
+      "node-title": {
+        "displayName": "Node Identity",
+        "purpose": "Flat mandate identity without budget-dependent dimensions."
+      },
+      "label": {
+        "displayName": "Mono State Label",
+        "purpose": "Uppercase state, depth, identifiers and provenance; metadata floor 11px."
+      },
+      "input": {
+        "displayName": "Mono Field Value",
+        "purpose": "Exact action amounts and account-address input."
+      },
+      "amount": {
+        "displayName": "Instrument Amount",
+        "purpose": "Exact financial focus in the flat bone instrument."
+      },
+      "amount-rail": {
+        "displayName": "Mandate Amount Rail",
+        "purpose": "Own-available capital embedded into each flat plate."
+      }
+    },
+    "shadows": [
+      {
+        "name": "story-plate-underside",
+        "value": "0 8px 0 #101513, 0 18px 22px #0002",
+        "purpose": "Only spatial Story mandate plates; Command has no plate shadow."
+      },
+      {
+        "name": "wallet-overlay",
+        "value": "0 16px 40px #0005",
+        "purpose": "Transient bone wallet popover above the world field."
+      }
+    ],
+    "motion": [
+      {
+        "name": "control-feedback",
+        "value": "background 150ms, border-color 150ms",
+        "purpose": "Main button hover feedback."
+      },
+      {
+        "name": "plate-state",
+        "value": "border-color 160ms, background 160ms",
+        "purpose": "Node surface and border feedback; trace has no animated camera."
+      },
+      {
+        "name": "plane-change",
+        "value": "240ms ease-out",
+        "purpose": "Route content clip-path replacement under the persistent shell."
+      },
+      {
+        "name": "boundary-in",
+        "value": "220ms ease-out",
+        "purpose": "Copper pre-revoke contour draw; no authority or balance mutation."
+      },
+      {
+        "name": "grant-travel",
+        "value": "480ms linear forwards",
+        "purpose": "One bone segment follows the inherited authority relation."
+      },
+      {
+        "name": "grant-resolve",
+        "value": "700ms cubic-bezier(0.2, 0.8, 0.2, 1) both",
+        "purpose": "Endpoint materialization; exact demo capacity delta appears after resolution."
+      },
+      {
+        "name": "cut-propagation",
+        "value": "700ms ease-out both; delay min(300ms, depth × 80ms)",
+        "purpose": "Resolved invalid authority flashes then settles down the affected depth; state is model-derived."
+      },
+      {
+        "name": "resolve-channel",
+        "value": "700ms ease-in-out",
+        "purpose": "Arena settlement channel resolves after confirmed or explicitly simulated settlement."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-desktop",
+        "value": "1279px"
+      },
+      {
+        "name": "tablet-single-column",
+        "value": "1000px"
+      },
+      {
+        "name": "mobile-ledger",
+        "value": "767px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary Button extracted from the shared button variants.",
+      "html": "<div class=\"ds-button-canvas-primary\"><button class=\"ds-button-primary\">Read accounts<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button></div>",
+      "css": ".ds-button-canvas-primary{background:var(--world,#171c1b);color:var(--ink,#1b2420);padding:24px;display:inline-block;} .ds-button-primary{border:1px solid var(--line,#3c4741);padding:12px 16px;min-height:44px;border-radius:4px;display:inline-flex;gap:20px;align-items:center;justify-content:space-between;font:550 13px/1.5 var(--sans,\"Geist Variable\",sans-serif);cursor:pointer;transition:background 150ms,border-color 150ms;background:var(--bone,#eae7de);color:var(--ink,#1b2420);border-color:var(--line,#3c4741);} .ds-button-primary:hover:not(:disabled){background:#fffaf0;} .ds-button-primary:focus-visible{outline:2px solid var(--bone,#eae7de);outline-offset:4px;} .ds-button-primary:disabled{opacity:.5;cursor:not-allowed;} @media(prefers-reduced-motion:reduce){.ds-button-primary{transition:none;}}"
+    },
+    {
+      "name": "Dark Instrument Button",
+      "kind": "button",
+      "refersTo": "button-dark",
+      "description": "Dark Instrument Button extracted from the shared button variants.",
+      "html": "<div class=\"ds-button-canvas-dark\"><button class=\"ds-button-dark\">Simulate spend<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button></div>",
+      "css": ".ds-button-canvas-dark{background:var(--bone,#eae7de);color:var(--bone,#eae7de);padding:24px;display:inline-block;} .ds-button-dark{border:1px solid var(--line,#3c4741);padding:12px 16px;min-height:44px;border-radius:4px;display:inline-flex;gap:20px;align-items:center;justify-content:space-between;font:550 13px/1.5 var(--sans,\"Geist Variable\",sans-serif);cursor:pointer;transition:background 150ms,border-color 150ms;background:var(--ink,#1b2420);color:var(--bone,#eae7de);border-color:var(--ink,#1b2420);} .ds-button-dark:hover:not(:disabled){background:#34453a;} .ds-button-dark:focus-visible{outline:2px solid var(--ink,#1b2420);outline-offset:4px;} .ds-button-dark:disabled{opacity:.5;cursor:not-allowed;} @media(prefers-reduced-motion:reduce){.ds-button-dark{transition:none;}}"
+    },
+    {
+      "name": "Subtle Button",
+      "kind": "button",
+      "refersTo": "button-subtle",
+      "description": "Subtle Button extracted from the shared button variants.",
+      "html": "<div class=\"ds-button-canvas-subtle\"><button class=\"ds-button-subtle\">Trace Scraper<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button></div>",
+      "css": ".ds-button-canvas-subtle{background:var(--world,#171c1b);color:var(--text,#f1eee6);padding:24px;display:inline-block;} .ds-button-subtle{border:1px solid var(--line,#3c4741);padding:12px 16px;min-height:44px;border-radius:4px;display:inline-flex;gap:20px;align-items:center;justify-content:space-between;font:550 13px/1.5 var(--sans,\"Geist Variable\",sans-serif);cursor:pointer;transition:background 150ms,border-color 150ms;background:transparent;color:var(--text,#f1eee6);border-color:var(--neutral-edge,#647369);} .ds-button-subtle:hover:not(:disabled){background:#ffffff08;} .ds-button-subtle:focus-visible{outline:2px solid var(--bone,#eae7de);outline-offset:4px;} .ds-button-subtle:disabled{opacity:.5;cursor:not-allowed;} @media(prefers-reduced-motion:reduce){.ds-button-subtle{transition:none;}}"
+    },
+    {
+      "name": "Copper Review Button",
+      "kind": "button",
+      "refersTo": "button-copper",
+      "description": "Copper Review Button extracted from the shared button variants.",
+      "html": "<div class=\"ds-button-canvas-copper\"><button class=\"ds-button-copper\">Review revoke<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button></div>",
+      "css": ".ds-button-canvas-copper{background:var(--bone,#eae7de);color:var(--bone,#eae7de);padding:24px;display:inline-block;} .ds-button-copper{border:1px solid var(--line,#3c4741);padding:12px 16px;min-height:44px;border-radius:4px;display:inline-flex;gap:20px;align-items:center;justify-content:space-between;font:550 13px/1.5 var(--sans,\"Geist Variable\",sans-serif);cursor:pointer;transition:background 150ms,border-color 150ms;background:var(--copper-ink,#81502b);color:var(--bone,#eae7de);border-color:var(--copper-ink,#81502b);} .ds-button-copper:hover:not(:disabled){background:#6a3d20;} .ds-button-copper:focus-visible{outline:2px solid var(--ink,#1b2420);outline-offset:4px;} .ds-button-copper:disabled{opacity:.5;cursor:not-allowed;} @media(prefers-reduced-motion:reduce){.ds-button-copper{transition:none;}}"
+    },
+    {
+      "name": "Copper Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline-copper",
+      "description": "Copper Outline Button extracted from the shared button variants.",
+      "html": "<div class=\"ds-button-canvas-outline\"><button class=\"ds-button-outline\">Preview revoke<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button></div>",
+      "css": ".ds-button-canvas-outline{background:var(--bone,#eae7de);color:var(--copper-ink,#81502b);padding:24px;display:inline-block;} .ds-button-outline{border:1px solid var(--line,#3c4741);padding:12px 16px;min-height:44px;border-radius:4px;display:inline-flex;gap:20px;align-items:center;justify-content:space-between;font:550 13px/1.5 var(--sans,\"Geist Variable\",sans-serif);cursor:pointer;transition:background 150ms,border-color 150ms;background:transparent;color:var(--copper-ink,#81502b);border-color:#a47850;} .ds-button-outline:hover:not(:disabled){background:#d69b681a;} .ds-button-outline:focus-visible{outline:2px solid var(--ink,#1b2420);outline-offset:4px;} .ds-button-outline:disabled{opacity:.5;cursor:not-allowed;} @media(prefers-reduced-motion:reduce){.ds-button-outline{transition:none;}}"
+    },
+    {
+      "name": "Amount Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "A mono action amount inside the bone instrument.",
+      "html": "<div class=\"ds-field-canvas\"><label class=\"ds-field-label\">Amount · USDC<input class=\"ds-amount-field\" aria-label=\"Action amount\" value=\"25\" inputmode=\"decimal\"/></label></div>",
+      "css": ".ds-field-canvas{padding:24px;background:var(--bone,#eae7de);color:var(--ink,#1b2420);width:280px;} .ds-field-label{display:flex;flex-direction:column;gap:6px;font:11px/1.5 var(--sans,\"Geist Variable\",sans-serif);color:var(--ink-muted,#4b5c52);} .ds-amount-field{border:1px solid #8c9a8b;border-radius:3px;padding:10px 12px;min-height:42px;width:100%;background:transparent;color:var(--ink,#1b2420);font:12px var(--mono,\"Geist Mono Variable\",monospace);caret-color:var(--ink,#1b2420);} .ds-amount-field:focus-visible{outline:2px solid var(--ink,#1b2420);outline-offset:4px;}"
+    },
+    {
+      "name": "World Navigation",
+      "kind": "nav",
+      "refersTo": "navigation-item",
+      "description": "The three-route shell with the authored Root mark and a mint active rule.",
+      "html": "<div class=\"ds-nav-canvas\"><span class=\"ds-nav-brand\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3 4h18l4 4v13H3zM14 21v5M9 26h10\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M8 10h12M8 15h8\" stroke=\"currentColor\"/></svg>MANDATEOS</span><nav class=\"ds-world-nav\" aria-label=\"Product navigation\"><a href=\"/\">Story</a><a href=\"/app\" aria-current=\"page\">Command</a><a href=\"/arena\">Arena</a></nav></div>",
+      "css": ".ds-nav-canvas{background:var(--world,#171c1b);color:var(--text,#f1eee6);height:64px;display:flex;align-items:center;padding:0 32px;gap:48px;border-bottom:1px solid var(--line,#3c4741);font-family:var(--sans,\"Geist Variable\",sans-serif);} .ds-nav-brand{display:flex;gap:12px;align-items:center;font-size:18px;letter-spacing:.14em;font-weight:500;} .ds-nav-brand svg{color:var(--mint,#b9d8b6);} .ds-world-nav{display:flex;gap:32px;height:100%;align-items:stretch;} .ds-world-nav a{display:flex;align-items:center;border-bottom:2px solid transparent;color:var(--muted,#b7c1b9);font-size:14px;padding:0 2px;text-decoration:none;} .ds-world-nav a[aria-current]{color:var(--text,#f1eee6);border-bottom-color:var(--mint,#b9d8b6);} .ds-world-nav a:hover{color:var(--text,#f1eee6);} .ds-world-nav a:focus-visible{outline:2px solid var(--bone,#eae7de);outline-offset:4px;} @media(max-width:767px){.ds-nav-canvas{height:104px;padding:14px 20px 0;gap:12px;display:grid;grid-template-rows:32px 44px;}.ds-nav-brand{font-size:14px;gap:8px;letter-spacing:.12em;}.ds-world-nav{gap:28px;}.ds-world-nav a{font-size:12px;}}"
+    },
+    {
+      "name": "Instrument State Marks",
+      "kind": "chip",
+      "refersTo": "status-active-instrument",
+      "description": "Explicit local/effective state labels using readable ink on bone.",
+      "html": "<div class=\"ds-status-canvas\"><div class=\"ds-status-line\"><strong>Research</strong><span class=\"ds-state ds-state-active\">ACTIVE</span></div><div class=\"ds-status-line\"><strong>Scraper</strong><span class=\"ds-state ds-state-blocked\">BLOCKED</span></div><div class=\"ds-local-state\">LOCAL <b>ACTIVE</b><span>EFFECTIVE <b>BLOCKED</b></span></div></div>",
+      "css": ".ds-status-canvas{background:var(--bone,#eae7de);color:var(--ink,#1b2420);padding:24px;width:280px;font-family:var(--sans,\"Geist Variable\",sans-serif);} .ds-status-line{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-bottom:16px;} .ds-status-line strong{font-size:13px;font-weight:550;} .ds-state{font:11px var(--mono,\"Geist Mono Variable\",monospace);letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;padding:4px 7px;} .ds-state-active{background:#a9c6ad55;color:var(--active-ink,#2a6442);} .ds-state-blocked{background:#e8a69455;color:var(--red-ink,#a43d2d);} .ds-local-state{font:11px var(--mono,\"Geist Mono Variable\",monospace);display:flex;justify-content:space-between;color:var(--ink-muted,#4b5c52);padding-bottom:18px;border-bottom:1px solid #a7aca1;} .ds-local-state b{font-weight:450;}"
+    },
+    {
+      "name": "Selected Mandate Plate",
+      "kind": "card",
+      "refersTo": "mandate-plate",
+      "description": "The flat interactive authority entity, with exact own-available capital and depth.",
+      "html": "<div class=\"ds-plate-canvas\"><button class=\"ds-mandate-plate ds-mandate-selected\" aria-label=\"Select Research\" aria-pressed=\"true\"><span class=\"ds-plate-heading\"><strong>Research</strong><span class=\"ds-depth\">D1</span></span><span class=\"ds-capital-rail\"><span>250.00</span><small>USDC</small></span><span class=\"ds-plate-foot\"><span class=\"ds-plate-status\">ACTIVE</span><span>OWN AVAILABLE</span></span></button><small class=\"ds-plate-provenance\">SIMULATED STATE</small></div>",
+      "css": ".ds-plate-canvas{background:var(--field,#1d2422);padding:28px;color:var(--text,#f1eee6);display:inline-flex;flex-direction:column;gap:18px;} .ds-mandate-plate{width:184px;height:86px;border:1px solid #6c8174;border-radius:3px;background:var(--field,#1d2422);text-align:left;padding:10px 12px;color:var(--text,#f1eee6);font:14px/1.5 var(--sans,\"Geist Variable\",sans-serif);cursor:pointer;transition:border-color 160ms,background 160ms;} .ds-mandate-plate:hover{background:var(--plate,#26302c);border-color:var(--bone,#eae7de);} .ds-mandate-selected{border-color:var(--bone,#eae7de);background:var(--selected-plate,#303a35);outline:1px solid var(--bone,#eae7de);outline-offset:3px;} .ds-mandate-plate:focus-visible{outline:2px solid var(--bone,#eae7de);outline-offset:4px;} .ds-plate-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;} .ds-plate-heading strong{font-size:13px;font-weight:550;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;} .ds-depth{font:11px var(--mono,\"Geist Mono Variable\",monospace);color:var(--muted,#b7c1b9);} .ds-capital-rail{font:21px/1.4 var(--mono,\"Geist Mono Variable\",monospace);display:flex;align-items:baseline;gap:8px;margin-top:3px;} .ds-capital-rail small{font-size:11px;color:var(--muted,#b7c1b9);} .ds-plate-foot{display:flex;justify-content:space-between;gap:6px;align-items:center;margin-top:3px;font:11px var(--mono,\"Geist Mono Variable\",monospace);} .ds-plate-status{color:var(--mint,#b9d8b6);letter-spacing:.02em;} .ds-plate-foot>span:last-child,.ds-plate-provenance{color:var(--muted,#b7c1b9);font:11px var(--mono,\"Geist Mono Variable\",monospace);} @media(prefers-reduced-motion:reduce){.ds-mandate-plate{transition:none;}}"
+    },
+    {
+      "name": "Impact Instrument",
+      "kind": "custom",
+      "refersTo": "bone-instrument",
+      "description": "An integrated pre-revoke consequence panel; it keeps active authority distinct from execution.",
+      "html": "<aside class=\"ds-impact-instrument\"><div class=\"ds-impact-meta\">IMPACT ANALYSIS</div><h2 class=\"ds-impact-heading\">Revoke Research?</h2><span class=\"ds-preview-label\">PREVIEW · NO TRANSACTION</span><div class=\"ds-impact-count\"><strong>1</strong><div><b>mandate will be revoked</b><p>Research · locally active</p></div></div><div class=\"ds-impact-count\"><strong>3</strong><div><b>descendants lose effective authority</b><p>Data · Analysis · Scraper</p></div></div><div class=\"ds-impact-capital\"><span>BRANCH REMAINING</span><strong>390.00 <small>USDC</small></strong><p>Demo account model · subtree_remaining</p></div><dl class=\"ds-impact-details\"><div><dt>Released to</dt><dd>Treasury available</dd></div><div><dt>Token transfer</dt><dd>None on revoke</dd></div><div><dt>Unaffected</dt><dd>Operations · active</dd></div></dl><button class=\"ds-impact-review\">Review revoke<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button><button class=\"ds-impact-cancel\">Cancel preview</button></aside>",
+      "css": ".ds-impact-instrument{background:var(--bone,#eae7de);color:var(--ink,#1b2420);padding:28px 28px 24px;width:280px;font:14px/1.5 var(--sans,\"Geist Variable\",sans-serif);} .ds-impact-meta{font:11px var(--mono,\"Geist Mono Variable\",monospace);letter-spacing:.04em;margin-bottom:10px;color:var(--ink-muted,#4b5c52);} .ds-impact-heading{font:550 32px/1.08 var(--sans,\"Geist Variable\",sans-serif);letter-spacing:-.03em;max-width:290px;text-transform:uppercase;margin:0 0 10px;} .ds-preview-label{color:var(--copper-ink,#81502b);font:11px var(--mono,\"Geist Mono Variable\",monospace);} .ds-impact-count{display:flex;gap:22px;padding:18px 0;border-bottom:1px solid #a7aca1;align-items:flex-start;} .ds-impact-count>strong{font:40px/1 var(--mono,\"Geist Mono Variable\",monospace);min-width:26px;} .ds-impact-count b{font-size:13px;font-weight:550;} .ds-impact-count p{margin:6px 0 0;font-size:12px;color:var(--ink-muted,#4b5c52);} .ds-impact-capital{margin:16px 0;} .ds-impact-capital>span{font:11px var(--mono,\"Geist Mono Variable\",monospace);letter-spacing:.04em;color:var(--copper-ink,#81502b);} .ds-impact-capital>strong{display:block;font:28px/1.4 var(--mono,\"Geist Mono Variable\",monospace);letter-spacing:-.04em;margin:6px 0;} .ds-impact-capital>strong small{font-size:13px;letter-spacing:0;} .ds-impact-capital p{font-size:11px;color:var(--ink-muted,#4b5c52);margin:4px 0 0;} .ds-impact-details{margin:0;} .ds-impact-details>div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;border-top:1px solid #b9bcb1;padding:8px 0;font-size:11px;} .ds-impact-details dt{color:var(--ink-muted,#4b5c52);} .ds-impact-details dd{margin:0;text-align:right;max-width:68%;font:11px var(--mono,\"Geist Mono Variable\",monospace);} .ds-impact-review{border:1px solid var(--copper-ink,#81502b);background:var(--copper-ink,#81502b);color:var(--bone,#eae7de);padding:12px 16px;min-height:44px;border-radius:4px;display:flex;width:100%;gap:20px;align-items:center;justify-content:space-between;font:550 13px/1.5 var(--sans,\"Geist Variable\",sans-serif);cursor:pointer;margin-top:16px;transition:background 150ms,border-color 150ms;} .ds-impact-review:hover:not(:disabled){background:#6a3d20;} .ds-impact-review:disabled{opacity:.5;cursor:not-allowed;} .ds-impact-cancel{width:100%;display:flex;justify-content:center;align-items:center;padding:6px 0;border:0;background:transparent;color:var(--ink,#1b2420);font:12px/1.5 var(--sans,\"Geist Variable\",sans-serif);margin-top:6px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;} .ds-impact-cancel:hover{color:var(--copper-ink,#81502b);} .ds-impact-review:focus-visible,.ds-impact-cancel:focus-visible{outline:2px solid var(--ink,#1b2420);outline-offset:4px;} @media(prefers-reduced-motion:reduce){.ds-impact-review{transition:none;}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Authority Chamber",
+    "overview": "An organization is a visible authority structure under one operator's control. Mineral graphite holds compact mandate plates and directed channels; a bone financial instrument presents exact capital, lineage, consequences, and actions. The recurring Root geometry carries identity through Story, Command, and Arena. The mood is restrained, institutional, and precise.\n\nDepth explains structure in Story and the mission basin in Arena. Command remains flat, dense, and inspectable. Selection, preview, effective blocking, and verified execution have distinct treatments. Readable labels and evidence carry meaning alongside color, and simulated state remains visibly identified.",
+    "keyCharacteristics": [
+      "One recurring Root plate and orthogonal authority structure.",
+      "Matte graphite field contrasted with a flat bone instrument.",
+      "Exact mono financial values embedded in compact amount rails.",
+      "Mint authority, copper preview, red break, and brass settlement.",
+      "Bounded event motion and readable nested ledgers on mobile."
+    ],
+    "rules": [
+      {
+        "name": "The Semantic Color Rule",
+        "body": "State colors describe authority or an operation's consequence. Keep mode/network labels neutral; use text, path style, and explicit state labels so color is never the only explanation.",
+        "section": "colors"
+      },
+      {
+        "name": "The Exact Amount Rule",
+        "body": "Keep financial truth in the account model and display exact formatted values. Amount animation must never calculate balances, begin from an invented zero, or obscure the final value.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Operation Rule",
+        "body": "Keep Command and financial text flat. Do not export Story perspective, underside shadows, or decorative depth into operating instruments.",
+        "section": "elevation"
+      },
+      {
+        "name": "The State Before Motion Rule",
+        "body": "Motion consumes known state; it never proves success. Pending retains the last verified authority. Reduced motion removes animations/transitions, perspective, grant travel, and smooth scrolling while preserving exact labels and state.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do preserve the recurring Root geometry, downward authority ranks, and exact node amount rails.",
+      "Do keep the bone instrument flat and make account scope, local/effective status, units, and provenance readable.",
+      "Do keep preview copper and authority unchanged until execution; show the unaffected sibling outside the impact boundary.",
+      "Do retain revoked and blocked topology, identify the broken ancestor, and keep rejection evidence persistent.",
+      "Do use the nested ledger below 768px and the single-column field/instrument layout through 1000px.",
+      "Do preserve visible keyboard focus, Escape/Cancel focus restoration for preview, and immediate reduced-motion state.",
+      "Do label simulated amounts and outcomes, and derive live evidence from the existing integration."
+    ],
+    "donts": [
+      "Don't sum nested subtree balances as organization capital or animate token recovery merely because authority was revoked.",
+      "Don't use semantic mint, copper, red, or brass as unrelated decoration or neutral mode badges.",
+      "Don't add generic card grids, crypto sculpture, robots, glass, particles, continuous edge loops, or copied library styling.",
+      "Don't put perspective, bevels, underside shadows, or oversized hero typography into Command.",
+      "Don't shrink the desktop graph into an unreadable mobile canvas or reduce metadata below 11px.",
+      "Don't rasterize interface text, introduce additional font families, or treat concept screenshots as runtime assets.",
+      "Don't display fabricated signatures, Explorer links, program errors, onchain confirmation, or live balances."
+    ]
+  }
+}

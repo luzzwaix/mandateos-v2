@@ -10,6 +10,7 @@
     "test": "npm run test:local",
     "test:local": "node scripts/local-test.mjs",
     "test:integration": "ts-mocha -p tsconfig.json -t 120000 tests/mandateos.ts",
+    "test:ui": "ts-mocha -p tsconfig.json tests/authority-ui.ts",
     "build:program": "node scripts/build-program.mjs",
     "demo:local": "node scripts/demo-validator.mjs",
     "check:secrets": "node scripts/check-secrets.mjs",

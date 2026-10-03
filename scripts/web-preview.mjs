@@ -9,6 +9,7 @@ const mime = {
   ".js": "application/javascript",
   ".css": "text/css",
   ".json": "application/json",
+  ".txt": "text/x-component",
   ".svg": "image/svg+xml",
   ".png": "image/png",
   ".ico": "image/x-icon",
@@ -25,7 +26,19 @@ createServer(async (request, response) => {
       response.writeHead(403).end();
       return;
     }
-    if ((await stat(file)).isDirectory()) file = resolve(file, "index.html");
+    try {
+      if ((await stat(file)).isDirectory()) {
+        try {
+          await stat(file + ".html");
+          file += ".html";
+        } catch {
+          file = resolve(file, "index.html");
+        }
+      }
+    } catch (error) {
+      if (error.code !== "ENOENT" || extname(file)) throw error;
+      file += ".html";
+    }
     response.writeHead(200, {
       "content-type": mime[extname(file)] ?? "application/octet-stream",
       "cache-control": "no-cache",

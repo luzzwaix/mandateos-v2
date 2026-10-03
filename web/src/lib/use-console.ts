@@ -13,7 +13,7 @@ import type {
   TransactionObserver,
 } from "./solana/types";
 
-export function useConsole() {
+export function useConsole(enabled = true) {
   const [wallet, setWallet] = useState<SigningWallet>();
   const [demo, setDemo] = useState<DemoSession>();
   const [snapshot, setSnapshot] = useState<Snapshot>();
@@ -27,12 +27,16 @@ export function useConsole() {
     phase: "idle",
     title: "",
   });
+  const progressRef = useRef<Partial<TransactionState>>({});
   const reportTransaction = useCallback<TransactionObserver>((progress) => {
+    progressRef.current = { ...progressRef.current, ...progress };
     setTransaction((previous) => ({ ...previous, ...progress }));
   }, []);
   const [error, setError] = useState("");
   const [rejection, setRejection] = useState<ProtocolRejection>();
   const [health, setHealth] = useState("Connecting to RPC");
+  const [lastRead, setLastRead] = useState<number>();
+  const [stale, setStale] = useState(false);
   const [released, setReleased] = useState("");
   const [transition, setTransition] = useState<CapitalTransition>();
   const [revocations, setRevocations] = useState<
@@ -49,6 +53,8 @@ export function useConsole() {
     Awaited<ReturnType<typeof connectWallet>>["adapter"] | undefined
   >(undefined);
   const client = useMemo(
+    // MandateClient's constructor retains this observer; only async send invokes it.
+    // eslint-disable-next-line react-hooks/refs
     () => new MandateClient(wallet, reportTransaction),
     [wallet, reportTransaction],
   );
@@ -173,6 +179,8 @@ export function useConsole() {
       }
       snapshotRef.current = next;
       setSnapshot(next);
+      setLastRead(Date.now());
+      setStale(false);
       setSelected((old) =>
         old && next.nodes.some((n) => n.publicKey.toBase58() === old)
           ? old
@@ -191,10 +199,12 @@ export function useConsole() {
           .sort((a, b) => (b.occurredAt ?? 0) - (a.occurredAt ?? 0))
           .slice(0, 30);
       });
+      return next;
     },
     [client, organization],
   );
   useEffect(() => {
+    if (!enabled) return;
     let cancelled = false;
     const update = async () => {
       try {
@@ -202,7 +212,10 @@ export function useConsole() {
         if (!cancelled) setHealth(`LIVE · slot ${slot.toLocaleString()}`);
         if (organization && !cancelled) await refresh();
       } catch (e) {
-        if (!cancelled) setHealth(e instanceof Error ? e.message : String(e));
+        if (!cancelled) {
+          setHealth(e instanceof Error ? e.message : String(e));
+          setStale(true);
+        }
       }
     };
     if (!busy) void update();
@@ -213,7 +226,7 @@ export function useConsole() {
       cancelled = true;
       clearInterval(timer);
     };
-  }, [client, organization, refresh, busy]);
+  }, [client, organization, refresh, busy, enabled]);
   async function run(
     title: string,
     task: () => Promise<string | void>,
@@ -222,6 +235,7 @@ export function useConsole() {
     if (busy) return;
     setBusy(title);
     setTransaction({ phase: "working", title });
+    progressRef.current = {};
     setError("");
     setRejection(undefined);
     let confirmedSignature: string | undefined;
@@ -249,12 +263,29 @@ export function useConsole() {
           ? `Transaction confirmed; account refresh failed: ${message}`
           : message,
       );
+      if (
+        confirmedSignature ||
+        title === "Refresh accounts" ||
+        title === "Read organization"
+      )
+        setStale(true);
       if (!confirmedSignature)
         setTransaction({
-          phase: "error",
+          phase:
+            !(e instanceof ProtocolRejection) &&
+            progressRef.current.phase === "pending"
+              ? "unknown"
+              : "error",
           title,
-          message,
-          signature: e instanceof ProtocolRejection ? e.signature : undefined,
+          message:
+            !(e instanceof ProtocolRejection) &&
+            progressRef.current.phase === "pending"
+              ? `Confirmation unknown. Check the submitted signature before retrying. ${message}`
+              : message,
+          signature:
+            e instanceof ProtocolRejection
+              ? e.signature
+              : progressRef.current.signature,
         });
       if (e instanceof ProtocolRejection) {
         setRejection(e);
@@ -335,6 +366,12 @@ export function useConsole() {
     setDemo(undefined);
   }
   const node = snapshot?.nodes.find((n) => n.publicKey.toBase58() === selected);
+  const refreshAccounts = useCallback(
+    async (address?: string) => {
+      await refresh(address);
+    },
+    [refresh],
+  );
   return {
     wallet,
     demo,
@@ -346,7 +383,9 @@ export function useConsole() {
     activity,
     busy,
     transaction,
-    canTransact: health.startsWith("LIVE"),
+    canTransact: enabled && !stale && health.startsWith("LIVE"),
+    lastRead,
+    stale,
     error,
     rejection,
     health,
@@ -354,7 +393,8 @@ export function useConsole() {
     transition,
     revocations,
     setReleased,
-    refresh,
+    refresh: refreshAccounts,
+    revalidate: refresh,
     run,
     forSigner,
     initialize,
