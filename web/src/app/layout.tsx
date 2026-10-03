@@ -3,6 +3,7 @@ import "@fontsource-variable/geist";
 import "@fontsource-variable/geist-mono";
 import WorldShell from "@/components/world-shell";
 import "./globals.css";
+import "./experience.css";
 
 export const metadata: Metadata = {
   title: "MandateOS — Recursive capital authority",

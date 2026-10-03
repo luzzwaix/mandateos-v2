@@ -1,5 +1,9 @@
 import { expect } from "chai";
 import {
+  authorityLayout,
+  authorityLedger,
+} from "../web/src/lib/authority-layout";
+import {
   amount,
   authorityPath,
   descendantsOf,
@@ -16,6 +20,40 @@ const u = (n: number) => BigInt(n) * 1_000_000n;
 const node = (m: ReturnType<typeof genesis>, id: string) =>
   m.nodes.find((n) => n.id === id)!;
 describe("Authority Chamber accounting and state selectors", () => {
+  it("keeps each mobile subtree contiguous before and after a revoke", () => {
+    const before = authorityLedger(genesis()).map((n) => n.id);
+    expect(before).deep.eq([
+      "treasury",
+      "research",
+      "data",
+      "scraper",
+      "analysis",
+      "operations",
+    ]);
+    expect(
+      authorityLedger(revokeDemo(genesis(), "research")).map((n) => n.id),
+    ).deep.eq(before);
+  });
+  it("keeps canonical node coordinates through construction, trace and revoke", () => {
+    const before = authorityLayout(genesis(), 900);
+    for (let count = 1; count <= 6; count++) {
+      const partial = authorityLayout(genesis(count), 900);
+      for (const n of genesis(count).nodes)
+        expect(partial.points.get(n.id)).deep.eq(before.points.get(n.id));
+    }
+    const after = authorityLayout(revokeDemo(genesis(), "research"), 900);
+    expect([...after.points]).deep.eq([...before.points]);
+    expect(after.points.get("operations")).deep.eq(
+      before.points.get("operations"),
+    );
+  });
+  it("fits the canonical last descendant inside the shared field", () => {
+    const layout = authorityLayout(genesis(), 900);
+    expect(layout.points.get("scraper")!.y + 86).lessThan(layout.height);
+    expect(layout.points.get("operations")!.x - 92).greaterThan(
+      layout.points.get("analysis")!.x + 92 + 16,
+    );
+  });
   it("balances the fixture without adding nested envelopes", () => {
     const m = genesis();
     expect(m.nodes.reduce((total, n) => total + n.available, 0n)).eq(m.vault);

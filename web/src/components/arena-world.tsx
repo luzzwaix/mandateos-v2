@@ -1,11 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { ArrowRight, Check, RotateCcw } from "lucide-react";
 import { amount, fundDemoMission, settleDemoMission } from "@/lib/authority";
 import { short, toBaseUnits } from "@/lib/solana/pdas";
 import { ConnectionInstrument, useWorld } from "./world-shell";
 import { EvidenceLedger } from "./command-world";
+import CapitalNumber from "./capital-number";
 
 export default function ArenaWorld() {
   const w = useWorld();
@@ -16,6 +17,9 @@ export default function ArenaWorld() {
     [result, setResult] = useState(""),
     [creating, setCreating] = useState(false),
     [error, setError] = useState("");
+  const [previewResult, setPreviewResult] = useState(false);
+  const executionField = useRef<HTMLDivElement>(null);
+  const pulseTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const s = w.live.snapshot,
     bounty =
       s?.bounties.find((b) => b.publicKey.toBase58() === selected) ??
@@ -48,6 +52,39 @@ export default function ArenaWorld() {
     funded = status !== "ready",
     settled = status === "settled";
   const root = w.model?.nodes.find((n) => n.id === w.model?.root);
+  const previousStatus = useRef(status);
+  useEffect(() => {
+    const before = previousStatus.current;
+    previousStatus.current = status;
+    clearTimeout(pulseTimer.current);
+    if (
+      before !== status &&
+      !document.hidden &&
+      !matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      const event =
+        status === "funded"
+          ? "fund"
+          : status === "settled"
+            ? "settle"
+            : undefined;
+      if (executionField.current && event)
+        executionField.current.dataset.pulse = event;
+      pulseTimer.current = setTimeout(
+        () => {
+          if (executionField.current)
+            delete executionField.current.dataset.pulse;
+        },
+        event === "settle" ? 800 : 420,
+      );
+    } else if (executionField.current)
+      delete executionField.current.dataset.pulse;
+    return () => clearTimeout(pulseTimer.current);
+  }, [status]);
+  function choose(index: number) {
+    setCandidate(String.fromCharCode(65 + index));
+    setPreviewResult(true);
+  }
   const hasOwner = !!(
     w.live.demo ||
     w.live.wallet?.publicKey.equals(
@@ -155,8 +192,11 @@ export default function ArenaWorld() {
         <button
           className="text-button"
           onClick={() => {
-            if (w.demo) w.reset();
-            else setCreating(!creating);
+            if (w.demo) {
+              w.reset();
+              setPreviewResult(false);
+              setError("");
+            } else setCreating(!creating);
           }}
         >
           {w.demo ? <RotateCcw size={13} /> : null}
@@ -182,7 +222,11 @@ export default function ArenaWorld() {
             )}
             <span>CAPITAL → MISSION ← SUBMISSIONS → VERIFIER</span>
           </div>
-          <div className={`mission-stage ${settled ? "resolved" : ""}`}>
+          <div
+            ref={executionField}
+            className={`mission-stage ${status} ${settled ? "resolved" : ""} ${submitted && previewResult && !settled ? "verifier-preview" : ""}`}
+            data-testid="mission-execution-field"
+          >
             <svg
               className="mission-channels"
               viewBox="0 0 1000 530"
@@ -203,41 +247,63 @@ export default function ArenaWorld() {
               </defs>
               <path
                 className={`funding-channel ${funded ? "active" : ""}`}
-                d="M220 78H460Q480 78 480 98V201"
+                d="M220 78H460Q480 78 480 98V142"
                 markerEnd="url(#mission-arrow)"
               />
+              {funded && (
+                <path
+                  className="financial-pulse funding-pulse"
+                  d="M220 78H460Q480 78 480 98V142"
+                  pathLength="1"
+                />
+              )}
               {submitted &&
                 names.map((name, i) => (
                   <path
                     key={name}
-                    className={`submission-channel ${settled && name === winner ? "selected" : ""}`}
-                    d={`M220 ${236 + i * 96}H258Q275 ${236 + i * 96} 305 ${266 + i * 30}L370 ${296 + i * 20}`}
+                    className={`submission-channel ${settled && name === winner ? "selected" : !settled && previewResult && i === candidate.charCodeAt(0) - 65 ? "preview-route" : ""}`}
+                    d={`M570 ${344 + i * 62}H${700 + i * 14}V260H780`}
+                    pathLength="1"
                     markerEnd="url(#mission-arrow)"
                   />
                 ))}
-              <path
-                className={`settlement-channel ${settled ? "active" : ""}`}
-                d="M650 305H771M830 305H994"
-                markerEnd="url(#mission-arrow)"
-              />
+              {submitted && (
+                <path
+                  className={`verification-channel ${settled ? "active" : previewResult ? "preview-route" : ""}`}
+                  d="M650 220H780"
+                />
+              )}
+              {settled && (
+                <path
+                  className="settlement-channel active"
+                  d="M830 260H945V342H780V358"
+                  markerEnd="url(#mission-arrow)"
+                />
+              )}
+              {settled && (
+                <path
+                  className="financial-pulse payout-pulse"
+                  d="M830 260H945V342H780V358"
+                  pathLength="1"
+                />
+              )}
             </svg>
             <div className="capital-source">
               <span>CAPITAL SOURCE</span>
               <strong>Treasury</strong>
               <b>
-                {funded
-                  ? amount(value, w.model!.decimals)
-                  : root
-                    ? amount(root.available, w.model!.decimals)
-                    : "Unavailable"}{" "}
+                {root ? (
+                  <CapitalNumber
+                    value={root.available}
+                    decimals={w.model!.decimals}
+                  />
+                ) : (
+                  "Unavailable"
+                )}{" "}
                 <small>{w.model?.unit}</small>
               </b>
               <small>
-                {settled
-                  ? "SETTLED FUNDING"
-                  : funded
-                    ? "MISSION RESERVATION"
-                    : "ROOT AVAILABLE"}
+                ROOT AVAILABLE
                 {w.demo ? " · DEMO" : ""}
               </small>
             </div>
@@ -255,9 +321,11 @@ export default function ArenaWorld() {
                   key={name}
                   className={`contender ${settled && name === winner ? "winner" : ""} ${!submitted ? "empty" : ""}`}
                   disabled={!w.demo || !submitted || settled}
-                  onClick={() => setCandidate(String.fromCharCode(65 + i))}
+                  onClick={() => choose(i)}
                   aria-pressed={
-                    w.demo && candidate === String.fromCharCode(65 + i)
+                    w.demo &&
+                    previewResult &&
+                    candidate === String.fromCharCode(65 + i)
                   }
                 >
                   <span>
@@ -268,7 +336,9 @@ export default function ArenaWorld() {
                     {settled && name === winner
                       ? "SELECTED RESULT"
                       : submitted
-                        ? "SUBMISSION COMMITMENT"
+                        ? previewResult && i === candidate.charCodeAt(0) - 65
+                          ? "VERIFIER PREVIEW · UNPAID"
+                          : "SUBMISSION COMMITMENT"
                         : "NOT YET SUBMITTED"}
                   </small>
                 </button>
@@ -307,12 +377,17 @@ export default function ArenaWorld() {
             </div>
             <div className="verifier-gate">
               <span>VERIFIER</span>
-              <i />
+              <div className="gate-aperture" aria-hidden="true">
+                <i />
+                <i />
+              </div>
               <strong>
                 {settled
                   ? `${winner} selected`
                   : submitted
-                    ? "Decision required"
+                    ? previewResult
+                      ? `Preview ${candidate}`
+                      : "Decision required"
                     : "Awaiting entries"}
               </strong>
               <small>
@@ -323,6 +398,19 @@ export default function ArenaWorld() {
                     : "TRUSTED SIGNER"}
               </small>
             </div>
+            {settled && (
+              <div className="mission-outcome">
+                <span>
+                  {w.demo ? "SIMULATED ATOMIC RECEIPT" : "OBSERVED SETTLEMENT"}
+                </span>
+                <strong>{winner}</strong>
+                <b>
+                  {amount(value, w.model!.decimals)}{" "}
+                  <small>{w.model?.unit}</small>
+                </b>
+                <small>Verified + settled in one operation</small>
+              </div>
+            )}
           </div>
           <div className="mission-mobile">
             <div>
@@ -353,21 +441,30 @@ export default function ArenaWorld() {
                 <button
                   key={name}
                   disabled={!w.demo || settled}
-                  className={name === winner ? "winner" : ""}
-                  onClick={() => setCandidate(String.fromCharCode(65 + i))}
+                  className={settled && name === winner ? "winner" : ""}
+                  onClick={() => choose(i)}
+                  aria-pressed={
+                    previewResult && candidate === String.fromCharCode(65 + i)
+                  }
                 >
                   {name}
                   <small>
                     {settled && name === winner
                       ? "SELECTED / SETTLED"
-                      : "SUBMISSION → VERIFIER"}
+                      : previewResult && i === candidate.charCodeAt(0) - 65
+                        ? "PREVIEW · UNPAID"
+                        : "SUBMISSION → VERIFIER"}
                   </small>
                 </button>
               ))}
             <div>
               <small>VERIFIER GATE</small>
               <strong>
-                {settled ? `${winner} selected` : "Trusted verifier decides"}
+                {settled
+                  ? `${winner} · verified + settled atomically`
+                  : previewResult
+                    ? `Preview ${candidate} · not paid`
+                    : "Trusted verifier decides"}
               </strong>
             </div>
           </div>

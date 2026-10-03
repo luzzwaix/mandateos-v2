@@ -1,10 +1,17 @@
 "use client";
-import { useId, type CSSProperties } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
+import CapitalNumber from "./capital-number";
+import {
+  authorityLayout,
+  authorityLedger,
+  PLATE_WIDTH,
+  ROOT_WIDTH,
+  ROOT_HEIGHT,
+} from "@/lib/authority-layout";
 import {
   amount,
   authorityPath,
   descendantsOf,
-  genesis,
   statusOf,
   type AuthorityModel,
 } from "@/lib/authority";
@@ -46,6 +53,7 @@ export default function AuthorityTree({
   onSelect,
   preview,
   trace = false,
+  traceEpoch = 0,
   spatial = false,
   grant,
   cascade,
@@ -56,37 +64,30 @@ export default function AuthorityTree({
   onSelect: (id: string) => void;
   preview?: string;
   trace?: boolean;
+  traceEpoch?: number;
   spatial?: boolean;
   grant?: string;
   cascade?: number;
   collapsed?: string[];
 }) {
   const marker = useId().replace(/:/g, "");
-  const canonical = model.nodes.every((n) =>
-    genesis().nodes.some((demo) => demo.id === n.id),
-  );
-  const layoutNodes = canonical ? genesis().nodes : model.nodes;
-  const points = new Map<string, { x: number; y: number }>();
-  let leaf = 0;
-  const visited = new Set<string>();
-  const visit = (id: string): number => {
-    if (visited.has(id)) return leaf;
-    visited.add(id);
-    const node = layoutNodes.find((n) => n.id === id)!;
-    const children = layoutNodes.filter((n) => n.parent === id);
-    const xs = children.map((n) => visit(n.id));
-    const x = xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : leaf++;
-    points.set(id, { x, y: 40 + node.depth * 132 });
-    return x;
-  };
-  if (layoutNodes.some((n) => n.id === model.root)) visit(model.root);
-  for (const [id, p] of points)
-    points.set(id, {
-      x: leaf > 1 ? 190 + p.x * (540 / (leaf - 1)) : 450,
-      y: p.y,
-    });
-  const height = Math.max(530, ...model.nodes.map((n) => n.depth * 132 + 150));
-  const path = new Set(authorityPath(model, selected).map((n) => n.id));
+  const surface = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(900);
+  useEffect(() => {
+    if (!surface.current) return;
+    const observer = new ResizeObserver(([entry]) =>
+      setWidth(entry.contentRect.width),
+    );
+    observer.observe(surface.current);
+    return () => observer.disconnect();
+  }, []);
+  const { canonical, points, height } = authorityLayout(model, width);
+  const nodeWidth = spatial && width < 600 ? 146 : PLATE_WIDTH;
+  const rootWidth = spatial && width < 600 ? 200 : ROOT_WIDTH;
+  const ancestry = authorityPath(model, selected);
+  const path = new Set(ancestry.map((n) => n.id));
+  const brokenDepth =
+    model.nodes.find((n) => n.local === "revoked")?.depth ?? 0;
   const dimUnrelated =
     trace && !preview && !model.nodes.some((n) => n.local === "revoked");
   const affected = new Set(
@@ -96,20 +97,30 @@ export default function AuthorityTree({
     collapsed.flatMap((id) => descendantsOf(model, id).map((n) => n.id)),
   );
   const visible = model.nodes.filter((n) => !hidden.has(n.id));
-  const impact = [...affected]
-    .map((id) => points.get(id))
-    .filter((p): p is { x: number; y: number } => !!p);
+  const impact = [...affected].flatMap((id) => {
+    const p = points.get(id);
+    return p
+      ? [{ ...p, half: (id === model.root ? rootWidth : nodeWidth) / 2 }]
+      : [];
+  });
   const bounds = impact.length
     ? {
-        left: Math.min(...impact.map((p) => p.x)) - 118,
-        right: Math.max(...impact.map((p) => p.x)) + 118,
-        top: Math.min(...impact.map((p) => p.y)) - 20,
-        bottom: Math.max(...impact.map((p) => p.y)) + 110,
+        left: Math.min(...impact.map((p) => p.x - p.half)) - 16,
+        right: Math.max(...impact.map((p) => p.x + p.half)) + 16,
+        top: Math.min(...impact.map((p) => p.y)) - 16,
+        bottom: Math.max(...impact.map((p) => p.y)) + 102,
       }
     : null;
   return (
     <div
+      ref={surface}
       className={`authority-surface ${spatial ? "spatial" : ""} ${trace ? "tracing" : ""}`}
+      style={
+        {
+          "--node-width": `${nodeWidth}px`,
+          "--root-width": `${rootWidth}px`,
+        } as CSSProperties
+      }
     >
       <div
         className="authority-map"
@@ -117,16 +128,9 @@ export default function AuthorityTree({
         role="group"
         aria-label="Capital authority hierarchy"
       >
-        {spatial && (
-          <div className="structural-planes" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </div>
-        )}
         <svg
           className="authority-channels"
-          viewBox={`0 0 900 ${height}`}
+          viewBox={`0 0 ${width} ${height}`}
           preserveAspectRatio="none"
           aria-hidden="true"
         >
@@ -145,9 +149,10 @@ export default function AuthorityTree({
           {bounds && (
             <g className="impact-contour">
               <path
+                pathLength="1"
                 d={`M${bounds.left + 18} ${bounds.top}H${bounds.right}V${bounds.bottom}H${bounds.left}V${bounds.top}H${bounds.left + 18}`}
               />
-              <text x={bounds.left + 14} y={bounds.bottom - 12}>
+              <text x={bounds.left + 14} y={bounds.bottom + 16}>
                 AFFECTED BRANCH · PREVIEW
               </text>
             </g>
@@ -158,21 +163,30 @@ export default function AuthorityTree({
               const p = points.get(n.id),
                 parent = points.get(n.parent!);
               if (!p || !parent) return null;
-              const d = `M${parent.x} ${parent.y + 86}V${p.y - 25}H${p.x}V${p.y - 3}`;
+              const d = `M${parent.x} ${parent.y + (n.parent === model.root ? ROOT_HEIGHT : 86)}V${p.y - 20}H${p.x}V${p.y - 3}`;
               const status = statusOf(model, n.id);
               return (
                 <g
                   key={n.id}
-                  className={`authority-link ${status} ${dimUnrelated && !path.has(n.id) ? "untraced" : ""} ${cascade && status !== "active" ? "cut-propagation" : ""}`}
+                  className={`authority-link ${status} ${trace && path.has(n.id) ? "on-path" : ""} ${grant === n.id ? "constructing" : ""} ${dimUnrelated && !path.has(n.id) ? "untraced" : ""} ${cascade && status !== "active" ? "cut-propagation" : ""}`}
                   style={
                     {
-                      "--delay": `${Math.min(300, n.depth * 80)}ms`,
+                      "--delay": `${Math.min(640, Math.max(0, n.depth - brokenDepth) * 80)}ms`,
+                      "--trace-delay": `${Math.max(0, ancestry.length - 1 - n.depth) * 70}ms`,
                     } as CSSProperties
                   }
                 >
-                  <path d={d} markerEnd={`url(#${marker})`} />
+                  <path d={d} pathLength="1" markerEnd={`url(#${marker})`} />
+                  {trace && path.has(n.id) && (
+                    <path
+                      key={`${selected}-${traceEpoch}`}
+                      className="trace-resolve"
+                      d={d}
+                      pathLength="1"
+                    />
+                  )}
                   {grant === n.id && (
-                    <path className="grant-travel" d={d} pathLength="100" />
+                    <path className="grant-travel" d={d} pathLength="1" />
                   )}
                   {status === "revoked" && (
                     <g
@@ -201,9 +215,9 @@ export default function AuthorityTree({
               className={`mandate-plate ${n.id === model.root ? "root-plate" : ""} ${status} ${n.id === selected ? "selected" : ""} ${dimUnrelated && !path.has(n.id) ? "untraced" : ""} ${affected.has(n.id) ? "preview-affected" : ""} ${grant === n.id ? "grant-resolve" : ""} ${cascade && status !== "active" ? "cut-propagation" : ""}`}
               style={
                 {
-                  left: `${p.x / 9}%`,
+                  left: p.x,
                   top: p.y,
-                  "--delay": `${Math.min(300, n.depth * 80)}ms`,
+                  "--delay": `${Math.min(640, Math.max(0, n.depth - brokenDepth) * 80)}ms`,
                 } as CSSProperties
               }
               onClick={() => onSelect(n.id)}
@@ -213,7 +227,7 @@ export default function AuthorityTree({
                 <span className="depth">D{n.depth}</span>
               </div>
               <div className="capital-rail">
-                <span>{amount(n.available, model.decimals)}</span>
+                <CapitalNumber value={n.available} decimals={model.decimals} />
                 <small>{model.unit}</small>
               </div>
               <div className="plate-foot">
@@ -223,7 +237,9 @@ export default function AuthorityTree({
                     ? `LOCAL ${n.local.toUpperCase()}`
                     : n.id === model.root
                       ? "ROOT AVAILABLE"
-                      : "OWN AVAILABLE"}
+                      : status === "revoked"
+                        ? "LOCAL REVOKED"
+                        : "OWN AVAILABLE"}
                 </span>
               </div>
               {collapsed.includes(n.id) && (
@@ -246,32 +262,34 @@ export default function AuthorityTree({
           )}
       </div>
       <div className="mobile-mandates" aria-label="Nested authority ledger">
-        {visible.map((n) => {
-          const status = statusOf(model, n.id);
-          return (
-            <button
-              key={n.id}
-              aria-label={`Select ${n.name} in ledger`}
-              aria-pressed={n.id === selected}
-              className={`mandate-row ${status} ${affected.has(n.id) ? "preview-affected" : ""} ${n.id === selected ? "selected" : ""}`}
-              style={{ "--depth": n.depth } as CSSProperties}
-              onClick={() => onSelect(n.id)}
-            >
-              <span className="ledger-identity">
-                <small>D{n.depth}</small>
-                <strong>{n.name}</strong>
-                <span className={`status ${status}`}>{status}</span>
-              </span>
-              <span className="ledger-amount">
-                {amount(n.available, model.decimals)}
-                <small>
-                  {model.unit} ·{" "}
-                  {status === "blocked" ? "HISTORICAL" : "AVAILABLE"}
-                </small>
-              </span>
-            </button>
-          );
-        })}
+        {authorityLedger(model)
+          .filter((n) => !hidden.has(n.id))
+          .map((n) => {
+            const status = statusOf(model, n.id);
+            return (
+              <button
+                key={n.id}
+                aria-label={`Select ${n.name} in ledger`}
+                aria-pressed={n.id === selected}
+                className={`mandate-row ${status} ${affected.has(n.id) ? "preview-affected" : ""} ${n.id === selected ? "selected" : ""}`}
+                style={{ "--depth": n.depth } as CSSProperties}
+                onClick={() => onSelect(n.id)}
+              >
+                <span className="ledger-identity">
+                  <small>D{n.depth}</small>
+                  <strong>{n.name}</strong>
+                  <span className={`status ${status}`}>{status}</span>
+                </span>
+                <span className="ledger-amount">
+                  {amount(n.available, model.decimals)}
+                  <small>
+                    {model.unit} ·{" "}
+                    {status === "blocked" ? "HISTORICAL" : "AVAILABLE"}
+                  </small>
+                </span>
+              </button>
+            );
+          })}
       </div>
       <div className="tree-key">
         <span>

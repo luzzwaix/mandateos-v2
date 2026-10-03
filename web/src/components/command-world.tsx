@@ -23,6 +23,7 @@ import {
 import { short, toBaseUnits } from "@/lib/solana/pdas";
 import { explorer } from "@/lib/solana/program";
 import AuthorityTree, { AuthorityTrace } from "./authority-tree";
+import CapitalNumber from "./capital-number";
 import { useWorld, ConnectionInstrument } from "./world-shell";
 
 export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
@@ -304,14 +305,18 @@ export default function CommandWorld() {
         <div>
           <small>ROOT AVAILABLE</small>
           <strong>
-            {root ? amount(root.available, model.decimals) : "Unavailable"}
+            {root ? (
+              <CapitalNumber value={root.available} decimals={model.decimals} />
+            ) : (
+              "Unavailable"
+            )}
             <span>{model.unit}</span>
           </strong>
         </div>
         <div>
           <small>SHARED VAULT</small>
           <strong>
-            {amount(model.vault, model.decimals)}
+            <CapitalNumber value={model.vault} decimals={model.decimals} />
             <span>{model.unit}</span>
           </strong>
         </div>
@@ -631,7 +636,10 @@ export default function CommandWorld() {
                   <div className="instrument-capital">
                     <span>AVAILABLE</span>
                     <strong>
-                      {amount(node.available, model.decimals)}{" "}
+                      <CapitalNumber
+                        value={node.available}
+                        decimals={model.decimals}
+                      />{" "}
                       <small>{model.unit}</small>
                     </strong>
                   </div>
