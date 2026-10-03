@@ -1,4 +1,52 @@
 /* Authority Chamber: semantic motion, one world, exact operating density. */
+@keyframes director-plaque {
+  from {
+    clip-path: inset(0 0 100%);
+    translate: 0 -6px;
+  }
+  to {
+    clip-path: inset(0);
+    translate: 0 0;
+  }
+}
+@keyframes director-channel-loss {
+  from {
+    stroke: var(--mint);
+    stroke-dasharray: none;
+  }
+  to {
+    stroke: var(--muted);
+    stroke-dasharray: 4 6;
+  }
+}
+@keyframes director-face-loss {
+  from {
+    border-color: var(--mint);
+  }
+  to {
+    border-color: var(--red);
+  }
+}
+@keyframes director-rim-loss {
+  from {
+    stroke: var(--mint);
+    stroke-dasharray: none;
+  }
+  to {
+    stroke: var(--muted);
+    stroke-dasharray: 3 4;
+  }
+}
+@keyframes volume-retract {
+  from {
+    opacity: 0.5;
+    stroke-dashoffset: 0;
+  }
+  to {
+    opacity: 0;
+    stroke-dashoffset: 1;
+  }
+}
 :root {
   --ease-settle: cubic-bezier(0.2, 0, 0, 1);
   --ease-enter: cubic-bezier(0.05, 0.7, 0.1, 1);
@@ -7,7 +55,7 @@
   --motion-plate: 240ms;
   --motion-impact: 360ms;
   --motion-focus: 420ms;
-  --motion-plane: 560ms;
+  --motion-plane: 520ms;
   --motion-cut: 120ms;
   --motion-amount: 240ms;
   --motion-selection: 140ms;
@@ -1139,4 +1187,219 @@
     clip-path: none;
     translate: none;
   }
+}
+/* DOM director: flat controls registered to one projected structure. */
+.story-object > .directed-world {
+  transform: none;
+  overflow: visible;
+}
+.story-object:has(.directed-world) {
+  min-height: 570px;
+}
+.story-object .directed-world .authority-map {
+  height: 570px !important;
+}
+.story-object .directed-world .authority-channels {
+  overflow: visible;
+}
+.depth-rim {
+  fill: none;
+  stroke: var(--mint);
+  stroke-width: 1;
+  opacity: 0.6;
+}
+.depth-rim.blocked,
+.depth-rim.revoked {
+  stroke: var(--muted);
+  stroke-dasharray: 3 4;
+}
+.story-object .authority-link.constructing > path:first-child {
+  animation: authority-construct 280ms linear 80ms both;
+}
+.story-object .authority-link .grant-travel {
+  animation: authority-travel 280ms linear 80ms both;
+}
+.story-object .grant-resolve {
+  animation: director-plaque 240ms var(--ease-enter) 360ms both;
+}
+.story-object .authority-link.revoked > path:first-child,
+.story-object .authority-break circle {
+  animation-duration: 90ms;
+}
+.story-object .authority-link.blocked.cut-propagation > path:first-child {
+  animation: director-channel-loss 120ms linear var(--delay) both;
+}
+.story-object .mandate-plate.cut-propagation {
+  animation: director-face-loss 120ms linear var(--delay) both;
+}
+.story-object .depth-rim.cut-propagation {
+  animation: director-rim-loss 120ms linear var(--delay) both;
+}
+.story-object .mandate-plate.cut-propagation .status {
+  animation: none;
+}
+.story-object .untraced {
+  opacity: 1;
+}
+.story-object .authority-link.untraced > path {
+  opacity: 0.7;
+}
+.impact-volume path {
+  fill: none;
+  stroke: var(--copper);
+  stroke-width: 1;
+  opacity: 0.9;
+}
+.impact-volume .volume-front {
+  animation: authority-construct 220ms linear both;
+}
+.impact-volume .volume-back {
+  animation: authority-construct 160ms linear 220ms both;
+  opacity: 0.5;
+}
+.impact-volume.volume-retract .volume-front {
+  animation: none;
+  stroke-dasharray: 3 6;
+  opacity: 0.45;
+}
+.impact-volume.volume-retract .volume-back {
+  animation: volume-retract 160ms linear 460ms both;
+}
+.plane-change .story-object,
+.plane-change .story-object .authority-map,
+.plane-change .story-object .authority-surface {
+  overflow: visible;
+}
+.flattening-world .impact-volume,
+.flattening-world .sibling-note {
+  visibility: hidden;
+}
+.flattening-world .mandate-plate {
+  animation: none !important;
+}
+.mission-stage .contender {
+  position: relative;
+  isolation: isolate;
+}
+.mission-stage .contender:not(.empty):before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--plate);
+  border-bottom: 1px solid var(--line);
+  transform: perspective(1100px) rotateX(8deg);
+  transform-origin: 50% 100%;
+}
+.mission-stage .contender:nth-child(2):before {
+  inset: -3px 0 3px 12px;
+}
+.mission-stage .contender:nth-child(3):before {
+  inset: -6px 0 6px 24px;
+}
+.mission-stage .contender[aria-pressed="true"]:before {
+  border-color: var(--copper);
+}
+.mission-stage .contender.winner:before {
+  border-color: var(--brass);
+}
+@media (max-width: 767px) {
+  .story-object .authority-link.constructing > path:first-child,
+  .story-object .authority-link .grant-travel {
+    animation-duration: 220ms;
+    animation-delay: 0ms;
+  }
+  .story-object .grant-resolve {
+    animation-delay: 220ms;
+    animation-duration: 100ms;
+  }
+  .mission-stage .contender:not(.empty):before {
+    transform: none;
+    inset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-object .depth-rim,
+  .story-object .impact-volume .volume-back {
+    display: none;
+  }
+  .story-object .authority-link > path,
+  .story-object .grant-resolve,
+  .story-object .cut-propagation,
+  .story-object .mandate-plate.cut-propagation,
+  .story-object .authority-break circle,
+  .impact-volume path {
+    animation: none !important;
+  }
+  .mission-stage .contender:not(.empty):before {
+    transform: none;
+    inset: 0;
+  }
+}
+.story-object > .directed-world {
+  transition: translate 450ms var(--ease-settle);
+  translate: 0 0;
+}
+.story-object > .directed-world.focus-world {
+  translate: 10px -8px;
+}
+.volume-exit path {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-object > .directed-world {
+    translate: 0 0;
+    transition: none;
+  }
+}
+.mandate-plate.root-plate .capital-rail {
+  font-size: 28px;
+}
+.mandate-plate .depth,
+.mandate-plate .plate-foot {
+  font-size: 12px;
+}
+.story-object .authority-link.blocked > path:first-child {
+  stroke: var(--muted);
+  stroke-dasharray: 4 6;
+}
+.story-object .authority-link.blocked.on-path > .trace-resolve {
+  stroke: var(--red);
+}
+@keyframes ledger-construction {
+  from {
+    scale: 1 0;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+@media (max-width: 767px) {
+  .constructing-row {
+    position: relative;
+  }
+  .constructing-row:before {
+    content: "";
+    position: absolute;
+    left: calc(6px + var(--depth) * 20px);
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--mint);
+    transform-origin: 50% 0;
+    animation: ledger-construction 220ms linear both;
+  }
+  .constructing-row > span {
+    animation: director-plaque 100ms linear 220ms both;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .constructing-row > span,
+  .constructing-row:before {
+    animation: none !important;
+  }
+}
+/* Small fields use flat geometry so the Research volume cannot hit its sibling. */
+.story-object > .authority-surface {
+  transform: none;
 }

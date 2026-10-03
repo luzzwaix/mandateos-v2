@@ -170,6 +170,7 @@ export default function StoryWorld() {
     cancel();
     setBuilding(true);
     const last = all ? 6 : count + 1;
+    const step = innerWidth < 768 ? 360 : 720;
     const create = (n: number) => {
       const before = genesis(n - 1),
         after = genesis(n),
@@ -189,13 +190,13 @@ export default function StoryWorld() {
     }
     create(count + 1);
     for (let n = count + 2; n <= last; n++)
-      later(() => create(n), (n - count - 1) * 400);
+      later(() => create(n), (n - count - 1) * step);
     later(
       () => {
         setBuilding(false);
         setGrant(undefined);
       },
-      (last - count - 1) * 400 + 640,
+      (last - count - 1) * step + step,
     );
   }
   function select(id: string) {
@@ -216,8 +217,7 @@ export default function StoryWorld() {
     setSettled(revokeDemo(model, "research"));
     setPreview(false);
     setSelected("scraper");
-    setTrace(true);
-    setTraceEpoch((old) => old + 1);
+    setTrace(false);
     setDelta("Research capacity released to Treasury · shared vault unchanged");
     navigate(4);
   }
@@ -411,6 +411,8 @@ export default function StoryWorld() {
               selected={selected}
               onSelect={select}
               spatial
+              director
+              flatten={flattening}
               grant={grant}
               preview={preview ? "research" : undefined}
               trace={trace}

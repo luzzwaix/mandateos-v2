@@ -2,6 +2,11 @@
 import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import CapitalNumber from "./capital-number";
 import {
+  authorityWorldView,
+  authorityVolume,
+  plaqueRim,
+} from "@/lib/authority-world-view";
+import {
   authorityLayout,
   authorityLedger,
   PLATE_WIDTH,
@@ -55,6 +60,8 @@ export default function AuthorityTree({
   trace = false,
   traceEpoch = 0,
   spatial = false,
+  director = false,
+  flatten = false,
   grant,
   cascade,
   collapsed = [],
@@ -66,6 +73,8 @@ export default function AuthorityTree({
   trace?: boolean;
   traceEpoch?: number;
   spatial?: boolean;
+  director?: boolean;
+  flatten?: boolean;
   grant?: string;
   cascade?: number;
   collapsed?: string[];
@@ -73,15 +82,30 @@ export default function AuthorityTree({
   const marker = useId().replace(/:/g, "");
   const surface = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(900);
+  const [reduceMotion, setReduceMotion] = useState(false);
   useEffect(() => {
     if (!surface.current) return;
-    const observer = new ResizeObserver(([entry]) =>
-      setWidth(entry.contentRect.width),
-    );
+    const media = matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReduceMotion(media.matches);
+    const observer = new ResizeObserver(([entry]) => {
+      setWidth(entry.contentRect.width);
+      sync();
+    });
     observer.observe(surface.current);
-    return () => observer.disconnect();
+    media.addEventListener("change", sync);
+    return () => {
+      observer.disconnect();
+      media.removeEventListener("change", sync);
+    };
   }, []);
-  const { canonical, points, height } = authorityLayout(model, width);
+  const flat = authorityLayout(model, width);
+  const directed = director && flat.canonical && width >= 780 && !reduceMotion;
+  const view = authorityWorldView(model, selected, width, directed ? 1 : 0);
+  const { canonical } = flat;
+  const points = directed
+    ? new Map(view.nodes.map((p) => [p.node.id, p]))
+    : flat.points;
+  const height = directed ? Math.max(570, view.height + 20) : flat.height;
   const nodeWidth = spatial && width < 600 ? 146 : PLATE_WIDTH;
   const rootWidth = spatial && width < 600 ? 200 : ROOT_WIDTH;
   const ancestry = authorityPath(model, selected);
@@ -111,10 +135,131 @@ export default function AuthorityTree({
         bottom: Math.max(...impact.map((p) => p.y)) + 102,
       }
     : null;
+  const volumeId =
+    preview ??
+    (cascade && director
+      ? model.nodes.find((n) => n.local === "revoked")?.id
+      : undefined);
+  const volume = volumeId ? authorityVolume(view, volumeId) : [];
+  // One bounded director clock, imperative projection only. The same mounted
+  // labels and SVG paths interpolate to Command's actual viewport recipe.
+  useEffect(() => {
+    const root = surface.current;
+    if (!root || !director || !flat.canonical || width < 560 || !flatten)
+      return;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const box = root.getBoundingClientRect();
+    const rail = innerWidth >= 1280 ? 144 : 0;
+    const inspector = innerWidth >= 1280 ? 336 : 320;
+    const fieldWidth = innerWidth - rail - inspector;
+    const command = authorityLayout(model, fieldWidth);
+    let frame: number;
+    let start: number | undefined;
+    const restore = () => {
+      for (const p of view.nodes) {
+        const label = root.querySelector<HTMLElement>(
+          `[data-testid="node-${p.node.id}"]`,
+        );
+        if (label) {
+          label.style.left = `${p.x}px`;
+          label.style.top = `${p.y}px`;
+        }
+        root
+          .querySelector(`[data-rim="${p.node.id}"]`)
+          ?.setAttribute("d", plaqueRim(p));
+        if (p.node.parent) {
+          const parent = view.nodes.find(
+            (item) => item.node.id === p.node.parent,
+          )!;
+          const path = `M${parent.x} ${parent.y + parent.height}V${p.y - 20}H${p.x}V${p.y - 3}`;
+          root
+            .querySelectorAll(`[data-edge="${p.node.id}"] > path`)
+            .forEach((edge) => edge.setAttribute("d", path));
+        }
+      }
+    };
+    const tick = (now: number) => {
+      start ??= now;
+      const t =
+        reduced || document.hidden ? 1 : Math.min(1, (now - start) / 520);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const projected = new Map(
+        view.nodes.map((p) => {
+          const end = command.points.get(p.node.id)!;
+          const x = p.x + (rail + end.x - box.left - p.x) * ease;
+          const y = p.y + (176 + end.y - box.top - p.y) * ease;
+          const label = root.querySelector<HTMLElement>(
+            `[data-testid="node-${p.node.id}"]`,
+          );
+          if (label) {
+            label.style.left = `${x}px`;
+            label.style.top = `${y}px`;
+          }
+          root
+            .querySelector(`[data-rim="${p.node.id}"]`)
+            ?.setAttribute("d", plaqueRim({ ...p, x, y }, 1 - ease));
+          return [p.node.id, { ...p, x, y }] as const;
+        }),
+      );
+      for (const p of projected.values()) {
+        if (!p.node.parent) continue;
+        const parent = projected.get(p.node.parent)!;
+        const path = `M${parent.x} ${parent.y + parent.height}V${p.y - 20}H${p.x}V${p.y - 3}`;
+        root
+          .querySelectorAll(`[data-edge="${p.node.id}"] > path`)
+          .forEach((edge) => edge.setAttribute("d", path));
+      }
+      root.dataset.flatten = String(t);
+      if (t < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(frame);
+      restore();
+      delete root.dataset.flatten;
+    };
+    // Read-only view is deterministic from these inputs; no per-frame React state.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flatten, directed, width, model, selected, director, flat.canonical]);
+  const previousVolume = useRef<SVGGElement | null>(null);
+  useEffect(() => {
+    const root = surface.current;
+    if (!root) return;
+    if (preview) {
+      previousVolume.current =
+        (root
+          .querySelector<SVGGElement>(".impact-volume")
+          ?.cloneNode(true) as SVGGElement) ?? null;
+      return;
+    }
+    const volume = previousVolume.current;
+    previousVolume.current = null;
+    if (
+      !volume ||
+      cascade ||
+      matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
+    volume.classList.add("volume-exit");
+    root.querySelector(".authority-channels")?.appendChild(volume);
+    const animation = volume.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: 180,
+      fill: "forwards",
+    });
+    animation.finished.then(
+      () => volume.remove(),
+      () => volume.remove(),
+    );
+    return () => {
+      animation.cancel();
+      volume.remove();
+    };
+  }, [preview, cascade]);
   return (
     <div
       ref={surface}
-      className={`authority-surface ${spatial ? "spatial" : ""} ${trace ? "tracing" : ""}`}
+      className={`authority-surface ${spatial ? "spatial" : ""} ${trace ? "tracing" : ""} ${directed ? "directed-world" : ""} ${directed && trace && !preview && !cascade ? "focus-world" : ""} ${flatten ? "flattening-world" : ""}`}
+      data-depth={directed ? "orthographic" : "flat"}
       style={
         {
           "--node-width": `${nodeWidth}px`,
@@ -146,7 +291,7 @@ export default function AuthorityTree({
               <path d="M0 0L5 2.5L0 5" fill="context-stroke" />
             </marker>
           </defs>
-          {bounds && (
+          {bounds && !directed && (
             <g className="impact-contour">
               <path
                 pathLength="1"
@@ -157,6 +302,38 @@ export default function AuthorityTree({
               </text>
             </g>
           )}
+          {directed && volume.length > 0 && (
+            <g
+              className={`impact-contour impact-volume ${cascade && !preview ? "volume-retract" : ""}`}
+            >
+              {volume.map((d, i) => (
+                <path
+                  key={i}
+                  d={d}
+                  pathLength="1"
+                  className={i < 4 ? "volume-front" : "volume-back"}
+                />
+              ))}
+            </g>
+          )}
+          {directed &&
+            visible.map((n) => {
+              const p = view.nodes.find((p) => p.node.id === n.id)!;
+              return (
+                <path
+                  key={n.id}
+                  data-rim={n.id}
+                  data-depth={p.z}
+                  d={plaqueRim(p)}
+                  className={`depth-rim ${statusOf(model, n.id)} ${grant === n.id ? "grant-resolve" : ""} ${cascade && statusOf(model, n.id) !== "active" ? "cut-propagation" : ""}`}
+                  style={
+                    {
+                      "--delay": `${n.depth === 1 ? 0 : n.depth === 2 ? 220 : 340}ms`,
+                    } as CSSProperties
+                  }
+                />
+              );
+            })}
           {visible
             .filter((n) => n.parent)
             .map((n) => {
@@ -168,10 +345,11 @@ export default function AuthorityTree({
               return (
                 <g
                   key={n.id}
+                  data-edge={n.id}
                   className={`authority-link ${status} ${trace && path.has(n.id) ? "on-path" : ""} ${grant === n.id ? "constructing" : ""} ${dimUnrelated && !path.has(n.id) ? "untraced" : ""} ${cascade && status !== "active" ? "cut-propagation" : ""}`}
                   style={
                     {
-                      "--delay": `${Math.min(640, Math.max(0, n.depth - brokenDepth) * 80)}ms`,
+                      "--delay": `${director ? (n.depth === brokenDepth ? 90 : n.depth === brokenDepth + 1 ? 220 : 340) : Math.min(640, Math.max(0, n.depth - brokenDepth) * 80)}ms`,
                       "--trace-delay": `${Math.max(0, ancestry.length - 1 - n.depth) * 70}ms`,
                     } as CSSProperties
                   }
@@ -217,7 +395,7 @@ export default function AuthorityTree({
                 {
                   left: p.x,
                   top: p.y,
-                  "--delay": `${Math.min(640, Math.max(0, n.depth - brokenDepth) * 80)}ms`,
+                  "--delay": `${director ? (n.depth === brokenDepth ? 0 : n.depth === brokenDepth + 1 ? 220 : 340) : Math.min(640, Math.max(0, n.depth - brokenDepth) * 80)}ms`,
                 } as CSSProperties
               }
               onClick={() => onSelect(n.id)}
@@ -227,7 +405,11 @@ export default function AuthorityTree({
                 <span className="depth">D{n.depth}</span>
               </div>
               <div className="capital-rail">
-                <CapitalNumber value={n.available} decimals={model.decimals} />
+                <CapitalNumber
+                  value={n.available}
+                  decimals={model.decimals}
+                  animate={!director || !cascade}
+                />
                 <small>{model.unit}</small>
               </div>
               <div className="plate-foot">
@@ -271,7 +453,7 @@ export default function AuthorityTree({
                 key={n.id}
                 aria-label={`Select ${n.name} in ledger`}
                 aria-pressed={n.id === selected}
-                className={`mandate-row ${status} ${affected.has(n.id) ? "preview-affected" : ""} ${n.id === selected ? "selected" : ""}`}
+                className={`mandate-row ${status} ${affected.has(n.id) ? "preview-affected" : ""} ${n.id === selected ? "selected" : ""} ${director && grant === n.id ? "constructing-row" : ""}`}
                 style={{ "--depth": n.depth } as CSSProperties}
                 onClick={() => onSelect(n.id)}
               >

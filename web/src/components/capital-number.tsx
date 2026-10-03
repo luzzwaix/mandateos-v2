@@ -7,9 +7,11 @@ import { amount } from "@/lib/authority";
 export default function CapitalNumber({
   value,
   decimals,
+  animate = true,
 }: {
   value: BN | bigint | string;
   decimals: number;
+  animate?: boolean;
 }) {
   const target = BigInt(value.toString());
   const previous = useRef(target);
@@ -23,7 +25,7 @@ export default function CapitalNumber({
     ).matches;
     const element = digits.current;
     if (!element) return;
-    if (reduced || document.hidden) {
+    if (!animate || reduced || document.hidden) {
       element.textContent = amount(target, decimals);
       return;
     }
@@ -34,8 +36,20 @@ export default function CapitalNumber({
       const ease = BigInt(
         Math.round((1 - Math.pow(1 - progress, 3)) * 1_000_000),
       );
+      // Keep intermediate digits at the observed asset precision. Never
+      // expose arbitrary micro-unit fractions from the easing calculation.
+      const precision = Math.min(
+        decimals,
+        Math.max(
+          2,
+          amount(from, decimals).split(".")[1]?.length ?? 0,
+          amount(target, decimals).split(".")[1]?.length ?? 0,
+        ),
+      );
+      const quantum = 10n ** BigInt(Math.max(0, decimals - precision));
+      const raw = from + ((target - from) * ease) / 1_000_000n;
       element.textContent = amount(
-        from + ((target - from) * ease) / 1_000_000n,
+        progress === 1 ? target : (raw / quantum) * quantum,
         decimals,
       );
       if (progress < 1) animation = requestAnimationFrame(tick);
@@ -45,7 +59,7 @@ export default function CapitalNumber({
       cancelAnimationFrame(animation);
       element.textContent = amount(target, decimals);
     };
-  }, [target, decimals]);
+  }, [target, decimals, animate]);
   return (
     <span className="capital-number">
       <span className="sr-only">{amount(target, decimals)}</span>
