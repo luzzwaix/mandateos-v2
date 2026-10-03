@@ -8,7 +8,10 @@ import assert from "node:assert/strict";
 const executable = process.env.AGENT_BROWSER_BIN ?? "agent-browser";
 const pass = process.argv[2] ?? "pass1";
 const url = process.argv[3] ?? "http://127.0.0.1:3001";
-const output = resolve("artifacts", "surgical-polish", pass);
+const output = resolve(
+  process.env.QA_EVIDENCE_ROOT ?? "artifacts/surgical-polish",
+  pass,
+);
 mkdirSync(output, { recursive: true });
 const findings = [];
 function run(...args) {
@@ -115,13 +118,15 @@ evaluate(
 if (process.env.QA_CAPTURE_TRACE === "1") run("trace", "start");
 instrument();
 record("story", () => {
+  wait(3000);
   click("Delegate authority");
   wait(660);
   shot("delegate");
   click("02 Recursion");
   click("Build demo hierarchy");
-  wait(2000);
+  wait(3100);
   shot("recursion");
+  wait(1800);
   check(
     "same Root node survived construction",
     "window.qaRoot===document.querySelector('[data-testid=node-treasury]')",
@@ -134,6 +139,7 @@ record("story", () => {
   click("Trace Scraper");
   wait(300);
   shot("trace");
+  wait(1600);
   check(
     "complete Scraper ancestry",
     "[...document.querySelectorAll('.story-instrument .authority-trace li strong')].map(e=>e.textContent).join(',')==='Treasury,Research,Data,Scraper'",
@@ -142,6 +148,7 @@ record("story", () => {
   click("Preview Research revoke");
   wait(400);
   shot("blast");
+  wait(1600);
   check(
     "preview never blocks authority",
     "document.querySelectorAll('.authority-map .mandate-plate.active').length===6",
@@ -152,6 +159,7 @@ record("story", () => {
   click("Confirm demo revoke");
   wait(650);
   shot("cascade");
+  wait(1600);
   check(
     "Operations DOM and geometry unchanged",
     "window.qaOperations===document.querySelector('[data-testid=node-operations]') && window.qaOperationGeometry===JSON.stringify(window.qaOperations.getBoundingClientRect().toJSON()) && window.qaOperations.classList.contains('active')",
@@ -177,16 +185,22 @@ record("story", () => {
     "one persistent Story object survived all chapters",
     "window.qaWorld===document.querySelector('[data-testid=persistent-authority-world]')",
   );
+  evaluate(`window.qaFlatGeometry=null;
+    const sample=()=>{const field=document.querySelector('.authority-surface');
+      if(field?.dataset.flatten==='1')window.qaFlatGeometry=[...document.querySelectorAll('.mandate-plate')].map(e=>({id:e.dataset.testid,rect:e.getBoundingClientRect().toJSON()}));
+      if(document.querySelector('.persistent-story'))requestAnimationFrame(sample);};requestAnimationFrame(sample);true`);
+  click("Open Command");
+  wait(700);
+  shot("command");
 });
 const perf = evaluate(
   "window.qaRunning=false; ({samples:qaFrames.length,p95:qaFrames.sort((a,b)=>a-b)[Math.floor(qaFrames.length*.95)],max:Math.max(...qaFrames),longTasks:qaLongTasks,cls:qaShifts.reduce((a,b)=>a+b,0),userAgent:navigator.userAgent,hardwareConcurrency:navigator.hardwareConcurrency})",
 );
 findings.push({ name: "desktop observed frame intervals", perf });
-record("handoff", () => {
-  click("Open Command");
-  wait(700);
-  shot("command");
-});
+check(
+  "flatten endpoints match mounted Command labels",
+  "window.qaFlatGeometry?.length===6 && window.qaFlatGeometry.every(p=>{const e=document.querySelector('[data-testid=\"'+p.id+'\"]');const r=e?.getBoundingClientRect();return r && Math.abs(r.x-p.rect.x)<1 && Math.abs(r.y-p.rect.y)<1 && Math.abs(r.width-p.rect.width)<1 && Math.abs(r.height-p.rect.height)<1})",
+);
 if (process.env.QA_CAPTURE_TRACE === "1")
   run("trace", "stop", resolve(output, "story-handoff.trace.json"));
 check(

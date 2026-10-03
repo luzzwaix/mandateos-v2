@@ -16,7 +16,7 @@
   }
   to {
     stroke: var(--muted);
-    stroke-dasharray: 4 6;
+    stroke-dasharray: 0.03 0.05;
   }
 }
 @keyframes director-face-loss {
@@ -844,7 +844,7 @@
     stroke: var(--mint);
   }
   to {
-    stroke-dasharray: 5 5;
+    stroke-dasharray: 0.03 0.05;
     stroke: var(--red);
   }
 }
@@ -1259,7 +1259,7 @@
 }
 .impact-volume.volume-retract .volume-front {
   animation: none;
-  stroke-dasharray: 3 6;
+  stroke-dasharray: 0.03 0.05;
   opacity: 0.45;
 }
 .impact-volume.volume-retract .volume-back {
@@ -1288,7 +1288,8 @@
   z-index: -1;
   background: var(--plate);
   border-bottom: 1px solid var(--line);
-  transform: perspective(1100px) rotateX(8deg);
+  transform: perspective(1100px) rotateX(8deg)
+    translateZ(var(--lane-depth, 0px));
   transform-origin: 50% 100%;
 }
 .mission-stage .contender:nth-child(2):before {
@@ -1361,7 +1362,7 @@
 }
 .story-object .authority-link.blocked > path:first-child {
   stroke: var(--muted);
-  stroke-dasharray: 4 6;
+  stroke-dasharray: 0.03 0.05;
 }
 .story-object .authority-link.blocked.on-path > .trace-resolve {
   stroke: var(--red);
@@ -1402,4 +1403,10 @@
 /* Small fields use flat geometry so the Research volume cannot hit its sibling. */
 .story-object > .authority-surface {
   transform: none;
+}
+
+.mandate-plate .status,
+.mandate-plate .plate-foot > span:last-child,
+.mandate-plate .capital-rail small {
+  font-size: 12px;
 }

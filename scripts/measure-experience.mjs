@@ -7,7 +7,8 @@ import { resolve } from "node:path";
 const executable = process.env.AGENT_BROWSER_BIN ?? "agent-browser";
 const session = process.env.QA_BROWSER_SESSION ?? "mandate-polish";
 const url = process.argv[2] ?? "http://127.0.0.1:3000";
-const output = resolve("artifacts/surgical-polish/performance.json");
+const evidence = process.env.QA_EVIDENCE_ROOT ?? "artifacts/surgical-polish";
+const output = resolve(evidence, "performance.json");
 const run = (...args) => {
   const result = spawnSync(executable, ["--session", session, ...args], {
     encoding: "utf8",
@@ -54,7 +55,7 @@ for (const [label, width, height, animate] of [
     run("wait", "660");
     click("02 Recursion");
     click("Build demo hierarchy");
-    run("wait", "2000");
+    run("wait", "3100");
     click("03 Trace");
     click("Trace Scraper");
     run("wait", "300");
@@ -72,6 +73,6 @@ for (const [label, width, height, animate] of [
     `${label}: p95 ${result.p95.toFixed(2)}ms / CLS ${result.cls.toFixed(4)}`,
   );
 }
-mkdirSync(resolve("artifacts/surgical-polish"), { recursive: true });
+mkdirSync(resolve(evidence), { recursive: true });
 writeFileSync(output, JSON.stringify(measurements, null, 2));
 run("close");

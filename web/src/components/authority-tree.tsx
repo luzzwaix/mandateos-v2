@@ -349,7 +349,7 @@ export default function AuthorityTree({
                   className={`authority-link ${status} ${trace && path.has(n.id) ? "on-path" : ""} ${grant === n.id ? "constructing" : ""} ${dimUnrelated && !path.has(n.id) ? "untraced" : ""} ${cascade && status !== "active" ? "cut-propagation" : ""}`}
                   style={
                     {
-                      "--delay": `${director ? (n.depth === brokenDepth ? 90 : n.depth === brokenDepth + 1 ? 220 : 340) : Math.min(640, Math.max(0, n.depth - brokenDepth) * 80)}ms`,
+                      "--delay": `${director ? (n.depth <= brokenDepth + 1 ? 90 : 340) : Math.min(640, Math.max(0, n.depth - brokenDepth) * 80)}ms`,
                       "--trace-delay": `${Math.max(0, ancestry.length - 1 - n.depth) * 70}ms`,
                     } as CSSProperties
                   }
