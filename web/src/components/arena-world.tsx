@@ -8,6 +8,7 @@ import { ConnectionInstrument, useWorld } from "./world-shell";
 import { EvidenceLedger } from "./command-world";
 import CapitalNumber from "./capital-number";
 import SpatialLoom from "./spatial-loom";
+import NativeExecution from "./native-execution";
 
 export default function ArenaWorld() {
   const w = useWorld();
@@ -434,62 +435,30 @@ export default function ArenaWorld() {
               </div>
             )}
           </div>
-          <div className="mission-mobile">
-            <div>
-              <small>CAPITAL SOURCE</small>
-              <strong>
-                Treasury →{" "}
-                {funded
-                  ? `${amount(value, w.model!.decimals)} ${w.model?.unit}`
-                  : "available authority"}
-              </strong>
-            </div>
-            <div>
-              <small>
-                {w.demo
-                  ? "MISSION M-001"
-                  : bounty
-                    ? `BOUNTY ${bounty.account.bountyId.toString()}`
-                    : "NO FUNDED MISSION"}
-              </small>
-              <h2>{w.demo ? "Research brief" : "Funded task"}</h2>
-              <span>
-                {status.toUpperCase()}
-                {w.demo ? " · SIMULATED" : ""}
-              </span>
-            </div>
-            {submitted &&
-              names.map((name, i) => (
-                <button
-                  key={name}
-                  disabled={!w.demo || settled}
-                  className={settled && name === winner ? "winner" : ""}
-                  onClick={() => choose(i)}
-                  aria-pressed={
-                    previewResult && candidate === String.fromCharCode(65 + i)
-                  }
-                >
-                  {name}
-                  <small>
-                    {settled && name === winner
-                      ? "SELECTED / SETTLED"
-                      : previewResult && i === candidate.charCodeAt(0) - 65
-                        ? "PREVIEW · UNPAID"
-                        : "SUBMISSION → VERIFIER"}
-                  </small>
-                </button>
-              ))}
-            <div>
-              <small>VERIFIER GATE</small>
-              <strong>
-                {settled
-                  ? `${winner} · verified + settled atomically`
-                  : previewResult
-                    ? `Preview ${candidate} · not paid`
-                    : "Trusted verifier decides"}
-              </strong>
-            </div>
-          </div>
+          <NativeExecution
+            funded={funded}
+            submitted={submitted}
+            settled={settled}
+            preview={previewResult}
+            candidate={candidate}
+            winner={winner}
+            names={names}
+            title={
+              w.demo
+                ? "Research brief"
+                : bounty
+                  ? `Funded task ${bounty.account.bountyId.toString()}`
+                  : "Awaiting funded work"
+            }
+            bounty={
+              w.demo || bounty
+                ? amount(value, w.model!.decimals)
+                : "Unavailable"
+            }
+            unit={w.model?.unit}
+            demo={w.demo}
+            choose={choose}
+          />
           <div className="arena-method">
             <span>
               {settled ? "SETTLEMENT RESOLVED" : "EXECUTION SEQUENCE"}

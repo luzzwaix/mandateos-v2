@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-04T09:19:01.235Z",
+  "generatedAt": "2026-10-04T17:22:50Z",
   "title": "Design System: MandateOS V2",
   "extensions": {
     "colorMeta": {
@@ -216,7 +216,7 @@
       },
       "relation": {
         "role": "neutral",
-        "displayName": "Relation",
+        "displayName": "Flat Relation",
         "tonalRamp": [
           "oklch(15% 0.0097 179.44)",
           "oklch(26% 0.0097 179.44)",
@@ -231,282 +231,275 @@
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Display",
-        "purpose": "Arrival thesis; authored line breaks and horizontal compression."
+        "displayName": "Arrival Display",
+        "purpose": "Anton thesis with authored line breaks and mint emphasis."
       },
       "headline": {
-        "displayName": "Headline",
-        "purpose": "General Story display heading; chapter-specific overrides remain in code."
+        "displayName": "Story Headline",
+        "purpose": "Condensed chapter statement; exact size adapts by chapter and viewport."
       },
       "arena-headline": {
-        "displayName": "Arena Headline",
-        "purpose": "Arena editorial title."
+        "displayName": "Arena Thesis",
+        "purpose": "The recurring work-to-capital statement."
       },
       "inspector-title": {
-        "displayName": "Inspector Title",
-        "purpose": "Selected mandate in the flat bone Command inspector."
+        "displayName": "Selected Mandate",
+        "purpose": "Geist title inside the flat financial inspector."
       },
       "body": {
-        "displayName": "Body",
-        "purpose": "Shared operating text."
+        "displayName": "Interface Body",
+        "purpose": "Readable operating text."
       },
       "story-support": {
         "displayName": "Story Support",
-        "purpose": "Short Story support copy."
+        "purpose": "Bounded supporting paragraph beside the cast subject."
       },
       "control": {
         "displayName": "Control",
-        "purpose": "Native operating controls."
+        "purpose": "Native action labels."
       },
       "label": {
-        "displayName": "Label",
-        "purpose": "Status, provenance, and compact exact metadata."
+        "displayName": "Mono Label",
+        "purpose": "Status, metadata, and provenance."
       },
       "spatial-label": {
-        "displayName": "Spatial Label",
-        "purpose": "Native uppercase labels projected beside spatial frames."
+        "displayName": "Projected Name",
+        "purpose": "Uppercase mandate name beside desktop geometry."
       },
       "input": {
-        "displayName": "Input",
-        "purpose": "Native transaction field values."
+        "displayName": "Financial Input",
+        "purpose": "Native mono field values."
       },
       "amount-flat": {
-        "displayName": "Amount Flat",
-        "purpose": "Exact mono available amount in the flat tree."
+        "displayName": "Flat Amount",
+        "purpose": "Own available capital in the native Command tree."
       },
       "amount-inspector": {
-        "displayName": "Amount Inspector",
-        "purpose": "Exact mono amount in the Command inspector."
+        "displayName": "Inspector Amount",
+        "purpose": "Primary available amount in the full-motion desktop financial instrument."
+      },
+      "amount-spatial": {
+        "displayName": "Projected Amount",
+        "purpose": "Exact formatted amount in native desktop annotations."
       }
     },
     "shadows": [
       {
-        "name": "spatial-annotation",
-        "value": "0 2px 12px #080b0b",
-        "purpose": "Native spatial text readability; removed during flattening."
-      },
-      {
-        "name": "wallet-overlay",
+        "name": "wallet-popover",
         "value": "0 16px 40px #0005",
-        "purpose": "Temporary inherited wallet popover; persistent inspection remains flat."
+        "purpose": "Inherited floating wallet surface; the financial inspector and spatial annotations have no decorative shadows."
       }
     ],
     "motion": [
       {
-        "name": "ease-settle",
-        "value": "cubic-bezier(0.2, 0, 0, 1)",
-        "purpose": "Existing CSS state resolution."
+        "name": "genesis",
+        "value": "850ms",
+        "purpose": "Initial delegation event."
       },
       {
-        "name": "ease-enter",
-        "value": "cubic-bezier(0.05, 0.7, 0.1, 1)",
-        "purpose": "Existing CSS construction entry."
+        "name": "recursion",
+        "value": "550ms",
+        "purpose": "Each ordered recursive delegation; relation grows in first 48%, child resolves after 50%, native label appears after 85%."
       },
       {
-        "name": "ease-exit",
-        "value": "cubic-bezier(0.3, 0, 0.8, 0.15)",
-        "purpose": "Existing CSS authority-cut feedback."
+        "name": "trace",
+        "value": "650ms",
+        "purpose": "One bounded traversal of selected ancestry; no idle pulse."
+      },
+      {
+        "name": "impact",
+        "value": "500ms",
+        "purpose": "Copper perimeter volume draw while authority remains active."
+      },
+      {
+        "name": "cascade",
+        "value": "1100ms",
+        "purpose": "Research relation cut and power loss through its descendants."
+      },
+      {
+        "name": "depth-interval",
+        "value": "200ms",
+        "purpose": "Depth delay in the power-loss sequence; Operations retains its coordinates and authority."
+      },
+      {
+        "name": "plane",
+        "value": "850ms",
+        "purpose": "Cast depth collapses toward native Command relation anchors."
+      },
+      {
+        "name": "settlement",
+        "value": "850ms",
+        "purpose": "Distinct funding, submission, verifier, and receipt routes resolve in Arena."
+      },
+      {
+        "name": "resolve-ease",
+        "value": "1 - (1 - clamp(t))^4",
+        "purpose": "Clamped quartic event progress used by the scene director."
       },
       {
         "name": "selection",
         "value": "140ms",
-        "purpose": "Existing control background/border feedback."
+        "purpose": "Native button background and border-color state transitions."
       },
       {
-        "name": "receipt",
-        "value": "200ms",
-        "purpose": "Existing evidence entry feedback."
+        "name": "button-press",
+        "value": "80ms",
+        "purpose": "Native one-pixel downward active press."
       },
       {
-        "name": "scene-resolve",
-        "value": "650ms",
-        "purpose": "Default bounded authority scene event."
-      },
-      {
-        "name": "scene-trace",
-        "value": "800ms",
-        "purpose": "Bounded native-label/camera/ancestry trace."
-      },
-      {
-        "name": "scene-preview",
-        "value": "950ms",
-        "purpose": "Copper all-active impact volume resolve."
-      },
-      {
-        "name": "scene-grant",
-        "value": "1150ms",
-        "purpose": "Single grant; full construction uses the existing 450ms step override."
-      },
-      {
-        "name": "scene-cascade",
-        "value": "1400ms",
-        "purpose": "Local cut and descendant effective-authority response."
-      },
-      {
-        "name": "scene-plane",
-        "value": "1150ms",
-        "purpose": "Perspective compression to the shared flat operating anchors."
-      },
-      {
-        "name": "arena-ready",
-        "value": "400ms",
-        "purpose": "Ready Arena scene resolve."
-      },
-      {
-        "name": "arena-funded",
-        "value": "900ms",
-        "purpose": "Funded/submitted Arena scene resolve."
-      },
-      {
-        "name": "arena-settlement",
-        "value": "1300ms",
-        "purpose": "Atomic settled winner resolves through the gate and brass endpoint."
-      },
-      {
-        "name": "scene-render-budget",
-        "value": "renderScale: 0.5–1",
-        "purpose": "RenderBudget observes only already-requested demand frames; it never starts an idle loop. After four valid interframe intervals (8–180ms), an upper median above (36ms) lowers only the Canvas render scale through (1 → 0.75 → 0.5625 → 0.5), within the limit (0.5–1). Scale persists in local presentation state across model-prop updates. On a weak GPU, reduced quality affects only rendered geometry; native DOM/SVG retains full CSS resolution, and camera, projection, and authority state remain unchanged. Each event still stops requesting frames when its step resolves."
+        "name": "amount-delta",
+        "value": "240ms",
+        "purpose": "CapitalNumber interpolates between observed balances with a cubic ease and native asset precision; initial load and reduced motion show the target immediately."
       }
     ],
     "breakpoints": [
       {
-        "name": "compact-desktop",
+        "name": "compact-desktop-max",
         "value": "1399px"
       },
       {
-        "name": "native-ledger",
-        "value": "1099px"
+        "name": "spatial-min",
+        "value": "1100px"
       },
       {
-        "name": "mobile",
+        "name": "mobile-shell-max",
         "value": "767px"
       }
     ]
   },
   "components": [
     {
-      "name": "Bone Story Action",
+      "name": "Bone Action",
       "kind": "button",
       "refersTo": "button-bone",
-      "description": "Primary flat Story action; fixture simulation is identified in its surrounding content.",
-      "html": "<button class=\"ds-button-bone\" type=\"button\">Delegate Research<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
-      "css": ".ds-button-bone{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;font:500 13px/1.5 var(--sans,\"Geist Variable\",sans-serif);border-radius:0;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;background:var(--bone,#ede9df);color:#17201d;border:1px solid var(--bone,#ede9df);padding:0 20px;min-width:190px;min-height:56px;}.ds-button-bone:hover:not(:disabled){background:#fffaf0;}.ds-button-bone:focus-visible{outline:2px solid var(--bone,#ede9df);outline-offset:4px;}.ds-button-bone:active:not(:disabled){translate:0 1px;}.ds-button-bone:disabled{opacity:.5;cursor:not-allowed;}"
+      "description": "Primary Story action on graphite; flat bone with an inline arrow.",
+      "html": "<button class=\"ds-bone-action\">Delegate Research <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
+      "css": ".ds-bone-action{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;border-radius:0;min-height:48px;padding:12px 16px;font:500 13px/1.5 \"Geist Variable\",sans-serif;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;min-height:56px;min-width:190px;padding:0 20px;background:var(--bone,#ede9df);color:var(--inspector-ink,#17201d);border:1px solid var(--bone,#ede9df)}.ds-bone-action:hover:not(:disabled){background:#fffaf0}.ds-bone-action:active:not(:disabled){translate:0 1px}.ds-bone-action:focus-visible{outline:2px solid var(--mint,#b9efdb);outline-offset:5px;}.ds-bone-action:disabled{opacity:.5;cursor:not-allowed}"
     },
     {
-      "name": "Dark Operating Button",
+      "name": "Dark Financial Action",
       "kind": "button",
       "refersTo": "button-dark",
-      "description": "Existing dark operating action used on financial inspection.",
-      "html": "<button class=\"ds-button-dark\" type=\"button\">Confirm<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
-      "css": ".ds-button-dark{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;font:500 13px/1.5 var(--sans,\"Geist Variable\",sans-serif);border-radius:0;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;background:var(--ink,#1b2420);color:var(--bone,#ede9df);border:1px solid var(--ink,#1b2420);padding:12px 16px;min-height:48px;}.ds-button-dark:hover:not(:disabled){background:#34453a;}.ds-button-dark:focus-visible{outline:2px solid #2c6655;outline-offset:4px;}.ds-button-dark:active:not(:disabled){translate:0 1px;}.ds-button-dark:disabled{opacity:.5;cursor:not-allowed;}"
+      "description": "A compact execution action on the bone financial surface.",
+      "html": "<button class=\"ds-dark-action\">Delegate <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
+      "css": ".ds-dark-action{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;border-radius:0;min-height:48px;padding:12px 16px;font:500 13px/1.5 \"Geist Variable\",sans-serif;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;background:var(--ink,#1b2420);color:var(--bone,#ede9df);border:1px solid var(--ink,#1b2420)}.ds-dark-action:hover:not(:disabled){background:#34453a}.ds-dark-action:active:not(:disabled){translate:0 1px}.ds-dark-action:focus-visible{outline:2px solid #2c6655;outline-offset:5px;}.ds-dark-action:disabled{opacity:.5;cursor:not-allowed}"
     },
     {
-      "name": "Subtle Button",
+      "name": "Subtle Action",
       "kind": "button",
       "refersTo": "button-subtle",
-      "description": "Transparent secondary action; text inherits its operating surface.",
-      "html": "<button class=\"ds-button-subtle\" type=\"button\">Cancel<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
-      "css": ".ds-button-subtle{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;font:500 13px/1.5 var(--sans,\"Geist Variable\",sans-serif);border-radius:0;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;background:transparent;color:var(--text,#f6f5ef);border:1px solid #647369;padding:12px 16px;min-height:48px;}.ds-button-subtle:hover:not(:disabled){background:#ffffff08;}.ds-button-subtle:focus-visible{outline:2px solid var(--bone,#ede9df);outline-offset:4px;}.ds-button-subtle:active:not(:disabled){translate:0 1px;}.ds-button-subtle:disabled{opacity:.5;cursor:not-allowed;}"
+      "description": "Secondary action with transparent fill and a muted structural border.",
+      "html": "<button class=\"ds-subtle-action\">Cancel preview</button>",
+      "css": ".ds-subtle-action{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;border-radius:0;min-height:48px;padding:12px 16px;font:500 13px/1.5 \"Geist Variable\",sans-serif;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;background:transparent;color:var(--text,#f6f5ef);border:1px solid #647369}.ds-subtle-action:hover:not(:disabled){background:#ffffff08}.ds-subtle-action:active:not(:disabled){translate:0 1px}.ds-subtle-action:focus-visible{outline:2px solid var(--mint,#b9efdb);outline-offset:5px;}.ds-subtle-action:disabled{opacity:.5;cursor:not-allowed}"
     },
     {
-      "name": "Copper Revoke Button",
+      "name": "Copper Confirmation",
       "kind": "button",
       "refersTo": "button-copper",
-      "description": "Existing consequence confirmation control on bone.",
-      "html": "<button class=\"ds-button-copper\" type=\"button\">Confirm revoke<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
-      "css": ".ds-button-copper{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;font:500 13px/1.5 var(--sans,\"Geist Variable\",sans-serif);border-radius:0;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;background:var(--copper-ink,#81502b);color:var(--bone,#ede9df);border:1px solid var(--copper-ink,#81502b);padding:12px 16px;min-height:48px;}.ds-button-copper:hover:not(:disabled){background:#6a3d20;}.ds-button-copper:focus-visible{outline:2px solid #2c6655;outline-offset:4px;}.ds-button-copper:active:not(:disabled){translate:0 1px;}.ds-button-copper:disabled{opacity:.5;cursor:not-allowed;}"
+      "description": "Consequence confirmation using copper ink and bone text.",
+      "html": "<button class=\"ds-copper-action\">Confirm demo revoke <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
+      "css": ".ds-copper-action{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;border-radius:0;min-height:48px;padding:12px 16px;font:500 13px/1.5 \"Geist Variable\",sans-serif;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;background:var(--copper-ink,#81502b);color:var(--bone,#ede9df);border:1px solid var(--copper-ink,#81502b)}.ds-copper-action:hover:not(:disabled){background:#6a3d20}.ds-copper-action:active:not(:disabled){translate:0 1px}.ds-copper-action:focus-visible{outline:2px solid var(--mint,#b9efdb);outline-offset:5px;}.ds-copper-action:disabled{opacity:.5;cursor:not-allowed}"
     },
     {
-      "name": "Revoke Preview Divider",
+      "name": "Revoke Review Row",
       "kind": "button",
       "refersTo": "button-outline-copper",
-      "description": "Native Command divider action opens the impact preview without changing mandate status.",
-      "html": "<button class=\"ds-button-preview\" type=\"button\">Preview revoke<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
-      "css": ".ds-button-preview{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;font:500 13px/1.5 var(--sans,\"Geist Variable\",sans-serif);border-radius:0;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;background:transparent;color:var(--copper-ink,#81502b);border:0;border-top:1px solid #c4c6bc;padding:18px 0;min-height:48px;width:100%;}.ds-button-preview:hover:not(:disabled){background:#d69b681a;}.ds-button-preview:focus-visible{outline:2px solid #2c6655;outline-offset:4px;}.ds-button-preview:active:not(:disabled){translate:0 1px;}.ds-button-preview:disabled{opacity:.5;cursor:not-allowed;}"
+      "description": "The Command inspector's transparent, top-divided consequence control.",
+      "html": "<button class=\"ds-revoke-review\">Preview revoke <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
+      "css": ".ds-revoke-review{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;border-radius:0;min-height:48px;padding:12px 16px;font:500 13px/1.5 \"Geist Variable\",sans-serif;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;width:100%;padding:18px 0;border:0;border-top:1px solid #c4c6bc;background:transparent;color:var(--copper-ink,#81502b)}.ds-revoke-review:hover:not(:disabled){background:#d69b681a}.ds-revoke-review:active:not(:disabled){translate:0 1px}.ds-revoke-review:focus-visible{outline:2px solid #2c6655;outline-offset:5px;}.ds-revoke-review:disabled{opacity:.5;cursor:not-allowed}"
     },
     {
-      "name": "Native Transaction Field",
+      "name": "Financial Field",
       "kind": "input",
       "refersTo": "input-field",
-      "description": "Mono field on bone; this specimen contains a demo amount and has no transaction behavior.",
-      "html": "<label class=\"ds-field\">Amount<input class=\"ds-field-input\" value=\"100\" aria-label=\"Amount\" inputmode=\"decimal\"/></label>",
-      "css": ".ds-field{display:flex;flex-direction:column;gap:6px;background:var(--bone,#ede9df);color:var(--ink,#1b2420);padding:16px;font:11px var(--sans,\"Geist Variable\",sans-serif);}.ds-field-input{width:100%;min-height:42px;border:1px solid #8c9a8b;border-radius:3px;background:transparent;color:inherit;padding:10px 12px;font:12px var(--mono,\"Geist Mono Variable\",monospace);caret-color:var(--ink,#1b2420);}.ds-field-input:focus-visible{outline:2px solid #2c6655;outline-offset:4px;}.ds-field-input:hover{border-color:#8c9a8b;}.ds-field-input:disabled{opacity:.5;}"
+      "description": "Native amount input with a compact mono value and surface-aware focus.",
+      "html": "<label class=\"ds-field-label\">Amount<input class=\"ds-financial-field\" inputmode=\"decimal\" value=\"30.00\" aria-label=\"Amount\"/></label>",
+      "css": ".ds-field-label{display:flex;flex-direction:column;gap:6px;color:var(--ink-muted,#4b5c52);font:11px/1.5 \"Geist Variable\",sans-serif}.ds-financial-field{width:100%;min-height:42px;border:1px solid #8c9a8b;border-radius:3px;padding:10px 12px;background:transparent;color:var(--ink,#1b2420);font:12px \"Geist Mono Variable\",monospace;caret-color:var(--ink,#1b2420)}.ds-financial-field:focus-visible{outline:2px solid #2c6655;outline-offset:5px;}.ds-financial-field:disabled{opacity:.5;cursor:not-allowed}"
     },
     {
-      "name": "Three-Surface Navigation",
+      "name": "Main Navigation",
       "kind": "nav",
       "refersTo": "navigation-item",
-      "description": "Native Story, Command, and Arena links with a mint current-page underline.",
-      "html": "<nav class=\"ds-nav\" aria-label=\"MandateOS\"><a class=\"ds-nav-link\" href=\"#story\">Story</a><a class=\"ds-nav-link\" href=\"#command\" aria-current=\"page\">Command</a><a class=\"ds-nav-link\" href=\"#arena\">Arena</a></nav>",
-      "css": ".ds-nav{display:flex;gap:38px;background:var(--world,#111617);padding:0 18px;}.ds-nav-link{display:flex;align-items:center;padding:30px 0;border-bottom:2px solid transparent;color:#b6bcba;font:400 12px/1.5 var(--sans,\"Geist Variable\",sans-serif);text-transform:uppercase;letter-spacing:.12em;text-decoration:none;}.ds-nav-link[aria-current=\"page\"]{color:var(--text,#f6f5ef);border-bottom-color:var(--mint,#b9efdb);}.ds-nav-link:hover{color:var(--text,#f6f5ef);}.ds-nav-link:focus-visible{outline:2px solid var(--bone,#ede9df);outline-offset:4px;}"
+      "description": "Story, Command, and Arena with a mint active route rule.",
+      "html": "<nav class=\"ds-main-nav\" aria-label=\"Main navigation\"><a href=\"/\">Story</a><a href=\"/app\" aria-current=\"page\">Command</a><a href=\"/arena\">Arena</a></nav>",
+      "css": ".ds-main-nav{display:flex;gap:38px;align-items:stretch;font:12px/1.5 \"Geist Variable\",sans-serif;background:var(--world,#111617)}.ds-main-nav a{display:flex;align-items:center;padding:30px 0;border-bottom:2px solid transparent;color:#b6bcba;letter-spacing:.12em;text-transform:uppercase;text-decoration:none}.ds-main-nav a[aria-current=\"page\"]{color:var(--text,#f6f5ef);border-bottom-color:var(--mint,#b9efdb)}.ds-main-nav a:hover{color:var(--text,#f6f5ef)}.ds-main-nav a:focus-visible{outline:2px solid var(--mint,#b9efdb);outline-offset:5px;}"
     },
     {
-      "name": "Instrument Active Status",
+      "name": "Inspector State Chips",
       "kind": "chip",
       "refersTo": "status-active-instrument",
-      "description": "Noninteractive explicit effective-state badge in the bone Command inspector.",
-      "html": "<span class=\"ds-status\">Active</span>",
-      "css": ".ds-status{display:inline-block;background:#b9d9cc;color:#1b493b;border-radius:2px;padding:8px 11px;font:11px var(--mono,\"Geist Mono Variable\",monospace);letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;}"
+      "description": "Explicit active, blocked, and revoked states on the bone inspector.",
+      "html": "<div class=\"ds-state-chips\"><span class=\"ds-state ds-state-active\">Active</span><span class=\"ds-state ds-state-blocked\">Blocked</span><span class=\"ds-state ds-state-revoked\">Revoked</span></div>",
+      "css": ".ds-state-chips{display:flex;flex-wrap:wrap;gap:12px}.ds-state{padding:8px 11px;border-radius:2px;font:11px \"Geist Mono Variable\",monospace;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}.ds-state-active{background:#b9d9cc;color:#1b493b}.ds-state-blocked{background:#dddcd2;color:#535c56}.ds-state-revoked{background:#efd1c4;color:#963b2f}"
     },
     {
-      "name": "Bone Mandate Inspector",
+      "name": "Bone Financial Inspector",
       "kind": "card",
       "refersTo": "bone-inspector",
-      "description": "Flat exact inspection; the displayed fixture amount and simulated provenance are specimen content.",
-      "html": "<section class=\"ds-inspector\"><span class=\"ds-inspector-label\">Selected mandate · D1</span><h2 class=\"ds-inspector-title\">Research</h2><div class=\"ds-inspector-capital\"><span class=\"ds-inspector-label\">Available</span><strong class=\"ds-inspector-amount\">250.00 <small>USDC</small></strong></div><dl class=\"ds-inspector-details\"><div><dt>Subtree remaining</dt><dd>390.00 USDC</dd></div><div><dt>Parent</dt><dd>Treasury</dd></div></dl><p class=\"ds-inspector-path\">Treasury → Research</p><small class=\"ds-inspector-label\">Simulated state · no onchain transaction</small></section>",
-      "css": ".ds-inspector{background:var(--bone,#ede9df);color:var(--ink,#1b2420);padding:32px;border:0;border-radius:0;box-shadow:none;font:14px/1.5 var(--sans,\"Geist Variable\",sans-serif);}.ds-inspector-label{font:11px var(--mono,\"Geist Mono Variable\",monospace);text-transform:uppercase;color:var(--ink-muted,#4b5c52);letter-spacing:.04em;}.ds-inspector-title{font:430 42px/1.2 var(--sans,\"Geist Variable\",sans-serif);letter-spacing:-.03em;margin:18px 0 25px;}.ds-inspector-capital{border-top:1px solid #c4c6bc;padding:25px 0 20px;}.ds-inspector-amount{display:block;font:29px/1.4 var(--mono,\"Geist Mono Variable\",monospace);letter-spacing:-.04em;margin-top:12px;}.ds-inspector-amount small{font-size:15px;letter-spacing:0;}.ds-inspector-details{margin:0;}.ds-inspector-details div{display:flex;justify-content:space-between;gap:12px;padding:16px 0;}.ds-inspector-details dt{font-size:13px;color:var(--ink-muted,#4b5c52);}.ds-inspector-details dd{font:16px var(--mono,\"Geist Mono Variable\",monospace);margin:0;}.ds-inspector-path{border-top:1px solid #c4c6bc;padding:24px 0;font:14px/1.7 var(--mono,\"Geist Mono Variable\",monospace);}"
+      "description": "Flat financial inspection with exact own available capital and lineage.",
+      "html": "<aside class=\"ds-inspector\"><div class=\"ds-inspector-meta\"><span>SELECTED MANDATE</span><span>D1</span></div><div class=\"ds-inspector-heading\"><h2>Research</h2><span class=\"ds-inspector-status\">ACTIVE</span></div><div class=\"ds-inspector-capital\"><span>AVAILABLE</span><strong>250.00 <small>USDC</small></strong></div><dl class=\"ds-inspector-details\"><div><dt>Subtree remaining</dt><dd>390.00 USDC</dd></div><div><dt>Parent</dt><dd>Treasury</dd></div></dl><div class=\"ds-inspector-path\"><span>AUTHORITY PATH</span><p>Treasury → Research</p></div><p class=\"ds-inspector-provenance\">SIMULATED STATE · NO ONCHAIN TRANSACTION</p></aside>",
+      "css": ".ds-inspector{max-width:425px;padding:32px;background:var(--bone,#ede9df);color:var(--ink,#1b2420);border-radius:0;font:14px/1.5 \"Geist Variable\",sans-serif}.ds-inspector-meta{display:flex;justify-content:space-between;font:11px \"Geist Mono Variable\",monospace;letter-spacing:.04em;color:var(--ink-muted,#4b5c52)}.ds-inspector-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 25px}.ds-inspector-heading h2{margin:0;font:430 42px/1.2 \"Geist Variable\",sans-serif;letter-spacing:-.03em}.ds-inspector-status{padding:8px 11px;background:#b9d9cc;color:#1b493b;border-radius:2px;font:11px \"Geist Mono Variable\",monospace}.ds-inspector-capital{padding:25px 0 20px;border-top:1px solid #c4c6bc}.ds-inspector-capital>span,.ds-inspector-path>span{font:11px \"Geist Mono Variable\",monospace;color:var(--ink-muted,#4b5c52)}.ds-inspector-capital strong{display:block;margin-top:12px;font:36px/1.4 \"Geist Mono Variable\",monospace;letter-spacing:-.04em}.ds-inspector-capital small{font-size:15px;letter-spacing:0}.ds-inspector-details{margin:0}.ds-inspector-details>div{display:flex;justify-content:space-between;gap:16px;padding:16px 0}.ds-inspector-details dt{font-size:13px;color:var(--ink-muted,#4b5c52)}.ds-inspector-details dd{margin:0;font:16px \"Geist Mono Variable\",monospace}.ds-inspector-path{border-top:1px solid #c4c6bc;padding:24px 0;margin-top:12px}.ds-inspector-path p{margin:12px 0 0;font:14px/1.7 \"Geist Mono Variable\",monospace}.ds-inspector-provenance{border-top:1px solid #a7aca1;margin:0;padding-top:16px;font:11px/1.7 \"Geist Mono Variable\",monospace;color:var(--ink-muted,#4b5c52)}"
     },
     {
       "name": "Flat Authority Node",
       "kind": "custom",
       "refersTo": "flat-authority-node",
-      "description": "Native selected tree node with an exposed mint relation anchor; exact amount is demo fixture content.",
-      "html": "<button type=\"button\" class=\"ds-flat-node\" aria-label=\"Select Research\" aria-pressed=\"true\"><i class=\"ds-authority-dot\" aria-hidden=\"true\"></i><span class=\"ds-flat-name\">Research</span><strong class=\"ds-flat-amount\">250.00 <small>USDC</small></strong></button>",
-      "css": ".ds-flat-node{position:relative;width:184px;min-height:80px;background:var(--world,#111617);color:var(--text,#f6f5ef);border:0;border-bottom:2px solid var(--mint,#b9efdb);border-radius:0;padding:0 0 12px 27px;text-align:left;font:12px var(--mono,\"Geist Mono Variable\",monospace);cursor:pointer;}.ds-authority-dot{position:absolute;left:-8px;top:11px;width:16px;height:16px;border:1.6px solid var(--mint,#b9efdb);border-radius:50%;background:var(--mint,#b9efdb);}.ds-flat-name{display:block;letter-spacing:.09em;text-transform:uppercase;}.ds-flat-amount{display:block;font-size:19px;font-weight:450;line-height:1.5;margin-top:7px;white-space:nowrap;}.ds-flat-amount small{font-size:15px;}.ds-flat-node:hover{background:var(--world,#111617);}.ds-flat-node:focus-visible{outline:2px solid var(--bone,#ede9df);outline-offset:4px;}"
+      "description": "A native selected tree node with its own available amount and ancestry marker.",
+      "html": "<button class=\"ds-flat-node\" aria-label=\"Select Research\" aria-pressed=\"true\"><i class=\"ds-authority-dot\" aria-hidden=\"true\"></i><span class=\"ds-flat-name\">Research</span><strong>250.00 <small>USDC</small></strong></button>",
+      "css": ".ds-flat-node{position:relative;width:184px;min-height:80px;padding:0 0 12px 27px;text-align:left;border:0;border-radius:0;border-bottom:2px solid var(--mint,#b9efdb);background:var(--world,#111617);color:var(--text,#f6f5ef);font:12px \"Geist Mono Variable\",monospace;cursor:pointer}.ds-authority-dot{position:absolute;left:-8px;top:11px;width:16px;height:16px;border:1.6px solid var(--mint,#b9efdb);border-radius:50%;background:var(--mint,#b9efdb)}.ds-flat-name{display:block;letter-spacing:.09em;text-transform:uppercase}.ds-flat-node strong{display:block;margin-top:7px;font-size:19px;font-weight:450;white-space:nowrap}.ds-flat-node small{font-size:15px}.ds-flat-node:focus-visible{outline:2px solid var(--mint,#b9efdb);outline-offset:5px;}"
     }
   ],
   "narrative": {
     "northStar": "Authority Loom",
-    "overview": "The organization is an open architectural object: a large Root frame, offset descendant frames, exposed branching rails, and persistent negative space. Procedural graphite materials, narrow illuminated edges, a grounded floor, and rear structural columns give Story and Arena a shared physical setting. Large condensed display type occupies an asymmetric editorial field. Authority Loom replaces the earlier Authority Chamber plate direction.\n\nThe same organization becomes a flat operating tree in Command. Native text, exact amounts, complete lineage, controls, and evidence remain separate from the rendered geometry. Mint describes effective authority; copper encloses an all-active impact preview; red interrupts the revoked ancestor's inbound authority; brass marks a resolved verified settlement or an explicitly simulated settlement. The bone inspector keeps financial inspection flat and readable.\n\nThis is an extraction of the implemented system, not a new visual brief. The approved high-end visual specification and build prompt establish the replacement world; the current CSS, components, and local font imports establish its values. `PRODUCT.md` supplies the durable protocol constraints. Production-browser captures in `artifacts/high-end/pass2` record the implementation at 1440×900, with 1280×800, 768×900, and 390×900 variants. They do not establish pixel parity with the concept images or successful live Devnet execution; material detail remains subject to visual verification.",
+    "overview": "Authority Loom expresses recursive capital authority as one asymmetric cast object. An oversized open Root source feeds a broad Research neck, a smaller Data bend, a tapered Scraper termination, an Analysis spur, and an independent Operations arm. Rounded shoulders, a deep underside, taper, and restrained studio reflections make the hierarchy legible through silhouette. Large Anton theses share the graphite field with the object; the scene has no architectural room, repeated node boxes, columns, stairs, or portal stacks.\n\nThe same authority becomes a flat native financial tree in Command. Geist and Geist Mono carry labels, exact amounts, status, lineage, controls, and evidence. Mint indicates effective authority, copper contains an active impact preview, red marks the local revoked relation, and brass marks resolved settlement with explicit provenance. Arena shares the cast material through a mission basin, three converging submission bands, an asymmetric verifier clamp, and a receipt wing.\n\nThis document extracts the current implementation. PRODUCT.md remains authoritative for product semantics. The visual system consumes the existing authority and mission state; geometry, projection, and motion do not establish transaction evidence or alter accounting. Sources are web/src/app/globals.css and loom.css; the topology, geometry, scene, native projection, Story, Arena, and flat tree components; and web/src/lib/loom-motion.ts.",
     "keyCharacteristics": [
-      "Open graphite frames and exposed authority rails replace mandate plaques.",
-      "One persistent Story object compresses into the flat Command relations.",
-      "Anton display type contrasts with Geist body and exact mono information.",
-      "Native DOM/SVG text, controls, lineage, and evidence carry product truth.",
-      "Event-bounded spatial rendering has a native ledger fallback."
+      "One asymmetric cast authority silhouette with unequal branch widths and open negative space.",
+      "Reflective shoulders and dark undersides give the spatial subject depth.",
+      "Anton display type, Geist interface text, and Geist Mono financial detail.",
+      "Native DOM labels and controls projected beside desktop geometry.",
+      "Static SVG projection of the same authored topology on mobile and reduced motion.",
+      "A flat Command tree and bone inspector preserve exact operational inspection."
     ],
     "rules": [
       {
         "name": "The State Color Rule",
-        "body": "Copper previews a consequence without changing authority status. Red marks the actual local cut. Brass appears only with resolved settlement and its provenance. Always pair color with explicit text and path treatment.",
+        "body": "Copper previews a consequence while authority remains active. Red marks the local cut; blocked descendants lose power and retain explicit blocked text. Brass accompanies resolved settlement and its provenance. Mint alone never means transaction confirmation.",
         "section": "colors"
       },
       {
         "name": "The Exact Text Rule",
-        "body": "Labels, monetary values, status, addresses, and evidence stay in native DOM/SVG. Geometry and animation consume the existing state; they never calculate balances or supply transaction evidence.",
+        "body": "Names, amounts, units, status, addresses, lineage, actions, and evidence remain native DOM/SVG driven by the existing model. Rendered geometry never supplies financial values or transaction evidence.",
         "section": "typography"
       },
       {
-        "name": "The Flat Inspection Rule",
-        "body": "Financial inspection and Command remain flat. Procedural depth belongs to the explanatory and mission objects, while native text and interaction remain screen readable.",
+        "name": "The Material Depth Rule",
+        "body": "Depth belongs to the cast profile, its underside, and studio reflections. Native operating surfaces remain flat; do not add spatial effects to the financial inspector.",
         "section": "elevation"
+      },
+      {
+        "name": "The Continuous Authority Rule",
+        "body": "A branch joins its actual parent through the cast connector and conductor. Preserve the unequal widths, bends, tapers, and independent Operations arm; do not turn each mandate into the same repeated box.",
+        "section": "shapes"
       }
     ],
     "dos": [
-      "**Do** preserve the open Root and descendant frames, exposed rails, and one shared graphite environment.",
-      "**Do** keep native text, exact amounts, controls, complete ancestry, and evidence driven by the existing model.",
-      "**Do** keep all affected mandates active during copper preview and distinguish local revoke from effective descendant blocking.",
-      "**Do** use brass only for resolved settlement with real or explicitly simulated provenance.",
-      "**Do** keep the Command tree and bone inspection flat, with all six canonical nodes and complete paths.",
-      "**Do** retain event-bounded rendering and native ledger fallback for narrow viewports, reduced motion, and scene failure."
+      "Do preserve graphite and bone as the field and financial instrument, with mint, copper, red, and brass bound to their implemented meanings.",
+      "Do keep Anton for condensed theses, Geist for readable interface text, and Geist Mono for exact financial detail.",
+      "Do preserve the open Root, broad Research neck, Data bend, Scraper taper, Analysis spur, and separate Operations arm.",
+      "Do keep desktop labels and actions as real projected DOM controls, with restrained guides and clear space around the cast contour.",
+      "Do preserve the same authored subject as a static SVG projection on narrow viewports, reduced motion, and unavailable WebGL.",
+      "Do place the mobile Story subject directly after its thesis and support copy, before the chapter actions.",
+      "Do keep Command flat, with own available amounts in the tree and complete financial inspection in the bone instrument.",
+      "Do retain visible simulation or observed-state provenance beside mission state, actions, and receipts."
     ],
     "donts": [
-      "**Don't** restore the superseded mandate-plate composition or substitute repeated cards for the open Loom.",
-      "**Don't** ship concept images as UI backgrounds or place product labels and amounts inside raster or canvas text.",
-      "**Don't** use broad bloom haze, random particles, smoke, generic network orbs, floating panes, or decorative gradients.",
-      "**Don't** animate token recovery from an authority cut or invent intermediate verification/payout transaction states.",
-      "**Don't** fabricate signatures, confirmations, addresses, rejected transactions, Explorer evidence, or live Devnet success.",
-      "**Don't** claim photo or pixel parity from the current captures; verify visible material detail against the approved targets."
+      "Don't restore the rejected rectangular Root frame, repeated beveled node boxes, CAD room, columns, stairs, card stacks, or portal stacks.",
+      "Don't render labels, amounts, status, buttons, lineage, or receipts as pixels inside the 3D scene or a full-screen mockup image.",
+      "Don't use copper preview as a revoked state, mark blocked descendants as locally revoked, or imply that tokens move during delegation or revoke.",
+      "Don't move, reshape, extinguish, or cut Operations when Research is revoked.",
+      "Don't introduce perpetual scene motion, looping ancestry pulses, or perspective-dependent mobile controls.",
+      "Don't use decorative shadows, gradients, or glass panels to replace the flat financial inspector.",
+      "Don't interpret a rendered receipt, screenshot, or animation as proof of a live transaction or successful Devnet execution."
     ]
   }
 }

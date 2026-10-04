@@ -8,13 +8,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import {
-  amount,
-  authorityPath,
-  statusOf,
-  type AuthorityModel,
-} from "@/lib/authority";
-import FlatAuthorityTree from "./flat-authority-tree";
+import { authorityPath, statusOf, type AuthorityModel } from "@/lib/authority";
+import NativeAuthority from "./native-authority";
+import CapitalNumber from "./capital-number";
 
 const Scene = dynamic(() => import("./loom-scene"), { ssr: false });
 export interface LoomProps {
@@ -92,18 +88,19 @@ export default function SpatialLoom(props: LoomProps) {
       {!props.arena && (
         <>
           <div className="loom-fallback">
-            <FlatAuthorityTree
-              model={props.model}
-              selected={props.selected}
-              onSelect={props.onSelect}
-              preview={props.preview}
-              trace={props.trace}
-            />
+            <NativeAuthority {...props} />
           </div>
           <div
             className="loom-annotations"
             aria-label="Spatial authority structure"
           >
+            <svg className="loom-guides" aria-hidden="true">
+              {props.model.nodes
+                .filter((n) => n.parent)
+                .map((n) => (
+                  <path key={n.id} data-loom-guide={n.id} />
+                ))}
+            </svg>
             <svg className="loom-flat-rails" aria-hidden="true">
               {props.model.nodes
                 .filter((n) => n.parent)
@@ -127,12 +124,20 @@ export default function SpatialLoom(props: LoomProps) {
                   onClick={() => props.onSelect(n.id)}
                   className={`loom-label ${status} ${props.selected === n.id ? "selected" : ""}`}
                 >
-                  <span>{n.name}</span>
+                  <span>
+                    {n.name}
+                    <i>D{n.depth}</i>
+                  </span>
                   <strong>
-                    {amount(n.available, props.model.decimals)}{" "}
+                    <CapitalNumber
+                      value={n.available}
+                      decimals={props.model.decimals}
+                    />{" "}
                     <small>{props.model.unit}</small>
                   </strong>
-                  <small className={`status ${status}`}>{status}</small>
+                  <small className={`status ${status}`}>
+                    {status} · {n.parent ? "own available" : "root available"}
+                  </small>
                 </button>
               );
             })}

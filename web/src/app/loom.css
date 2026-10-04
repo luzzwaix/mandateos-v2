@@ -108,9 +108,9 @@ select {
 .persistent-story .story-editorial {
   position: absolute;
   z-index: 3;
-  top: 180px;
+  top: 22vh;
   left: 54px;
-  width: 440px;
+  width: 34vw;
   height: auto;
   padding: 0;
   display: flex;
@@ -123,6 +123,7 @@ select {
 }
 .persistent-story .chapter-copy {
   padding: 0;
+  min-height: 0;
 }
 .persistent-story .chapter-copy h1,
 .persistent-story .chapter-copy h2 {
@@ -142,8 +143,8 @@ select {
   white-space: nowrap;
   width: max-content;
   max-width: none;
-  font-size: 100px;
-  transform: scaleX(0.72);
+  font-size: clamp(64px, 5.65vw, 100px);
+  transform: none;
   transform-origin: left top;
 }
 .persistent-story .chapter-copy h1 br {
@@ -297,19 +298,19 @@ select {
 }
 .persistent-story[data-chapter="recursion"] .chapter-copy h2 {
   font:
-    14px "Geist Mono Variable",
-    monospace;
+    400 48px/1.08 Anton,
+    sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  max-width: 520px;
+  letter-spacing: -0.02em;
+  max-width: 380px;
 }
 .persistent-story[data-chapter="recursion"] .chapter-copy p {
   display: none;
 }
 .persistent-story[data-chapter="recursion"] .chapter-action {
-  position: fixed;
-  right: 54px;
-  bottom: 154px;
+  position: relative;
+  right: auto;
+  bottom: auto;
 }
 .persistent-story[data-chapter="trace"] .chapter-copy h2 {
   font-size: 66px;
@@ -332,6 +333,18 @@ select {
     monospace;
   letter-spacing: 0.18em;
   max-width: 370px;
+}
+.persistent-story[data-chapter="enter"] .chapter-action {
+  position: fixed;
+  left: calc(70% - 280px);
+  bottom: 130px;
+  width: 240px;
+}
+.persistent-story[data-chapter="enter"] .story-arena-invitation {
+  position: fixed;
+  left: 54px;
+  bottom: 70px;
+  width: 290px;
 }
 .persistent-story[data-chapter="enter"] .story-editorial {
   top: 110px;
@@ -409,53 +422,197 @@ select {
   inset: 60px 30px 120px 38%;
   background: var(--world);
 }
+.native-authority {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.native-authority > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+}
+.native-channel {
+  stroke: var(--mint);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+.native-channel.blocked {
+  stroke: #75817b;
+  stroke-dasharray: 4 5;
+}
+.native-channel.revoked {
+  stroke: var(--red);
+  stroke-width: 2;
+  stroke-dasharray: 7 9;
+}
+.native-channel.traced {
+  stroke-width: 3;
+}
+.native-impact {
+  stroke: var(--copper);
+  stroke-width: 1.5;
+  fill: #efab7508;
+  vector-effect: non-scaling-stroke;
+}
+.native-authority .native-station {
+  position: absolute;
+  display: block;
+  width: 42%;
+  height: 86px;
+  min-height: 86px;
+  transform: none;
+  padding: 8px 6px;
+  border: 0;
+  background: var(--world);
+  text-align: left;
+}
+.native-authority .native-station.selected {
+  border: 0;
+}
+.native-authority .native-station.preview-affected {
+  border: 0;
+  color: var(--text);
+}
+.native-authority .native-station .native-name {
+  display: block;
+  font:
+    12px "Geist Mono Variable",
+    monospace;
+  padding: 0;
+}
+.native-authority .native-name i {
+  font:
+    10px "Geist Mono Variable",
+    monospace;
+  color: var(--muted);
+  margin-left: 8px;
+}
+.native-authority .native-station strong {
+  display: block;
+  font:
+    18px "Geist Mono Variable",
+    monospace;
+  margin: 8px 0;
+}
+.native-authority .native-station strong small {
+  font-size: 10px;
+  margin-left: 5px;
+  display: inline;
+}
+.native-authority .native-station .status {
+  display: block;
+  font:
+    11px "Geist Mono Variable",
+    monospace;
+  padding: 0;
+  background: transparent;
+  margin: 0;
+  color: var(--mint);
+}
+.native-authority .native-station.blocked .status {
+  color: var(--muted);
+}
+.native-authority .native-station.revoked .status {
+  color: var(--red);
+}
+.native-authority .native-station.selected .native-name {
+  color: var(--mint);
+}
+.bone-instrument .status.blocked {
+  color: #535c56;
+  background: #dddcd2;
+}
+.bone-instrument .status.revoked {
+  color: #963b2f;
+  background: #efd1c4;
+}
 .loom-label {
   position: absolute;
-  width: 160px;
-  min-height: 64px;
-  padding: 8px 0 8px 20px;
+  width: 178px;
+  min-height: 78px;
+  padding: 8px 0;
   border: 0;
   text-align: left;
   color: var(--text);
   background: transparent;
   font:
-    12px "Geist Mono Variable",
+    13px "Geist Mono Variable",
     monospace;
-  transform: translate(0, -50%);
+  transform: translate(0, -28px);
   pointer-events: auto;
-  text-shadow: 0 2px 12px #080b0b;
+  text-shadow: none;
 }
 .loom-label:before {
-  content: "";
+  content: none;
   position: absolute;
-  width: 22px;
-  left: -10px;
+  width: 20px;
+  left: -28px;
   top: 16px;
   border-top: 1px solid #aeb9b6;
-  transform: rotate(-28deg);
+  transform: none;
   transform-origin: right;
 }
 .loom-label > span {
   display: block;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   font-weight: 500;
 }
+.authority-loom:not(.loom-flatten)
+  .loom-label[data-loom-label="treasury"]:before {
+  content: none;
+}
+.persistent-story[data-chapter="genesis"]
+  .loom-label[data-loom-label="treasury"]
+  > strong {
+  font-size: 30px;
+}
+.loom-label > span i {
+  margin-left: 14px;
+  font-style: normal;
+  color: var(--muted);
+  font-size: 10px;
+}
 .loom-label > strong {
   display: block;
-  color: var(--mint);
-  font-size: 15px;
+  color: var(--bone);
+  font-size: 22px;
   margin: 6px 0;
   font-weight: 400;
   white-space: nowrap;
 }
 .loom-label > strong small {
-  font-size: 9px;
+  font-size: 11px;
 }
 .loom-label .status {
   padding: 0;
-  font-size: 9px;
+  font-size: 11px;
   background: transparent;
+}
+.loom-label.selected > span {
+  color: var(--mint);
+}
+.loom-label.selected > span:after {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin: 0 0 2px 9px;
+  background: var(--mint);
+}
+.loom-label[data-effective="active"] .status {
+  color: var(--mint);
+}
+.loom-label[data-effective="blocked"] .status {
+  color: var(--muted);
+}
+.loom-label[data-effective="revoked"] .status {
+  color: var(--red);
 }
 .loom-label.revoked .status {
   color: var(--red);
@@ -476,6 +633,31 @@ select {
   fill: none;
   stroke: var(--mint);
   stroke-width: 1.4;
+}
+.loom-guides {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: #91a098;
+  stroke-width: 0.8;
+}
+.loom-flatten .loom-guides {
+  display: none;
+}
+.native-source-fold {
+  stroke: #294032;
+  stroke-width: 18;
+  fill: none;
+}
+.native-source-light {
+  stroke: var(--mint);
+  stroke-width: 1.5;
+  fill: none;
+}
+.native-authority .native-station[data-node-id="treasury"] {
+  background: transparent;
 }
 .loom-flatten .loom-flat-rails {
   display: block;
@@ -502,6 +684,7 @@ select {
   transform: translateY(-14px);
 }
 .loom-flatten .loom-label:before {
+  content: "";
   width: 14px;
   height: 14px;
   border: 1.5px solid var(--mint);
@@ -605,7 +788,7 @@ select {
 .flat-node.revoked .status,
 .flat-node.blocked .status {
   display: block;
-  font-size: 9px;
+  font-size: 11px;
   margin-top: 7px;
   padding: 0;
   background: transparent;
@@ -766,8 +949,16 @@ select {
   color: #1b493b;
   border-radius: 2px;
 }
+.command-world .instrument-heading .status.blocked {
+  background: #dddcd2;
+  color: #535c56;
+}
+.command-world .instrument-heading .status.revoked {
+  background: #efd1c4;
+  color: #963b2f;
+}
 .command-world .local-state {
-  font-size: 9px;
+  font-size: 11px;
   margin-bottom: 20px;
 }
 .command-world .instrument-capital {
@@ -866,7 +1057,7 @@ select {
 }
 .arena-world .arena-heading h1 {
   font:
-    400 76px/1.04 Anton,
+    400 64px/1.04 Anton,
     sans-serif;
   letter-spacing: -0.025em;
 }
@@ -970,7 +1161,7 @@ select {
 }
 .arena-world .contender small {
   display: block;
-  font-size: 8px;
+  font-size: 11px;
   margin-top: 6px;
 }
 .arena-world .contender.winner strong {
@@ -1001,19 +1192,29 @@ select {
 }
 .arena-world .mission-basin h2 {
   font:
-    36px/1.15 Anton,
+    28px/1.15 Anton,
     sans-serif;
   text-transform: uppercase;
-  margin: 15px 0;
+  margin: 10px 0;
 }
 .arena-world .mission-bounty {
-  padding: 13px 0 0;
+  padding: 8px 0 0;
   border-color: #879087;
-  margin-top: 14px;
+  margin-top: 8px;
   width: 230px;
 }
 .arena-world .mission-stage .mission-bounty {
   display: block;
+}
+.arena-world .mission-bounty > small {
+  display: block;
+  margin-bottom: 4px;
+  position: static;
+}
+.arena-world .mission-bounty strong {
+  display: block;
+  position: static;
+  margin: 0;
 }
 .arena-world .mission-bounty strong {
   font:
@@ -1047,7 +1248,7 @@ select {
 .arena-world .mission-outcome {
   width: 170px;
   font-size: 11px;
-  transform: translateX(-100%);
+  transform: translateX(-55%);
 }
 .arena-world .mission-outcome strong {
   font-size: 13px;
@@ -1058,9 +1259,10 @@ select {
 .arena-world .arena-instrument {
   position: absolute;
   z-index: 4;
-  right: 40px;
-  top: 110px;
-  width: 280px;
+  left: 54px;
+  right: auto;
+  top: 510px;
+  width: 300px;
   padding: 0 0 0 22px;
   border: 0;
   border-left: 1px solid #83908a;
@@ -1134,7 +1336,7 @@ select {
   font-size: 10px;
 }
 .arena-world .arena-instrument .provenance-note {
-  font-size: 8px;
+  font-size: 11px;
   padding-top: 10px;
 }
 .arena-world .arena-method {
@@ -1251,6 +1453,7 @@ select {
   }
   .persistent-story.story-world {
     min-height: 0;
+    height: auto;
   }
   .persistent-story .story-stage {
     position: relative;
@@ -1292,6 +1495,7 @@ select {
   .persistent-story .chapter-navigation {
     position: relative;
     right: auto;
+    left: auto;
     bottom: auto;
     margin-top: 20px;
     justify-content: flex-start;
@@ -1299,6 +1503,7 @@ select {
   .persistent-story .chapter-action {
     position: relative !important;
     right: auto !important;
+    left: auto !important;
     bottom: auto !important;
     margin-top: 20px;
   }
@@ -1484,6 +1689,7 @@ select {
   }
   .arena-world .arena-instrument {
     position: relative;
+    left: auto;
     right: auto;
     top: auto;
     border: 0;
@@ -1578,6 +1784,156 @@ select {
     padding: 0;
   }
 }
+@media (max-width: 1099px), (prefers-reduced-motion: reduce) {
+  .arena-world .arena-zones {
+    display: flex;
+    flex-direction: column;
+  }
+  .arena-world .arena-field {
+    display: contents;
+  }
+  .arena-world .arena-instrument {
+    order: 0;
+    margin: 8px 24px 28px;
+    padding: 20px;
+    left: auto;
+    top: auto;
+    width: auto;
+    background: var(--bone);
+    border: 0;
+  }
+  .arena-world .arena-instrument h2 {
+    font-size: 24px;
+    margin: 12px 0 0;
+  }
+  .arena-world .arena-instrument .instrument-capital {
+    padding: 14px 0 0;
+  }
+  .arena-world .arena-instrument .instrument-capital strong {
+    font:
+      32px "Geist Mono Variable",
+      monospace;
+  }
+  .arena-world .arena-instrument .instrument-capital strong small {
+    font:
+      13px "Geist Mono Variable",
+      monospace;
+  }
+  .arena-world .arena-instrument .settlement-checklist,
+  .arena-world .arena-instrument .details {
+    display: none;
+  }
+  .arena-world .arena-instrument .provenance-note {
+    padding: 12px 0 0;
+  }
+  .arena-world .mission-switcher {
+    order: 1;
+  }
+  .arena-world .native-execution {
+    order: 2;
+    position: relative;
+    max-width: 600px;
+    width: calc(100% - 48px);
+    height: 580px;
+    margin: 0 auto;
+  }
+  .native-execution > svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: #818d86;
+    stroke-width: 1.5;
+  }
+  .execution-capital.active {
+    stroke: var(--mint);
+    stroke-width: 2;
+  }
+  .execution-submission.preview {
+    stroke: var(--copper);
+    stroke-width: 2;
+  }
+  .execution-submission.winner,
+  .execution-settlement {
+    stroke: var(--brass);
+    stroke-width: 2.5;
+  }
+  .arena-world .native-execution > div,
+  .arena-world .native-execution > button {
+    position: absolute;
+    border: 0;
+    padding: 8px;
+    background: var(--world);
+    display: block;
+  }
+  .arena-world .native-execution .execution-source {
+    left: 5%;
+    top: 0;
+  }
+  .arena-world .native-execution .execution-mission {
+    left: 7%;
+    top: 105px;
+    width: 70%;
+  }
+  .native-execution .execution-mission h2 {
+    margin: 8px 0;
+    font:
+      30px Anton,
+      sans-serif;
+    text-transform: uppercase;
+  }
+  .arena-world .native-execution .execution-mission strong {
+    font:
+      22px "Geist Mono Variable",
+      monospace;
+    margin: 8px 0;
+  }
+  .arena-world .native-execution .execution-entry {
+    left: 10%;
+    width: 45%;
+    min-height: 55px;
+  }
+  .arena-world .native-execution .execution-entry strong {
+    font:
+      12px "Geist Mono Variable",
+      monospace;
+  }
+  .arena-world .native-execution .execution-verifier {
+    left: 67%;
+    width: 31%;
+    top: 286px;
+    min-height: 100px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .arena-world .native-execution .execution-verifier strong {
+    font-size: 13px;
+    margin: 12px 0;
+  }
+  .arena-world .native-execution .execution-terminal {
+    left: 64%;
+    top: 480px;
+    width: 34%;
+  }
+  .arena-world .native-execution .execution-terminal strong {
+    font:
+      18px "Geist Mono Variable",
+      monospace;
+    color: var(--brass);
+    margin: 10px 0;
+  }
+  .arena-world .native-execution small {
+    font-size: 11px;
+    line-height: 1.45;
+  }
+  .arena-world .arena-method {
+    order: 3;
+  }
+  .arena-world .evidence-dock {
+    order: 4;
+  }
+}
 @media (max-width: 767px) {
   .world-header {
     height: 72px;
@@ -1615,4 +1971,432 @@ select {
   .chapter-copy {
     margin: 0;
   }
+}
+
+/* The spatial object and its operating gesture share one composed viewport. */
+@media (min-width: 1100px) and (prefers-reduced-motion: no-preference) {
+  .persistent-story .specimen-caption {
+    display: none;
+  }
+  .persistent-story[data-chapter="genesis"] .story-editorial {
+    top: 24vh;
+  }
+  .story-world .story-stage,
+  .arena-world .arena-field {
+    background: radial-gradient(ellipse at 71% 44%, #26362d40 0, #11161700 52%);
+  }
+  .persistent-story[data-chapter="recursion"] .story-editorial {
+    top: 155px;
+    width: 400px;
+  }
+  .persistent-story[data-chapter="recursion"] .chapter-copy h2 {
+    font-size: 58px;
+    max-width: 400px;
+  }
+  .persistent-story .chapter-action {
+    min-height: 0;
+    gap: 12px;
+  }
+  .persistent-story[data-chapter="recursion"] .chapter-action {
+    margin-top: 30px;
+  }
+  .arena-world .arena-instrument {
+    top: 505px;
+    width: 320px;
+    padding-left: 20px;
+  }
+  .arena-world .arena-instrument h2,
+  .arena-world .arena-instrument .instrument-capital {
+    display: none;
+  }
+  .arena-world .settlement-checklist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 12px;
+    padding: 10px 0;
+  }
+  .arena-world .settlement-checklist li {
+    width: calc(50% - 6px);
+    min-height: 33px;
+    font-size: 11px;
+  }
+  .arena-world .arena-instrument .details {
+    display: none;
+  }
+  .arena-world .arena-instrument .dark {
+    margin-top: 6px;
+    min-height: 50px;
+    font-size: 13px;
+  }
+  .arena-world .arena-instrument .button.dark:hover:not(:disabled) {
+    background: var(--mint);
+    color: #17201d;
+  }
+  .command-world .flat-node[data-node-id="treasury"] strong {
+    font-size: 23px;
+  }
+  .command-world .instrument-capital strong {
+    font-size: 36px;
+  }
+  .arena-world .arena-instrument p {
+    font-size: 12px;
+  }
+  .arena-world .mission-bounty strong {
+    font:
+      30px/1.2 "Geist Mono Variable",
+      monospace;
+    margin-top: 6px;
+  }
+  .arena-world .mission-bounty strong small {
+    font:
+      13px "Geist Mono Variable",
+      monospace;
+  }
+  .arena-world .mission-bounty {
+    border: 0;
+    padding-top: 12px;
+  }
+  .arena-world .mission-basin {
+    width: 200px;
+  }
+  .arena-world .mission-basin h2 {
+    font-size: 26px;
+  }
+  .arena-world .verifier-gate {
+    width: 150px;
+  }
+}
+@media (min-width: 1100px) and (prefers-reduced-motion: reduce) {
+  .persistent-story .story-stage {
+    display: grid;
+    grid-template-columns: minmax(350px, 35%) minmax(0, 1fr);
+    gap: 36px;
+    padding: 40px 54px;
+    align-items: start;
+    min-height: calc(100vh - 84px);
+  }
+  .persistent-story .story-editorial {
+    padding: 0;
+  }
+  .persistent-story .chapter-copy h2 {
+    max-width: 440px;
+  }
+  .persistent-story .specimen-caption {
+    display: none;
+  }
+  .persistent-story .loom-fallback {
+    margin: 0;
+  }
+  .persistent-story .story-instrument {
+    margin: 26px 0 0;
+  }
+}
+@media (min-width: 1100px) and (max-width: 1399px) and (prefers-reduced-motion: no-preference) {
+  .loom-label {
+    width: 148px;
+    font-size: 12px;
+  }
+  .loom-label > strong {
+    font-size: 21px;
+  }
+  .loom-label > span i {
+    margin-left: 7px;
+  }
+  .loom-label .status {
+    font-size: 10px;
+  }
+  .arena-world .arena-instrument {
+    left: 30px;
+    right: auto;
+    width: 290px;
+  }
+}
+/* Responsive projections retain the cast object; only the camera and label
+   anchors adapt. All controls and all values remain live native elements. */
+.native-authority {
+  max-width: 420px;
+  height: auto;
+}
+.native-authority > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.native-authority .native-station {
+  width: 110px;
+  height: auto;
+  min-height: 74px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--text);
+}
+.native-authority .native-station .native-name {
+  font-size: 12px;
+  letter-spacing: 0.03em;
+}
+.native-authority .native-station strong {
+  font-size: 18px;
+  margin: 6px 0;
+  white-space: nowrap;
+}
+.native-authority .native-station strong small {
+  font-size: 9px;
+  margin-left: 4px;
+}
+.native-authority .native-station .status {
+  font-size: 10px;
+}
+.native-authority .source-only .native-station {
+  width: 160px;
+}
+.native-authority.source-only .native-station strong {
+  font-size: 24px;
+}
+.native-authority.source-only .native-station {
+  width: 160px;
+}
+.native-flow {
+  fill: none;
+  stroke: var(--mint);
+  stroke-width: 1.2;
+}
+.native-flow.blocked {
+  stroke: #67776d;
+}
+.native-flow.revoked {
+  stroke: #67776d;
+}
+.native-flow.traced {
+  stroke-width: 2.2;
+}
+.native-flow .native-cut {
+  stroke: var(--red);
+  stroke-width: 2;
+  stroke-dasharray: 8 14;
+}
+.native-guide {
+  stroke: #84948a;
+  stroke-width: 0.6;
+  fill: none;
+}
+.native-impact {
+  fill: none;
+  stroke: var(--copper);
+  stroke-width: 1.2;
+}
+@media (max-width: 1099px) {
+  .persistent-story .story-stage {
+    gap: 0;
+  }
+  .persistent-story .story-editorial,
+  .persistent-story .story-specimen {
+    display: contents;
+  }
+  .persistent-story .chapter-copy {
+    order: 0;
+    padding: 25px 24px 0;
+  }
+  .persistent-story .chapter-copy h1 {
+    font-size: clamp(44px, 12.5vw, 70px);
+  }
+  .persistent-story .chapter-copy h2 {
+    font-size: 44px !important;
+  }
+  .persistent-story .story-object {
+    order: 1;
+    margin-top: 12px;
+  }
+  .persistent-story .loom-fallback {
+    margin: 0 24px;
+  }
+  .native-authority {
+    max-width: 340px;
+  }
+  .persistent-story .specimen-caption {
+    display: none;
+  }
+  .persistent-story .chapter-action {
+    order: 2;
+    margin: 8px 24px 16px;
+  }
+  .persistent-story .chapter-action .button {
+    width: 100%;
+  }
+  .persistent-story .chapter-rail {
+    order: 3;
+    margin: 0 24px 12px;
+    gap: 0 16px;
+  }
+  .persistent-story .chapter-navigation {
+    order: 5;
+    margin: 0 24px 24px;
+  }
+  .persistent-story .story-instrument {
+    order: 4;
+    margin: 10px 24px 24px;
+  }
+  .persistent-story .plane-inspector {
+    order: 4;
+  }
+  .persistent-story .story-arena-invitation {
+    order: 6;
+    margin: 0 24px 24px;
+  }
+}
+@media (max-width: 1099px), (prefers-reduced-motion: reduce) {
+  .arena-world .arena-heading {
+    padding-bottom: 12px;
+  }
+  .arena-world .native-execution {
+    order: 0;
+    height: auto;
+    aspect-ratio: 340 / 380;
+    width: calc(100% - 48px);
+    max-width: 510px;
+    margin-bottom: 16px;
+  }
+  .arena-world .native-execution > svg {
+    fill: none;
+    stroke: none;
+  }
+  .native-execution .execution-capital {
+    fill: none;
+    stroke: #73877a;
+    stroke-width: 1.3;
+  }
+  .native-execution .execution-capital.active {
+    stroke: var(--mint);
+    stroke-width: 1.8;
+  }
+  .native-execution .execution-submission {
+    stroke: #728378;
+    stroke-width: 1.2;
+    fill: none;
+  }
+  .native-execution .execution-submission.preview {
+    stroke: var(--copper);
+    stroke-width: 2;
+  }
+  .native-execution .execution-submission.winner,
+  .native-execution .execution-settlement {
+    stroke: var(--brass);
+    stroke-width: 2;
+    fill: none;
+  }
+  .arena-world .native-execution > div,
+  .arena-world .native-execution > button {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    height: auto;
+    min-height: 0;
+    color: var(--text);
+  }
+  .arena-world .native-execution .execution-source {
+    left: 0;
+    top: 0;
+  }
+  .arena-world .native-execution .execution-source strong {
+    font-size: 13px;
+    margin-top: 5px;
+  }
+  .arena-world .native-execution .execution-mission {
+    left: 18%;
+    top: 31%;
+    width: 46%;
+  }
+  .native-execution .execution-mission h2 {
+    font-size: 24px;
+    margin: 6px 0;
+    max-width: 145px;
+  }
+  .arena-world .native-execution .execution-mission strong {
+    font-size: 21px;
+    margin: 8px 0;
+  }
+  .arena-world .native-execution .execution-mission strong small,
+  .arena-world .native-execution .execution-terminal strong small {
+    display: inline;
+    font-size: 9px;
+  }
+  .arena-world .native-execution .execution-entry {
+    left: 36%;
+    width: 34%;
+    text-align: left;
+    display: block;
+  }
+  .arena-world .native-execution .execution-entry strong {
+    font-size: 12px;
+  }
+  .arena-world .native-execution .execution-entry small {
+    font-size: 9px;
+    margin-top: 5px;
+  }
+  .arena-world .native-execution .execution-awaiting {
+    left: 34%;
+    top: 70%;
+    width: 42%;
+  }
+  .arena-world .native-execution .execution-awaiting strong {
+    font-size: 12px;
+  }
+  .arena-world .native-execution .execution-verifier {
+    left: 65%;
+    top: 10%;
+    width: 35%;
+    border: 0;
+    min-height: 0;
+  }
+  .arena-world .native-execution .execution-verifier strong {
+    font-size: 12px;
+    margin: 8px 0;
+  }
+  .arena-world .native-execution .execution-terminal {
+    left: 55%;
+    top: 86%;
+    width: 45%;
+  }
+  .arena-world .native-execution .execution-terminal strong {
+    font-size: 19px;
+    margin: 6px 0;
+  }
+  .arena-world .native-execution small {
+    font-size: 9px;
+  }
+  .arena-world .arena-instrument {
+    order: 2;
+  }
+  .arena-world .mission-switcher {
+    order: 1;
+  }
+}
+@media (max-width: 1099px), (prefers-reduced-motion: reduce) {
+  .arena-world .native-execution .execution-mission {
+    left: 12%;
+    top: 30%;
+    width: 27%;
+  }
+  .native-execution .execution-mission h2 {
+    max-width: 90px;
+    font-size: 24px;
+  }
+  .arena-world .native-execution .execution-mission strong {
+    font-size: 19px;
+    white-space: nowrap;
+  }
+  .arena-world .native-execution .execution-entry {
+    left: 42%;
+    width: 29%;
+  }
+}
+@media (max-width: 1099px), (prefers-reduced-motion: reduce) {
+  .arena-world .native-execution .execution-verifier {
+    top: 0;
+  }
+}
+.arena-world .arena-instrument .button.dark:hover:not(:disabled) {
+  background: var(--mint);
+  color: #17201d;
 }

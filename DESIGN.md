@@ -1,6 +1,6 @@
 ---
 name: MandateOS V2 — Authority Loom
-description: Recursive capital authority expressed as open graphite architecture, exposed authority rails, and exact native financial inspection.
+description: Recursive capital authority expressed as one asymmetric cast strip, projected native information, and exact flat financial inspection.
 colors:
   world: "#111617"
   field: "#141a1b"
@@ -21,7 +21,7 @@ colors:
 typography:
   display:
     fontFamily: "Anton, sans-serif"
-    fontSize: "100px"
+    fontSize: "clamp(64px, 5.65vw, 100px)"
     fontWeight: 400
     lineHeight: 1.05
     letterSpacing: "-0.025em"
@@ -33,7 +33,7 @@ typography:
     letterSpacing: "-0.025em"
   arena-headline:
     fontFamily: "Anton, sans-serif"
-    fontSize: "76px"
+    fontSize: "64px"
     fontWeight: 400
     lineHeight: 1.04
     letterSpacing: "-0.025em"
@@ -65,9 +65,9 @@ typography:
     letterSpacing: "0.02em"
   spatial-label:
     fontFamily: '"Geist Mono Variable", monospace'
-    fontSize: "12px"
+    fontSize: "13px"
     fontWeight: 500
-    letterSpacing: "0.12em"
+    letterSpacing: "0.08em"
   input:
     fontFamily: '"Geist Mono Variable", monospace'
     fontSize: "12px"
@@ -79,10 +79,15 @@ typography:
     lineHeight: 1.5
   amount-inspector:
     fontFamily: '"Geist Mono Variable", monospace'
-    fontSize: "29px"
+    fontSize: "36px"
     fontWeight: 400
     lineHeight: 1.4
     letterSpacing: "-0.04em"
+  amount-spatial:
+    fontFamily: '"Geist Mono Variable", monospace'
+    fontSize: "22px"
+    fontWeight: 400
+    lineHeight: 1.5
 rounded:
   square: "0"
   status: "2px"
@@ -92,7 +97,6 @@ spacing:
   "8": "8px"
   "12": "12px"
   "16": "16px"
-  "18": "18px"
   "20": "20px"
   "24": "24px"
   "25": "25px"
@@ -182,181 +186,185 @@ components:
 
 **Creative North Star: "Authority Loom"**
 
-The organization is an open architectural object: a large Root frame, offset descendant frames, exposed branching rails, and persistent negative space. Procedural graphite materials, narrow illuminated edges, a grounded floor, and rear structural columns give Story and Arena a shared physical setting. Large condensed display type occupies an asymmetric editorial field. Authority Loom replaces the earlier Authority Chamber plate direction.
+Authority Loom expresses recursive capital authority as one asymmetric cast object. An oversized open Root source feeds a broad Research neck, a smaller Data bend, a tapered Scraper termination, an Analysis spur, and an independent Operations arm. Rounded shoulders, a deep underside, taper, and restrained studio reflections make the hierarchy legible through silhouette. Large Anton theses share the graphite field with the object; the scene has no architectural room, repeated node boxes, columns, stairs, or portal stacks.
 
-The same organization becomes a flat operating tree in Command. Native text, exact amounts, complete lineage, controls, and evidence remain separate from the rendered geometry. Mint describes effective authority; copper encloses an all-active impact preview; red interrupts the revoked ancestor's inbound authority; brass marks a resolved verified settlement or an explicitly simulated settlement. The bone inspector keeps financial inspection flat and readable.
+The same authority becomes a flat native financial tree in Command. Geist and Geist Mono carry labels, exact amounts, status, lineage, controls, and evidence. Mint indicates effective authority, copper contains an active impact preview, red marks the local revoked relation, and brass marks resolved settlement with explicit provenance. Arena shares the cast material through a mission basin, three converging submission bands, an asymmetric verifier clamp, and a receipt wing.
 
-This is an extraction of the implemented system, not a new visual brief. The approved high-end visual specification and build prompt establish the replacement world; the current CSS, components, and local font imports establish its values. `PRODUCT.md` supplies the durable protocol constraints. Production-browser captures in `artifacts/high-end/pass2` record the implementation at 1440×900, with 1280×800, 768×900, and 390×900 variants. They do not establish pixel parity with the concept images or successful live Devnet execution; material detail remains subject to visual verification.
+This document extracts the current implementation. PRODUCT.md remains authoritative for product semantics. The visual system consumes the existing authority and mission state; geometry, projection, and motion do not establish transaction evidence or alter accounting. Sources are web/src/app/globals.css and loom.css; the topology, geometry, scene, native projection, Story, Arena, and flat tree components; and web/src/lib/loom-motion.ts.
 
 **Key Characteristics:**
 
-- Open graphite frames and exposed authority rails replace mandate plaques.
-- One persistent Story object compresses into the flat Command relations.
-- Anton display type contrasts with Geist body and exact mono information.
-- Native DOM/SVG text, controls, lineage, and evidence carry product truth.
-- Event-bounded spatial rendering has a native ledger fallback.
+- One asymmetric cast authority silhouette with unequal branch widths and open negative space.
+- Reflective shoulders and dark undersides give the spatial subject depth.
+- Anton display type, Geist interface text, and Geist Mono financial detail.
+- Native DOM labels and controls projected beside desktop geometry.
+- Static SVG projection of the same authored topology on mobile and reduced motion.
+- A flat Command tree and bone inspector preserve exact operational inspection.
 
 ## Colors
 
-Dark graphite and warm bone carry the composition; state colors carry a specific authority or execution meaning. Frontmatter values are normative for the UI. `loom.css` overrides the shared palette after `globals.css` and `experience.css`; inherited ink tokens still serve forms and financial text. Sidecar tonal ramps are display metadata, not additional shipped palette tokens.
+Dark graphite and warm bone carry the composition. State colors have specific authority and execution meanings. Frontmatter values are normative: loom.css loads after globals.css and experience.css, replacing the shared palette while retaining the inherited financial ink colors. Material colors and native metal gradients describe lighting and surface response, not additional interface state tokens. Sidecar tonal ramps are panel metadata, not shipped palette additions.
 
 ### Primary
 
-- **Authority Mint — `mint`:** active structural rims, effective authority rails, selected ancestry, selected tree markers, and Story's emphasized thesis. Mint is not transaction confirmation.
+- **Authority Mint — mint:** the powered conductor, effective active authority, selected ancestry, selected tree markers, and emphasized thesis. Its use is structural and semantic.
 
 ### Secondary
 
-- **Impact Copper — `copper`:** affected-branch boundary and unpaid verifier preview. The spatial preview shader uses its own authored warm copper value; it is a material treatment, not a replacement UI token.
-- **Copper Ink — `copper-ink`:** consequence text and revoke controls on bone.
-- **Settlement Brass — `brass`:** the selected settled Arena lane, verifier resolution, and settlement endpoint. A demo retains visible simulation provenance.
+- **Impact Copper — copper:** the active affected-branch volume and an unpaid selected submission preview.
+- **Copper Ink — copper-ink:** consequence text and revoke controls on bone.
+- **Settlement Brass — brass:** the selected settled submission route and resolved receipt path. Simulated settlement retains its simulation label.
 
 ### Tertiary
 
-- **Authority Cut — `red`:** local revoked state and interrupted incoming authority. Descendants become blocked, with darkened rails rather than additional local red revoke marks.
-- **Cut Ink — `red-ink`:** blocked/revoked text and errors on the financial instrument.
+- **Authority Cut — red:** the local revoked relation and its cut marker.
+- **Cut Ink — red-ink:** errors and consequence text on the financial instrument. Blocked and revoked inspector chips also have their own observed tonal state treatments.
 
 ### Neutral
 
-- **World Graphite — `world`:** shell, Command field, flat nodes, and fallback ledger.
-- **Field Graphite — `field`:** inherited field surfaces and resolved tonal layering.
-- **Bone — `bone`:** Command inspector, plane-change inspector, primary action, and the responsive Arena instrument.
-- **Warm Text / Muted Text — `text` / `muted`:** primary and secondary information on dark surfaces.
-- **Financial Ink / Muted Ink — `ink` / `ink-muted`:** exact financial values and supporting information on bone.
-- **Inspector Ink — `inspector-ink`:** recurring bone-control and plane-inspector contrast.
-- **Structural Line / Relation — `line` / `relation`:** dividers and inactive flat relation strokes.
+- **World Graphite — world / Field Graphite — field:** the shared shell, operating field, native fallback, and tonal surfaces.
+- **Bone — bone:** the primary action, Command inspector, plane inspector, and responsive Arena financial instrument.
+- **Warm Text — text / Muted Text — muted:** primary and secondary information on graphite.
+- **Financial Ink — ink / Muted Ink — ink-muted / Inspector Ink — inspector-ink:** exact values, supporting copy, and controls on bone.
+- **Structural Line — line / Relation — relation:** dividers and inactive flat authority relations.
 
-**The State Color Rule.** Copper previews a consequence without changing authority status. Red marks the actual local cut. Brass appears only with resolved settlement and its provenance. Always pair color with explicit text and path treatment.
+**The State Color Rule.** Copper previews a consequence while authority remains active. Red marks the local cut; blocked descendants lose power and retain explicit blocked text. Brass accompanies resolved settlement and its provenance. Mint alone never means transaction confirmation.
 
 ## Typography
 
 **Display Font:** Anton, with sans-serif fallback.
-**Body Font:** Geist Sans, implemented as `"Geist Variable", sans-serif`.
-**Label and Numeric Font:** Geist Mono, implemented as `"Geist Mono Variable", monospace`.
+**Body Font:** Geist Sans, implemented as "Geist Variable", sans-serif.
+**Label and Numeric Font:** Geist Mono, implemented as "Geist Mono Variable", monospace.
 
-All three fonts load locally through Fontsource CSS imports in `layout.tsx`. Anton is the one added display family. It supplies condensed, uppercase architectural scale; Geist supplies the operating interface and mono financial detail.
+All three fonts load locally through Fontsource imports in layout.tsx. Anton supplies the condensed uppercase thesis and mission name. Geist makes the operating interface readable; Geist Mono distinguishes measured capital, compact labels, lineage, and provenance.
 
 ### Hierarchy
 
-- **Arrival display:** fixed display size from frontmatter, with horizontal compression (`scaleX(0.72)`) and left transform origin. The main thesis has authored line breaks and mint emphasis. It becomes (85px) below 1400px, (58px) in the native fallback, and (54px) below 768px.
-- **Story headline:** the frontmatter headline clamp is the general rule. Trace, preview, and cascade have authored desktop sizes (66px, 68px, 77px). The organization chapter uses a mono heading (14px) and plane change a mono heading (23px); these are existing chapter-specific treatments.
-- **Arena headline:** uses the frontmatter Arena role, then (65px) below 1400px and (58px) in the fallback. Mission titles use Anton (36px / 1.15); mission bounty and resolved payout remain real formatted DOM values even where Anton supplies their display treatment.
-- **Inspector title:** Geist at the frontmatter size and weight, then (34px) below 1400px. Plane-change inspection uses (36px).
-- **Body:** the shared operating base uses the frontmatter body role. Story support uses (17px / 1.5), with a bounded width (410px), then (14px) in the native fallback. Arena support uses (15px / 1.55).
-- **Amounts:** flat-node values use the frontmatter mono amount role, then (16px) below 1400px. Command inspector values use the larger mono role. Spatial annotation values use (15px); exact mobile ledger values use (14px).
-- **Labels and controls:** spatial names are uppercase mono with wide tracking. Shell, state, and provenance details use existing compact sizes (8–12px), with operational controls generally (11–14px). Preserve the native text and readable hierarchy when changing density.
+- **Arrival display:** the frontmatter display clamp, authored line breaks, mint emphasis, and no horizontal transform. Compact desktop uses (85px); the narrow Story layout uses clamp(44px, 12.5vw, 70px).
+- **Story headline:** the frontmatter headline clamp. Trace, impact, and cascade use chapter-specific desktop sizes (66px, 68px, 77px); the organization chapter uses (58px) in the desktop composition. Plane change uses a tracked mono heading (23px). Narrow layouts use (44px); desktop reduced motion retains (48px).
+- **Arena headline:** the frontmatter Arena role, with the compact desktop override (65px). Desktop mission titles use (26px / 1.15); native mission titles use (24px). Monetary values remain mono in the composed desktop and native representations.
+- **Inspector title:** the frontmatter role, then (34px) below 1400px. The plane inspector uses (36px).
+- **Body:** the shared interface uses the frontmatter body role. Story support uses (17px / 1.5) with a bounded width (410px), then (14px) in native layouts. Arena support uses (15px / 1.55).
+- **Amounts:** spatial amounts use the frontmatter spatial role, with Root at (30px) in Genesis. Flat nodes use the frontmatter amount role, with the desktop Root at (23px). Command's main available amount uses (36px) on desktop with full motion and (29px) in its base inspector treatment. Native Story values use (18px), source-only Root (24px), and mobile Command values (14px).
+- **Labels and controls:** uppercase mono names, depth tags, status, and provenance use compact sizes (9–13px). Spatial names use the frontmatter tracking; native names reduce tracking to (0.03em). Buttons use Geist at (13px) for the recurring operating action.
 
-**The Exact Text Rule.** Labels, monetary values, status, addresses, and evidence stay in native DOM/SVG. Geometry and animation consume the existing state; they never calculate balances or supply transaction evidence.
+CapitalNumber shows the formatted target immediately on initial load. A later observed balance change may interpolate for (240ms) at the asset's established display precision; reduced motion and hidden documents resolve directly. The accessible text retains the formatted target.
+
+**The Exact Text Rule.** Names, amounts, units, status, addresses, lineage, actions, and evidence remain native DOM/SVG driven by the existing model. Rendered geometry never supplies financial values or transaction evidence.
 
 ## Layout
 
-Desktop Story uses one sticky viewport stage (100vh, minimum 740px) inside a persistent scroll extent (minimum 450vh). The editorial field starts at (54px, 180px) and has width (440px); the Loom occupies the shared stage behind it. Six chapter controls sit at bottom left and Back/Next/Reset at bottom right. Scroll and chapter controls change the current representation without rebuilding the world. At compact desktop, outer margins become (30px).
+The shared desktop shell uses a horizontal header (84px) and outer margin (54px). Story and Arena put a dominant subject and a condensed thesis in the same viewport. Their header floats above the graphite field. The Command header is a native operating row (80px), with routes at left, Root/vault/mandate figures in the middle, and mode/wallet controls at right.
 
-Story → Command uses the same operational anchors. The spatial stage compresses depth, projects native annotations into flat relations, and resolves the bone inspector. Open Command carries the existing selected mandate and eligible demo state; reduced motion and narrow viewports navigate directly. No separate decorative transition supplies financial state.
+Desktop Story holds one sticky stage (100vh, minimum 740px) within a persistent scroll extent (minimum 450vh). The editorial field begins at (54px, 22vh), with a width of (34vw) and chapter-specific adjustments. The cast object occupies the same stage. Six chapter controls sit at lower left; Back, Next, and Reset sit at lower right. Supporting accounting statements follow the subject along the lower field. The source-only chapter enlarges and centers the open Root within its own camera framing.
 
-Command is a native DOM/SVG workspace at every viewport. Its desktop grid is a flexible tree beside a bone inspector (29.5%). A top operating header (80px) shares its row with exact Root/vault/mandate figures. The tree's search and compact toolbar precede the working surface; the evidence dock follows it. The inspector is sticky at (80px), uses internal padding (32px), and scrolls within the remaining viewport. At compact desktop its padding becomes (25px).
+Command uses a flexible flat tree beside a bone inspector (29.5%). The inspector is sticky beneath the header (80px), has internal padding (32px), and scrolls within the viewport. The compact toolbar and search precede the tree; the event sequence and accounting explanation follow it. The native tree has a minimum height (575px). Its six canonical anchors are Treasury at (43% width, depth 0), Research (35%, depth 1), Operations (82%, depth 1), Data (21%, depth 2), Analysis (50%, depth 2), and Scraper (11.5%, depth 3). Vertical placement is (55px + depth × 143px). General graphs retain the existing layout algorithm. The displayed figure is own available capital; node size is not a quantitative budget scale.
 
-The six canonical anchors are Treasury at (43% width, depth 0), Research (35%, depth 1), Operations (82%, depth 1), Data (21%, depth 2), Analysis (50%, depth 2), and Scraper (11.5%, depth 3). Vertical placement is (55px + depth × 143px), with a minimum map height (575px). General graphs retain the existing layout algorithm. Native node buttons show model-formatted own available amounts; the inspector retains subtree remaining and the complete path to Root. Node size is not a budget scale.
-
-Arena places a mission, three submitted-result lanes in the canonical demo, a narrow verifier, and a settled endpoint in the same procedural setting. The desktop stage is (100vh, minimum 740px). Its flat native summary sits at top right with a divider and no panel background; on fallback layouts it becomes a bone financial instrument after the mission ledger. All mission data and controls remain native elements.
+Arena places the mission basin, converging submission bands, clamp, and receipt in a full viewport stage (100vh, minimum 740px). Native annotations attach to authored anchors. Its desktop action instrument stays under the thesis at left, with a single vertical divider and transparent background. The mission title and bounty occupy the basin opening; the selected lane and receipt carry resolution. Native layouts place the projected execution subject before the mission switcher and bone financial instrument.
 
 ### Responsive behavior
 
-- **Below 1400px:** Story outer margins reduce to (30px), display type and flat nodes reduce in size, and the Arena summary becomes narrower (240px).
-- **Below 1100px or reduced motion:** Story and Arena do not mount the lazy spatial scene. They use native nested authority or mission ledgers, a normal document flow, relative chapter controls, and following inspection. Command reflows below 1100px; at desktop reduced motion it keeps its flat two-column graph.
-- **Nested authority ledger:** depth-first ordering keeps each subtree contiguous. Row indentation is (18px + depth × 22px), minimum row height is (76px), and each row retains its name, exact amount, depth, and effective status.
-- **Below 768px:** shell controls and navigation use compact sizing; arrival display reduces to (54px). Responsive documents remain scrollable, with full-width financial inspection and explicit provenance.
-- **GPU loss or canvas failure:** the spatial wrapper marks the scene unavailable and retains native authority content. Arena switches from its stage to its mission ledger. Native inspection and controls remain available.
+- **Below 1400px:** outer margins reduce to (30px), flat nodes reduce from (184px) to (160px), inspector padding becomes (25px), and typography has the observed compact overrides.
+- **Below 1100px:** Story becomes normal document flow. Thesis and support are followed immediately by the static cast subject, then the action, chapter rail, inspection, and navigation. The native authority canvas uses a viewBox width (340), with source-only height (285) and full-tree height (525); its mobile maximum width is (340px).
+- **Reduced motion:** Story and Arena do not mount the spatial scene and show the static SVG cast projection. Desktop reduced-motion Story uses two columns with a gap (36px) and padding (40px 54px). Command remains a flat two-column operating graph at widths of 1100px and above.
+- **Mobile Command:** the tree becomes a depth-first nested ledger. Each subtree stays contiguous; row indentation is (18px + depth × 22px) and minimum row height is (76px). Each native row retains name, exact amount, depth, and effective status. The full-width bone inspector follows the field.
+- **Native Arena:** the mathematical projection uses a viewBox (340 × 380), a maximum width (510px), and an aspect ratio that preserves the basin, bands, clamp, and receipt wing. Labels remain independently selectable native controls.
+- **Below 768px:** the shell becomes a compact wrapped header (72px) with smaller wordmark, routes, mode, and wallet controls.
+- **Unavailable WebGL:** native authority content remains in the wrapper. Arena reveals the native execution representation through its failure layout. This path shares the authored topology; it does not require a screenshot or a second financial model.
 
 ## Elevation & Depth
 
-Story and Arena use actual procedural Three.js geometry through a lazy React Three Fiber scene. Open extruded frames have structural thickness (0.22 world units) and a narrow edge bevel (0.028); rails curve through deliberate corners rather than connecting card centers. Root repeats two rear frames. Offset frames, the floor, rear columns, distance fog, material response, and real shadows establish foreground and background. There are no shipped concept-image backgrounds.
+The spatial subject is custom BufferGeometry following centripetal curved sweeps. A sampled profile creates the rounded shoulder, deep underside, changing width, twist, and taper. Root keeps a broader taper (0.85); descendant terminations taper more strongly (0.35). A dark, broader underside sits behind the face. Parent connectors use the same cast material, so the authority structure reads as a continuous object.
 
-The current front structural material uses `MeshStandardMaterial` with color (`#424844`), roughness (0.46), metalness (0.28), and bump scale (0.038). Rear structure uses (`#1d2321`), roughness (0.72), metalness (0.12), and bump scale (0.009). A generated repeating height field (128×128) combines deterministic interpolated hash noise at three scales; mesh-space shader variation adds fine surface detail without visible sinusoidal bands. The floor uses (`#242b27`), roughness (0.2), and metalness (0.42). A procedural room environment has intensity (0.28), and the front area key has intensity (1.1); authored directional/spot lights and soft shadows reveal edges. These values record implementation, not a claim of finished material parity.
+The front material is a reflective green graphite (color #69786e, roughness 0.2, metalness 0.88, environment intensity 2). The edge uses darker graphite (#202c26, roughness 0.36, metalness 0.65), and the recess is darker again (#101a16, roughness 0.52, metalness 0.3). A generated studio cubemap, hemisphere light, warm key, and cool edge light shape the highlights. The current scene uses an orthographic camera and a transparent canvas. It does not rely on a room, floor receiver, background columns, fog, post-processing bloom, or decorative card shadows for depth.
 
-The authority stage keeps six area-light slots for canonical chambers plus the shared environment lights; scene events update their intensity and transform. Chamber light intensity is (4 × effective authority × construction), and lights extinguish during flattening. The constant light count avoids recompiling the physical materials when a delegate appears. No lights are added per animation frame. The canvas uses a demand frame loop, low-power preference, ACES filmic tone mapping, and exposure (0.9). RenderBudget observes only already-requested demand frames; it never starts an idle loop. After four valid interframe intervals (8–180ms), an upper median above (36ms) lowers only the Canvas render scale through (1 → 0.75 → 0.5625 → 0.5), within the limit (0.5–1). Scale persists in local presentation state across model-prop updates. On a weak GPU, reduced quality affects only rendered geometry; native DOM/SVG retains full CSS resolution, and camera, projection, and authority state remain unchanged. Each event still stops requesting frames when its step resolves.
-
-Command, native ledgers, and bone inspection use flat tonal contrast and relation strokes. Spatial text has a restrained readability shadow; financial panels do not gain the rendered object's perspective or surface texture.
+The native cast uses vector faces with a metal gradient and dark underside fills projected from the authored sweeps and rounded profile. It preserves the subject's shape without mounting the Three.js scene. The financial tree, buttons, labels, and inspector remain flat; dividers, tonal contrast, and selection markers establish hierarchy.
 
 ### Shadow Vocabulary
 
-- **Spatial annotation:** `0 2px 12px #080b0b`; supports native labels over geometry and disappears in the flattened representation.
-- **Wallet overlay:** `0 16px 40px #0005`; the inherited temporary wallet popover treatment.
-- **Physical structure:** soft canvas shadows, with the authored directional shadow map (1024×1024); these belong to geometry rather than operating panels.
+- **Wallet popover** (box-shadow: 0 16px 40px #0005): the inherited floating wallet surface.
+- **Financial instrument and scene annotations:** no decorative box shadow. Native labels have no text shadow.
 
-**The Flat Inspection Rule.** Financial inspection and Command remain flat. Procedural depth belongs to the explanatory and mission objects, while native text and interaction remain screen readable.
-
-Motion is driven by the same state as camera, frames, rails, labels, and deltas. The current scene director uses default resolve (650ms), trace (800ms), copper preview (950ms), grant (1150ms, or the existing construction override), cascade (1400ms), and plane compression (1150ms). Arena uses ready resolve (400ms), funded/submitted resolve (900ms), and settlement resolve (1300ms). Each event requests frames until it resolves, then returns to idle. Hidden documents resolve or cancel pending choreography, and reduced motion bypasses spatial rendering. Existing CSS feedback uses the shared selection (140ms) and receipt (200ms) timings.
+**The Material Depth Rule.** Depth belongs to the cast profile, its underside, and studio reflections. Native operating surfaces remain flat; do not add spatial effects to the financial inspector.
 
 ## Shapes
 
-The signature silhouette is a sequence of open structural frames. Their thickness and offsets make hierarchy perceptible while leaving the center open. The impact preview is a branch-shaped copper wire volume. The single local revoke is a small red interruption on the incoming Research relation; retained descendant structure darkens after it loses effective authority.
+The signature is an open, uneven cast strip. Root has a large hollow source; Research has a broad neck; Data bends; Scraper narrows to a small termination; Analysis is a shorter spur; Operations has its own arm. Their directions and widths make ancestry recognizable before reading labels. Metal connectors join actual parent endpoints. Fine powered conductors follow the cast's center; a separate narrow bone rail represents the observed available ratio.
 
-Operating surfaces and buttons have square corners. Inputs retain a modest inherited radius (3px); instrument status retains (2px). Circular authority dots are small relation anchors (16px desktop, 10px ledger), not avatars. Flat relations use orthogonal vertical/horizontal routing, with a brighter selected lineage. Native preview contours enclose the affected subtree without changing its status.
+The impact treatment is a copper perimeter volume with a front contour, rear contour, and depth connectors, drawn around Research's affected branch. The local cut opens only the Research incoming relation, with two small red opposing marks. Native and flat representations retain explicit blocked/revoked text and line treatments.
+
+Buttons, the bone inspector, and flat nodes use square corners. Inputs retain a small corner (3px); inspector state chips use (2px). Authority markers and selected annotation dots are circular. Thin guides and tree elbows have a functional relationship to the information, with clear space around labels.
+
+**The Continuous Authority Rule.** A branch joins its actual parent through the cast connector and conductor. Preserve the unequal widths, bends, tapers, and independent Operations arm; do not turn each mandate into the same repeated box.
 
 ## Components
 
 ### Buttons
 
-Primary actions are flat bone slabs with native labels and a directional icon where present. Story's action uses minimum width (190px), minimum height (56px), and padding (0 20px). General operating buttons use minimum height (48px), padding (12px 16px), and square corners. Existing dark, transparent, copper, and copper-outline variants remain available. Command's revoke preview is a full-width divider action with padding (18px 0), rather than a raised card.
+Flat, square actions with a precise typographic label and optional inline arrow.
 
-Feedback changes background or border; buttons do not float on hover. Disabled controls keep their actual eligibility and inherited reduced opacity. Native keyboard focus remains visible; bone instruments use a dark green focus outline. The sidecar records component-specific hover, focus, and active CSS.
+- **Primary bone action:** bone background, inspector ink, and an observed Story treatment (56px minimum height, 0 20px padding).
+- **Dark financial action:** financial ink background, bone text, and compact padding (12px 16px); the common action minimum is (48px).
+- **Subtle action:** transparent background, inherited text color, and a muted border. Hover adds a very faint white fill.
+- **Copper confirmation:** copper ink background and bone text. Review actions use copper ink text on a transparent financial surface; Command's review control is a full-width top-divided row.
+- **Hover / active / focus:** colors change without hover lift. The inherited active press moves down (1px). State transitions use (140ms); the press uses (80ms). Focus is a mint outline (2px, offset 5px); bone instruments use dark green focus. Disabled buttons retain native disabled behavior and reduced opacity.
 
 ### Inputs / Fields
 
-Transaction fields are transparent native inputs with a restrained stroke, mono values, padding (10px 12px), minimum height (42px), and modest corners. Command's search is visually lighter: an inline icon and borderless query field. A search result can expose a small bone result area. Focus, errors, and eligibility explanations remain native and adjacent to the relevant action.
+Transparent mono fields with a muted green-gray stroke, small corners, internal padding (10px 12px), and minimum height (42px). Width is (100%). Caret is mint on graphite and financial ink in the inspector. Focus uses the surface's explicit outline. Search remains a compact native input in the tree field.
 
 ### Navigation
 
-Only Story, Command, and Arena are surface links. The desktop shell uses uppercase labels (12px, tracking 0.12em), a mint active underline, and neutral mode/network controls. Story/Arena place the shell over the stage; Command combines navigation and treasury information in its operating row. Chapter controls are ordinary buttons with current-step semantics and a mint underline. Wallet and mode controls retain their real state.
+Only Story, Command, and Arena appear in the main navigation. Uppercase labels use compact tracking (0.12em). The active route has warm text and a mint bottom rule. Hover raises text contrast. The chapter rail uses native buttons with the selected chapter in mint and an underline; its mobile treatment wraps rather than changing the chapter names.
 
-### Status
+### State Chips
 
-Status is explicit uppercase mono text. Spatial annotations retain active/revoked/blocked labels; compact flat-map nodes hide active text but retain revoked/blocked text and selected path markers. Native ledger rows always include effective status. The Command inspector shows both stored local state and effective state, with its compact active badge on bone. Preview adds a copper contour without replacing active labels.
+On graphite, status is compact uppercase mono text without a pill background. The Command inspector uses a small tonal chip: active is green-tinted; blocked is muted neutral; revoked is warm red-tinted. Text states remain explicit. A blocked descendant is visually distinct from the locally revoked record.
 
-### Flat authority tree and bone inspector
+### Financial Containers
 
-Node identity sits beside an exposed relation anchor, followed by the exact available amount. Selection adds a mint bottom rule and illuminates the complete available ancestor path. Treasury, Research, Operations, Data, Analysis, and Scraper all remain in the canonical tree; explicit collapse is the existing operator action. Inspection shows available, subtree remaining, parent, depth/children, complete ancestry, actions, and provenance. It does not copy geometry into the financial pane.
+The bone inspector is a square native financial surface. Selected mandate, local and effective state, own available amount, subtree remaining, depth, parent, and complete path stay separate. Thin dividers organize the available amount, lineage, and action sections. The event sequence and provenance remain native content. The desktop Arena instrument is transparent with a left rule; its responsive variant becomes a bone instrument.
 
-### Persistent spatial Loom
+### Authority Subject and Annotations
 
-Story uses the existing `genesis` fixture and `revokeDemo` operation. Construction reveals the existing mandates, trace resolves their existing ancestry, and copper preview leaves every affected record active. Confirmation revokes Research locally and makes Data, Analysis, and Scraper effectively blocked while Operations remains active. The physical frames persist. The separate accounting line explains the fixture's release of Research capacity and unchanged shared vault; the cut itself is not a token-transfer animation.
+Desktop Story renders the cast topology once and changes existing transforms and shader uniforms for each event. Real button annotations are projected from authored anchors; their name, depth, amount, unit, and effective state remain DOM content. A selected name turns mint and gains a small circular dot. Research and Data sit outside the left cast contour with guides; the other labels attach to authored positions that preserve the silhouette.
 
-### Arena execution stage
+The event vocabulary is authored in loom-motion.ts: Genesis (850ms), recursion (550ms), trace (650ms), impact (500ms), cascade (1100ms), plane change (850ms), and settlement (850ms), with a depth interval (200ms). Progress resolves with a clamped quartic ease.
 
-The source lifecycle remains `ready → funded → submitted → settled`. Candidate selection is an unpaid UI preview, not an extra transaction state. Copper identifies that preview. Only the settled winner continues through the verifier into the brass endpoint. The two final checklist entries resolve together because verification and payout are atomic in the existing operation. Demo A/B/C submissions, values, and receipts remain explicitly simulated; real views use the existing bounty/submission accounts and transaction lifecycle.
+- **Delegation:** the inbound relation grows through the first (48%) of its event; the child resolves from its endpoint after (50%). The native label appears late in resolution (85%).
+- **Trace:** one bounded traversal follows selected ancestry. Root stays present, and unrelated powered branches reduce visual emphasis.
+- **Impact:** copper draws the enclosing volume while active authority and financial state remain unchanged.
+- **Cut:** the Research relation opens locally. Power loss follows depth at the authored interval; Operations retains its geometry, coordinates, and authority.
+- **Plane change:** the cast's z depth compresses toward zero, labels converge on the existing flat Command anchors, native relations appear, and the bone inspector resolves. Narrow and reduced-motion layouts navigate directly.
+- **Rendering:** the scene uses demand rendering and stops invalidating after the event resolves. This is implementation behavior, not a claim of measured performance.
 
-### Evidence and recorded surfaces
+### Flat Authority Tree
 
-The compact event sequence shows the current evidence and expandable history. Demo events say simulated; real transaction links and outcomes come from the existing client. These production-browser images record the seven built compositions:
+Square native node buttons sit on orthogonal SVG ancestry relations. A selected mandate has a mint bottom rule. Effective active ancestry fills its circular marker; unrelated markers remain outlined. Revoked relations are red and dashed; blocked relations are muted and dashed. Preview changes affected text to copper and draws a copper extent. Mobile selection uses the same native state within the nested ledger.
 
-| Composition                 | Implemented capture                                                         |
-| --------------------------- | --------------------------------------------------------------------------- |
-| Arrival                     | [01-arrival.png](artifacts/high-end/pass2/01-arrival.png)                   |
-| Organization                | [02-organization.png](artifacts/high-end/pass2/02-organization.png)         |
-| All-active impact preview   | [03-blast-preview.png](artifacts/high-end/pass2/03-blast-preview.png)       |
-| Authority cascade           | [04-cascade.png](artifacts/high-end/pass2/04-cascade.png)                   |
-| Plane change                | [05-plane-change.png](artifacts/high-end/pass2/05-plane-change.png)         |
-| Flat Command                | [06-command-active.png](artifacts/high-end/pass2/06-command-active.png)     |
-| Simulated atomic settlement | [07-arena-settlement.png](artifacts/high-end/pass2/07-arena-settlement.png) |
+### Arena Execution Subject
 
-Responsive captures use the existing `390-`, `768-`, and `1280-` route filenames in the same directory. `results.json` records the browser and captured viewports. Captures are visual evidence of the build, not chain evidence.
+A cast mission basin opens into three distinct converging submission bands. The asymmetric verifier clamp spans their meeting point; the receipt wing continues from it. Capital funding, submission selection, and settlement have separate routes. Funding is mint. Selecting a submitted result creates an unpaid copper preview. Resolved settlement makes the winning submission and receipt route brass. The native representation uses the same declared basin, submission, clamp, and receipt sweeps. Actions, formatted values, status, and the existing ready/funded/submitted/settled lifecycle remain native application state.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** preserve the open Root and descendant frames, exposed rails, and one shared graphite environment.
-- **Do** keep native text, exact amounts, controls, complete ancestry, and evidence driven by the existing model.
-- **Do** keep all affected mandates active during copper preview and distinguish local revoke from effective descendant blocking.
-- **Do** use brass only for resolved settlement with real or explicitly simulated provenance.
-- **Do** keep the Command tree and bone inspection flat, with all six canonical nodes and complete paths.
-- **Do** retain event-bounded rendering and native ledger fallback for narrow viewports, reduced motion, and scene failure.
+- **Do** preserve graphite and bone as the field and financial instrument, with mint, copper, red, and brass bound to their implemented meanings.
+- **Do** keep Anton for condensed theses, Geist for readable interface text, and Geist Mono for exact financial detail.
+- **Do** preserve the open Root, broad Research neck, Data bend, Scraper taper, Analysis spur, and separate Operations arm.
+- **Do** keep desktop labels and actions as real projected DOM controls, with restrained guides and clear space around the cast contour.
+- **Do** preserve the same authored subject as a static SVG projection on narrow viewports, reduced motion, and unavailable WebGL.
+- **Do** place the mobile Story subject directly after its thesis and support copy, before the chapter actions.
+- **Do** keep Command flat, with own available amounts in the tree and complete financial inspection in the bone instrument.
+- **Do** retain visible simulation or observed-state provenance beside mission state, actions, and receipts.
 
 ### Don't:
 
-- **Don't** restore the superseded mandate-plate composition or substitute repeated cards for the open Loom.
-- **Don't** ship concept images as UI backgrounds or place product labels and amounts inside raster or canvas text.
-- **Don't** use broad bloom haze, random particles, smoke, generic network orbs, floating panes, or decorative gradients.
-- **Don't** animate token recovery from an authority cut or invent intermediate verification/payout transaction states.
-- **Don't** fabricate signatures, confirmations, addresses, rejected transactions, Explorer evidence, or live Devnet success.
-- **Don't** claim photo or pixel parity from the current captures; verify visible material detail against the approved targets.
+- **Don't** restore the rejected rectangular Root frame, repeated beveled node boxes, CAD room, columns, stairs, card stacks, or portal stacks.
+- **Don't** render labels, amounts, status, buttons, lineage, or receipts as pixels inside the 3D scene or a full-screen mockup image.
+- **Don't** use copper preview as a revoked state, mark blocked descendants as locally revoked, or imply that tokens move during delegation or revoke.
+- **Don't** move, reshape, extinguish, or cut Operations when Research is revoked.
+- **Don't** introduce perpetual scene motion, looping ancestry pulses, or perspective-dependent mobile controls.
+- **Don't** use decorative shadows, gradients, or glass panels to replace the flat financial inspector.
+- **Don't** interpret a rendered receipt, screenshot, or animation as proof of a live transaction or successful Devnet execution.

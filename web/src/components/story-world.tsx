@@ -14,6 +14,7 @@ import {
 import { AuthorityTrace } from "./authority-tree";
 import SpatialLoom from "./spatial-loom";
 import { useWorld } from "./world-shell";
+import { loomMotion } from "@/lib/loom-motion";
 
 const chapters = [
   {
@@ -173,7 +174,7 @@ export default function StoryWorld() {
     cancel();
     setBuilding(true);
     const last = all ? 6 : count + 1;
-    const step = all ? 450 : 1150;
+    const step = all ? loomMotion.recursion : loomMotion.genesis;
     const immediate = reduced() || innerWidth < 1100;
     const create = (n: number) => {
       const before = genesis(n - 1),
@@ -249,7 +250,7 @@ export default function StoryWorld() {
       return;
     }
     setFlattening(true);
-    later(() => router.push("/app"), 1200);
+    later(() => router.push("/app"), loomMotion.plane);
   }
   return (
     <main
@@ -422,7 +423,11 @@ export default function StoryWorld() {
               chapter={current.id}
               flatten={flattening}
               grant={grant}
-              grantDuration={chapter === 0 && count === 2 ? 1150 : 450}
+              grantDuration={
+                chapter === 0 && count === 2
+                  ? loomMotion.genesis
+                  : loomMotion.recursion
+              }
               preview={preview ? "research" : undefined}
               trace={trace}
               traceEpoch={traceEpoch}
