@@ -7,6 +7,7 @@ import { short, toBaseUnits } from "@/lib/solana/pdas";
 import { ConnectionInstrument, useWorld } from "./world-shell";
 import { EvidenceLedger } from "./command-world";
 import CapitalNumber from "./capital-number";
+import SpatialLoom from "./spatial-loom";
 
 export default function ArenaWorld() {
   const w = useWorld();
@@ -173,7 +174,13 @@ export default function ArenaWorld() {
     <main className="arena-world">
       <section className="arena-heading">
         <div>
-          <h1>Arena</h1>
+          <h1>
+            WORK
+            <br />
+            RESOLVES
+            <br />
+            <em>TO CAPITAL.</em>
+          </h1>
           <span>
             {w.demo
               ? "MISSION M-001 · SIMULATED EXECUTION"
@@ -227,6 +234,20 @@ export default function ArenaWorld() {
             className={`mission-stage ${status} ${settled ? "resolved" : ""} ${submitted && previewResult && !settled ? "verifier-preview" : ""}`}
             data-testid="mission-execution-field"
           >
+            <SpatialLoom
+              model={w.model!}
+              selected={w.selected}
+              onSelect={w.select}
+              arena={{
+                status,
+                candidate: candidate.charCodeAt(0) - 65,
+                preview: previewResult,
+                names,
+                winnerIndex: w.demo
+                  ? w.missionWinner.charCodeAt(0) - 65
+                  : names.findIndex((n) => n === winner),
+              }}
+            />
             <svg
               className="mission-channels"
               viewBox="0 0 1000 530"
@@ -288,7 +309,7 @@ export default function ArenaWorld() {
                 />
               )}
             </svg>
-            <div className="capital-source">
+            <div className="capital-source" data-arena-label="capital">
               <span>CAPITAL SOURCE</span>
               <strong>Treasury</strong>
               <b>
@@ -319,6 +340,7 @@ export default function ArenaWorld() {
               {(submitted ? names : ["Awaiting submissions"]).map((name, i) => (
                 <button
                   key={name}
+                  data-arena-label={`lane-${i}`}
                   className={`contender ${settled && name === winner ? "winner" : ""} ${!submitted ? "empty" : ""}`}
                   disabled={!w.demo || !submitted || settled}
                   onClick={() => choose(i)}
@@ -344,7 +366,7 @@ export default function ArenaWorld() {
                 </button>
               ))}
             </div>
-            <div className="mission-basin">
+            <div className="mission-basin" data-arena-label="mission">
               <span>
                 {w.demo
                   ? "MISSION M-001"
@@ -375,7 +397,7 @@ export default function ArenaWorld() {
                 </strong>
               </div>
             </div>
-            <div className="verifier-gate">
+            <div className="verifier-gate" data-arena-label="verifier">
               <span>VERIFIER</span>
               <div className="gate-aperture" aria-hidden="true">
                 <i />
@@ -399,7 +421,7 @@ export default function ArenaWorld() {
               </small>
             </div>
             {settled && (
-              <div className="mission-outcome">
+              <div className="mission-outcome" data-arena-label="outcome">
                 <span>
                   {w.demo ? "SIMULATED ATOMIC RECEIPT" : "OBSERVED SETTLEMENT"}
                 </span>

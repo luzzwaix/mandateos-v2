@@ -22,7 +22,8 @@ import {
 } from "@/lib/authority";
 import { short, toBaseUnits } from "@/lib/solana/pdas";
 import { explorer } from "@/lib/solana/program";
-import AuthorityTree, { AuthorityTrace } from "./authority-tree";
+import { AuthorityTrace } from "./authority-tree";
+import AuthorityTree from "./flat-authority-tree";
 import CapitalNumber from "./capital-number";
 import { useWorld, ConnectionInstrument } from "./world-shell";
 
@@ -329,33 +330,9 @@ export default function CommandWorld() {
             </span>
           </strong>
         </div>
-        <div className="ledger-freshness">
-          <small>
-            {w.demo
-              ? "SIMULATED · NO TRANSACTIONS"
-              : w.live.stale
-                ? "STALE · REFRESH REQUIRED"
-                : w.live.lastRead
-                  ? `READ ${new Date(w.live.lastRead).toLocaleTimeString()}`
-                  : "READ UNAVAILABLE"}
-          </small>
-          <button
-            className="text-button"
-            disabled={!!w.live.busy}
-            onClick={() => {
-              setPreview(undefined);
-              setProof(false);
-              if (w.demo) w.reset();
-              else void w.live.run("Refresh accounts", () => w.live.refresh());
-            }}
-          >
-            <RotateCcw size={12} />
-            {w.demo ? "Reset demo" : "Refresh"}
-          </button>
-        </div>
       </section>
       <div className="command-zones">
-        <aside className="hierarchy-rail">
+        <aside className={`hierarchy-rail ${query ? "searching" : ""}`}>
           <label className="search-field">
             <Search size={13} />
             <input
@@ -452,6 +429,31 @@ export default function CommandWorld() {
             collapsed={collapsed}
           />
           <EvidenceLedger compact />
+          <div className="ledger-freshness">
+            <small>
+              {w.demo
+                ? "SIMULATED · NO TRANSACTIONS"
+                : w.live.stale
+                  ? "STALE · REFRESH REQUIRED"
+                  : w.live.lastRead
+                    ? `READ ${new Date(w.live.lastRead).toLocaleTimeString()}`
+                    : "READ UNAVAILABLE"}
+            </small>
+            <button
+              className="text-button"
+              disabled={!!w.live.busy}
+              onClick={() => {
+                setPreview(undefined);
+                setProof(false);
+                if (w.demo) w.reset();
+                else
+                  void w.live.run("Refresh accounts", () => w.live.refresh());
+              }}
+            >
+              <RotateCcw size={12} />
+              {w.demo ? "Reset demo" : "Refresh"}
+            </button>
+          </div>
           {preview ? (
             <div className="impact-summary">
               <div>
@@ -626,15 +628,14 @@ export default function CommandWorld() {
                   <Copy size={12} />
                 </button>
               )}
-              {status === "blocked" || trace ? (
-                <>
-                  <h3>Effective authority</h3>
-                  <AuthorityTrace model={model} selected={node.id} />
-                </>
-              ) : (
+              {
                 <>
                   <div className="instrument-capital">
-                    <span>AVAILABLE</span>
+                    <span>
+                      {status === "blocked"
+                        ? "STORED AVAILABLE · BLOCKED"
+                        : "AVAILABLE"}
+                    </span>
                     <strong>
                       <CapitalNumber
                         value={node.available}
@@ -673,6 +674,12 @@ export default function CommandWorld() {
                         .join(" → ")}
                     </p>
                   </div>
+                </>
+              }
+              {(status === "blocked" || trace) && (
+                <>
+                  <h3>Effective authority</h3>
+                  <AuthorityTrace model={model} selected={node.id} />
                 </>
               )}
               {status === "blocked" ? (

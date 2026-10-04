@@ -1,0 +1,1618 @@
+/* The Authority Loom. Financial state belongs to the existing application. */
+:root {
+  --world: #111617;
+  --field: #141a1b;
+  --bone: #ede9df;
+  --text: #f6f5ef;
+  --muted: #b7bfbc;
+  --mint: #b9efdb;
+  --copper: #efab75;
+  --red: #ff625b;
+  --brass: #ecc28a;
+  --line: #424b4a;
+}
+body {
+  background: var(--world);
+}
+::selection {
+  background: var(--mint);
+  color: #101918;
+}
+button,
+a,
+input,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+:focus-visible {
+  outline: 2px solid var(--mint);
+  outline-offset: 5px;
+}
+.bone-instrument :focus-visible {
+  outline-color: #2c6655;
+}
+.world-header {
+  height: 84px;
+  padding: 0 54px;
+  background: #111617;
+  border-bottom: 1px solid #424b4a;
+}
+.world-header .wordmark {
+  font-size: 13px;
+  font-weight: 550;
+  letter-spacing: 0.23em;
+  gap: 0;
+}
+.wordmark .root-anchor {
+  display: none;
+}
+.world-header nav {
+  margin-left: 54px;
+  gap: 38px;
+}
+.world-header nav a {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #b6bcba;
+  padding: 30px 0;
+}
+.world-header nav a[aria-current="page"] {
+  color: #f6f5ef;
+}
+.world-header .shell-controls {
+  font-family: "Geist Mono Variable", monospace;
+  font-size: 10px;
+}
+.world-header:has(+ .route-plane .story-world),
+.world-header:has(+ .route-plane .arena-world) {
+  background: transparent;
+  border-color: transparent;
+}
+.world-header:has(+ .route-plane .story-world),
+.world-header:has(+ .route-plane .arena-world) {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+}
+.button {
+  border-radius: 0;
+  min-height: 48px;
+  font-weight: 500;
+}
+.button.bone {
+  background: var(--bone);
+  color: #17201d;
+  border-color: var(--bone);
+}
+.button:hover {
+  transform: none;
+  translate: none;
+}
+.persistent-story.story-world {
+  margin: 0;
+  min-height: 450vh;
+  background: transparent;
+}
+.persistent-story .story-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  min-height: 740px;
+  display: block;
+  padding: 0;
+  overflow: hidden;
+}
+.persistent-story .story-editorial {
+  position: absolute;
+  z-index: 3;
+  top: 180px;
+  left: 54px;
+  width: 440px;
+  height: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+.story-editorial button,
+.story-editorial a {
+  pointer-events: auto;
+}
+.persistent-story .chapter-copy {
+  padding: 0;
+}
+.persistent-story .chapter-copy h1,
+.persistent-story .chapter-copy h2 {
+  font-family: Anton, sans-serif;
+  font-size: clamp(70px, 6.65vw, 106px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  max-width: 460px;
+  margin: 0 0 20px;
+  text-transform: uppercase;
+}
+.persistent-story .chapter-copy h1 span {
+  color: var(--mint);
+}
+.persistent-story .chapter-copy h1 {
+  white-space: nowrap;
+  width: max-content;
+  max-width: none;
+  font-size: 100px;
+  transform: scaleX(0.72);
+  transform-origin: left top;
+}
+.persistent-story .chapter-copy h1 br {
+  display: initial;
+}
+.persistent-story .chapter-copy p {
+  font-size: 17px;
+  line-height: 1.5;
+  max-width: 410px;
+  color: #d4d8d4;
+  margin: 0;
+}
+.persistent-story .chapter-action {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.persistent-story .chapter-action .button {
+  padding: 0 20px;
+  font-size: 13px;
+  min-width: 190px;
+}
+.persistent-story .demo-caption {
+  flex-basis: 100%;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #b7bfbc;
+}
+.persistent-story .authority-delta {
+  font-size: 11px;
+  line-height: 1.45;
+}
+.persistent-story .chapter-rail {
+  position: fixed;
+  z-index: 6;
+  bottom: 22px;
+  left: 54px;
+  display: flex;
+  gap: 20px;
+  border: 0;
+  width: auto;
+  padding: 0;
+}
+.chapter-rail button {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  font-size: 10px;
+  color: #aeb9b6;
+  background: transparent;
+}
+.chapter-rail button span {
+  display: none;
+}
+.chapter-rail button[aria-current="step"] {
+  color: var(--mint);
+  text-decoration: underline;
+  text-underline-offset: 8px;
+}
+.persistent-story .chapter-navigation {
+  position: fixed;
+  z-index: 6;
+  right: 50px;
+  bottom: 20px;
+  margin: 0;
+  gap: 20px;
+}
+.persistent-story .story-specimen {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  display: block;
+  overflow: visible;
+}
+.persistent-story .story-object {
+  position: absolute;
+  inset: 0;
+  transform: none;
+}
+.persistent-story .specimen-caption {
+  position: absolute;
+  z-index: 2;
+  right: 54px;
+  top: 95px;
+  padding: 0;
+  font:
+    10px "Geist Mono Variable",
+    monospace;
+  letter-spacing: 0.08em;
+  gap: 18px;
+}
+.persistent-story .story-instrument {
+  position: absolute;
+  z-index: 3;
+  bottom: 94px;
+  left: 54px;
+  right: 54px;
+  display: flex;
+  gap: 30px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  min-height: 0;
+}
+.persistent-story .story-instrument > div {
+  max-width: 470px;
+  padding: 0 30px 0 0;
+}
+.persistent-story .story-instrument > div + div {
+  border-left: 1px solid #727975;
+  padding-left: 30px;
+}
+.persistent-story .story-instrument span {
+  font:
+    11px "Geist Mono Variable",
+    monospace;
+  letter-spacing: 0.12em;
+  color: #c3cac6;
+}
+.persistent-story .story-instrument strong {
+  font-size: 15px;
+  margin: 9px 0 5px;
+  display: block;
+  font-weight: 500;
+}
+.persistent-story .story-instrument p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #bfc8c3;
+  margin: 0;
+}
+.persistent-story .story-instrument .authority-trace {
+  display: none;
+}
+.persistent-story[data-chapter="genesis"] .story-instrument {
+  left: auto;
+  right: 54px;
+  max-width: 350px;
+  bottom: 90px;
+}
+.persistent-story[data-chapter="genesis"] .story-instrument > div {
+  max-width: 350px;
+}
+.persistent-story[data-chapter="genesis"] .story-instrument > div + div {
+  display: none;
+}
+.persistent-story[data-chapter="recursion"] .story-editorial {
+  top: 110px;
+  width: 540px;
+}
+.persistent-story[data-chapter="recursion"] .chapter-copy h2 {
+  font:
+    14px "Geist Mono Variable",
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  max-width: 520px;
+}
+.persistent-story[data-chapter="recursion"] .chapter-copy p {
+  display: none;
+}
+.persistent-story[data-chapter="recursion"] .chapter-action {
+  position: fixed;
+  right: 54px;
+  bottom: 154px;
+}
+.persistent-story[data-chapter="trace"] .chapter-copy h2 {
+  font-size: 66px;
+  max-width: 340px;
+}
+.persistent-story[data-chapter="blast"] .chapter-copy h2 {
+  font-size: 68px;
+  max-width: 500px;
+}
+.persistent-story[data-chapter="blast"] .story-editorial {
+  top: 110px;
+  width: 535px;
+}
+.persistent-story[data-chapter="cut"] .chapter-copy h2 {
+  font-size: 77px;
+}
+.persistent-story[data-chapter="enter"] .chapter-copy h2 {
+  font:
+    23px "Geist Mono Variable",
+    monospace;
+  letter-spacing: 0.18em;
+  max-width: 370px;
+}
+.persistent-story[data-chapter="enter"] .story-editorial {
+  top: 110px;
+  width: 300px;
+}
+.persistent-story[data-chapter="enter"] .chapter-copy p {
+  max-width: 280px;
+  font-size: 13px;
+}
+.persistent-story[data-chapter="enter"] .story-instrument {
+  display: none;
+}
+.story-arena-invitation {
+  margin-top: 24px;
+  max-width: 310px;
+  font-size: 12px;
+}
+.plane-inspector {
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  top: 84px;
+  bottom: 80px;
+  width: 29.5%;
+  padding: 42px 34px;
+  background: var(--bone);
+  color: #17201d;
+  border: 0;
+}
+.plane-inspector h2 {
+  font-family: "Geist Variable", sans-serif;
+  font-size: 36px;
+  margin: 20px 0 14px;
+}
+.plane-inspector > span {
+  font:
+    11px "Geist Mono Variable",
+    monospace;
+}
+.plane-inspector .details {
+  margin-top: 40px;
+}
+.plane-inspector .details > div {
+  display: block;
+  padding: 20px 0;
+}
+.plane-inspector .details dd {
+  margin: 12px 0 0;
+  font-size: 16px;
+  text-align: left;
+}
+.spatial-loom {
+  position: absolute;
+  inset: 0;
+}
+.loom-canvas {
+  position: absolute !important;
+  inset: 0;
+  pointer-events: none;
+}
+.loom-annotations {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+.spatial-loom[data-webgl="ready"] .loom-annotations {
+  visibility: visible;
+}
+.spatial-loom[data-webgl="ready"] .loom-fallback {
+  display: none;
+}
+.loom-fallback {
+  position: absolute;
+  inset: 60px 30px 120px 38%;
+  background: var(--world);
+}
+.loom-label {
+  position: absolute;
+  width: 160px;
+  min-height: 64px;
+  padding: 8px 0 8px 20px;
+  border: 0;
+  text-align: left;
+  color: var(--text);
+  background: transparent;
+  font:
+    12px "Geist Mono Variable",
+    monospace;
+  transform: translate(0, -50%);
+  pointer-events: auto;
+  text-shadow: 0 2px 12px #080b0b;
+}
+.loom-label:before {
+  content: "";
+  position: absolute;
+  width: 22px;
+  left: -10px;
+  top: 16px;
+  border-top: 1px solid #aeb9b6;
+  transform: rotate(-28deg);
+  transform-origin: right;
+}
+.loom-label > span {
+  display: block;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.loom-label > strong {
+  display: block;
+  color: var(--mint);
+  font-size: 15px;
+  margin: 6px 0;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.loom-label > strong small {
+  font-size: 9px;
+}
+.loom-label .status {
+  padding: 0;
+  font-size: 9px;
+  background: transparent;
+}
+.loom-label.revoked .status {
+  color: var(--red);
+}
+.loom-label.blocked .status,
+.loom-label.blocked strong {
+  color: #b0b8b4;
+}
+.loom-label.selected > span {
+  color: var(--mint);
+}
+.loom-flat-rails {
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--mint);
+  stroke-width: 1.4;
+}
+.loom-flatten .loom-flat-rails {
+  display: block;
+}
+.plane-edge {
+  stroke: #8a9290;
+}
+.plane-edge.active.on-path {
+  stroke: var(--mint);
+}
+.plane-edge.revoked {
+  stroke: var(--red);
+  stroke-dasharray: 4 4;
+}
+.plane-edge.blocked {
+  stroke: #646d69;
+  stroke-dasharray: 4 4;
+}
+.loom-flatten .loom-label {
+  background: transparent;
+  text-shadow: none;
+  padding-left: 27px;
+  width: 184px;
+  transform: translateY(-14px);
+}
+.loom-flatten .loom-label:before {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--mint);
+  border-radius: 50%;
+  background: var(--world);
+  top: 14px;
+  left: -7px;
+  transform: none;
+}
+.loom-flatten .loom-label strong {
+  font-size: 19px;
+}
+.loom-flatten .loom-label strong small {
+  font-size: 14px;
+}
+.flat-authority {
+  position: relative;
+  width: 100%;
+}
+.flat-map {
+  position: relative;
+  overflow: visible;
+}
+.flat-rails {
+  position: absolute;
+  inset: 0;
+  fill: none;
+}
+.flat-relation {
+  stroke: #8a9290;
+  stroke-width: 1.2;
+  fill: none;
+}
+.flat-relation.on-path.active {
+  stroke: var(--mint);
+  stroke-width: 1.6;
+}
+.flat-relation.blocked {
+  stroke: #727b78;
+  stroke-dasharray: 4 6;
+}
+.flat-relation.revoked {
+  stroke: var(--red);
+  stroke-dasharray: 4 5;
+}
+.flat-impact {
+  fill: #efab7508;
+  stroke: var(--copper);
+  stroke-width: 1.2;
+}
+.flat-node {
+  position: absolute;
+  padding: 0 0 12px 27px;
+  width: 184px;
+  min-height: 80px;
+  transform: translateY(-14px);
+  text-align: left;
+  background: var(--world);
+  color: var(--text);
+  border: 0;
+  border-radius: 0;
+  font:
+    12px "Geist Mono Variable",
+    monospace;
+}
+.authority-dot {
+  position: absolute;
+  left: -8px;
+  top: 11px;
+  width: 16px;
+  height: 16px;
+  border: 1.6px solid #a6afab;
+  border-radius: 50%;
+  background: var(--world);
+}
+.flat-node.on-path.active .authority-dot {
+  background: var(--mint);
+  border-color: var(--mint);
+}
+.flat-node.selected {
+  border-bottom: 2px solid var(--mint);
+}
+.flat-node .flat-name {
+  display: block;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.flat-node strong {
+  display: block;
+  font-size: 19px;
+  font-weight: 450;
+  margin-top: 7px;
+  white-space: nowrap;
+}
+.flat-node strong small {
+  font-size: 15px;
+}
+.flat-node .status {
+  display: none;
+}
+.flat-node.revoked .status,
+.flat-node.blocked .status {
+  display: block;
+  font-size: 9px;
+  margin-top: 7px;
+  padding: 0;
+  background: transparent;
+}
+.flat-node.revoked .authority-dot {
+  background: var(--red);
+  border-color: var(--red);
+}
+.flat-node.preview-affected {
+  color: var(--copper);
+}
+.flat-mobile {
+  display: none;
+}
+.command-world .treasury-ledger {
+  height: 76px;
+  min-height: 76px;
+  padding: 0 35px;
+  background: var(--world);
+  gap: 32px;
+}
+.world-header:has(+ .route-plane .command-world) {
+  height: 80px;
+  z-index: 20;
+  padding: 0 32px;
+}
+.world-header:has(+ .route-plane .command-world) .wordmark {
+  display: none;
+}
+.world-header:has(+ .route-plane .command-world) nav {
+  margin-left: 0;
+}
+.command-world .treasury-ledger {
+  position: fixed;
+  top: 0;
+  left: 395px;
+  right: 260px;
+  z-index: 21;
+  padding: 0 22px;
+  gap: 22px;
+  height: 80px;
+  min-height: 80px;
+  border-bottom: 0;
+}
+.command-world .ledger-freshness {
+  position: relative;
+  margin: 0 25px;
+  width: auto;
+  z-index: 6;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  display: flex;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+.command-world .ledger-freshness small {
+  font:
+    10px "Geist Mono Variable",
+    monospace;
+  color: var(--muted);
+}
+.command-world .ledger-freshness button {
+  color: var(--mint);
+}
+.command-world .treasury-ledger > div:first-child {
+  display: none;
+}
+.command-world .treasury-ledger strong {
+  font-size: 19px;
+  font-weight: 450;
+}
+.command-world .treasury-ledger small {
+  color: #bfc6c2;
+  font-size: 10px;
+  letter-spacing: 0.09em;
+}
+.command-world .command-zones {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 29.5%;
+}
+.command-world .command-field {
+  min-width: 0;
+  background: var(--world);
+}
+.command-world .graph-toolbar {
+  height: 28px;
+  min-height: 28px;
+  border: 0;
+  padding: 0 25px;
+}
+.command-world .graph-toolbar h1 {
+  font-size: 11px;
+  font-family: "Geist Mono Variable", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.command-world .graph-toolbar button {
+  font-size: 11px;
+}
+.command-world .hierarchy-rail {
+  position: absolute;
+  z-index: 5;
+  top: 40px;
+  left: 25px;
+  width: 150px;
+  min-height: 0;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.command-world .hierarchy-rail .rail-label,
+.command-world .hierarchy-rail > button,
+.command-world .hierarchy-rail > p {
+  display: none;
+}
+.command-world .hierarchy-rail.searching {
+  padding: 12px;
+  background: var(--bone);
+  color: #17201d;
+}
+.command-world .hierarchy-rail.searching > button {
+  display: block;
+  color: #17201d;
+  width: 100%;
+}
+.command-world .search-field {
+  border: 0;
+  padding: 0;
+}
+.command-world .search-field input {
+  font-size: 10px;
+}
+.command-world .bone-instrument {
+  background: var(--bone);
+  padding: 32px;
+  min-height: 740px;
+  border: 0;
+  position: sticky;
+  top: 80px;
+  align-self: start;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+.command-world .instrument-heading {
+  align-items: center;
+  margin: 18px 0 25px;
+}
+.command-world .instrument-heading h2 {
+  font-size: 42px;
+  font-weight: 430;
+}
+.command-world .instrument-heading .status {
+  font-size: 11px;
+  padding: 8px 11px;
+  background: #b9d9cc;
+  color: #1b493b;
+  border-radius: 2px;
+}
+.command-world .local-state {
+  font-size: 9px;
+  margin-bottom: 20px;
+}
+.command-world .instrument-capital {
+  border-top: 1px solid #c4c6bc;
+  margin: 0;
+  padding: 25px 0 20px;
+}
+.command-world .instrument-capital strong {
+  font-size: 29px;
+  margin-top: 12px;
+}
+.command-world .details {
+  margin: 0;
+}
+.command-world .details div {
+  padding: 16px 0;
+  border: 0;
+  font-size: 12px;
+}
+.command-world .details dd {
+  font-size: 16px;
+}
+.command-world .details dt {
+  font-size: 13px;
+}
+.command-world .path-breadcrumb {
+  border-top: 1px solid #c4c6bc;
+  padding: 24px 0;
+  margin-top: 12px;
+}
+.command-world .path-breadcrumb p {
+  font:
+    14px/1.7 "Geist Mono Variable",
+    monospace;
+}
+.command-world .action-choices {
+  display: flex;
+  gap: 24px;
+  border: 0;
+}
+.command-world .action-choices button {
+  border: 0;
+  min-height: 44px;
+  padding: 0;
+  font-size: 14px;
+}
+.command-world .outline-copper {
+  border: 0;
+  border-top: 1px solid #c4c6bc;
+  padding: 18px 0;
+  justify-content: space-between;
+}
+.command-world .evidence-dock {
+  border-top: 1px solid var(--line);
+  margin: 0 25px;
+  padding: 14px 0;
+}
+.command-world .evidence-dock .section-line {
+  padding: 0;
+}
+.command-world .event-table {
+  border: 0;
+}
+.command-world .event-head {
+  display: none;
+}
+.command-world .evidence-dock.compact .event-head {
+  display: none;
+}
+.command-world .event-row {
+  border: 0;
+  padding: 8px 0;
+}
+.command-world .accounting-note {
+  padding: 15px 25px;
+  border-top: 1px solid var(--line);
+}
+.command-world .accounting-note p {
+  font-size: 11px;
+}
+.arena-world {
+  position: relative;
+  min-height: 100vh;
+  background: var(--world);
+  padding: 0;
+}
+.arena-world .arena-heading {
+  position: absolute;
+  z-index: 4;
+  top: 110px;
+  left: 54px;
+  width: 300px;
+  padding: 0;
+  display: block;
+  border: 0;
+}
+.arena-world .arena-heading h1 {
+  font:
+    400 76px/1.04 Anton,
+    sans-serif;
+  letter-spacing: -0.025em;
+}
+.arena-heading h1 em {
+  color: var(--mint);
+  font-style: normal;
+}
+.arena-world .arena-heading > div > span {
+  font-size: 9px;
+}
+.arena-world .arena-heading p {
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 16px 0 8px;
+}
+.arena-world .arena-heading button {
+  font-size: 11px;
+}
+.arena-world .arena-zones {
+  display: block;
+  border: 0;
+}
+.arena-world .arena-field {
+  position: static;
+  width: 100%;
+  background: transparent;
+}
+.arena-world .mission-switcher {
+  position: absolute;
+  z-index: 3;
+  left: 54px;
+  bottom: 40px;
+  border: 0;
+  padding: 0;
+  font-size: 10px;
+}
+.arena-world .mission-switcher > span + span {
+  display: none;
+}
+.arena-world .mission-stage {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 740px;
+  margin: 0;
+  transform: none;
+  perspective: none;
+  overflow: hidden;
+}
+.arena-world .mission-channels {
+  display: none;
+}
+.arena-world .capital-source,
+.arena-world .mission-basin,
+.arena-world .verifier-gate,
+.arena-world .mission-outcome,
+.arena-world .contender {
+  position: absolute;
+  z-index: 3;
+  border: 0;
+  background: transparent;
+  transform: none;
+  padding: 0;
+  box-shadow: none;
+}
+.arena-world .capital-source {
+  width: 200px;
+  font-size: 12px;
+}
+.arena-world .capital-source strong {
+  font-size: 15px;
+  margin: 7px 0;
+}
+.arena-world .capital-source b {
+  font-size: 13px;
+}
+.arena-world .funding-track-label {
+  display: none;
+}
+.arena-world .contender-lanes {
+  display: contents;
+}
+.arena-world .contender {
+  width: 230px;
+  min-height: 54px;
+  text-align: left;
+  display: block;
+  font:
+    11px "Geist Mono Variable",
+    monospace;
+}
+.arena-world .contender > span {
+  display: none;
+}
+.arena-world .contender strong {
+  display: block;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 450;
+}
+.arena-world .contender small {
+  display: block;
+  font-size: 8px;
+  margin-top: 6px;
+}
+.arena-world .contender.winner strong {
+  color: var(--brass);
+}
+.arena-world .mission-basin {
+  width: 250px;
+  height: auto;
+  min-height: 0;
+  text-align: left;
+}
+.arena-world .mission-stage .mission-basin:before,
+.arena-world .mission-stage .contender:before {
+  display: none;
+  content: none;
+}
+.arena-world .mission-stage .mission-basin {
+  display: block;
+}
+.arena-world .mission-stage .contender {
+  display: block;
+  background: transparent;
+  border: 0;
+  opacity: 1;
+}
+.arena-world .mission-basin > span {
+  font-size: 11px;
+}
+.arena-world .mission-basin h2 {
+  font:
+    36px/1.15 Anton,
+    sans-serif;
+  text-transform: uppercase;
+  margin: 15px 0;
+}
+.arena-world .mission-bounty {
+  padding: 13px 0 0;
+  border-color: #879087;
+  margin-top: 14px;
+  width: 230px;
+}
+.arena-world .mission-stage .mission-bounty {
+  display: block;
+}
+.arena-world .mission-bounty strong {
+  font:
+    42px/1.2 Anton,
+    sans-serif;
+  margin-top: 8px;
+}
+.arena-world .mission-bounty strong small {
+  font:
+    20px Anton,
+    sans-serif;
+}
+.arena-world .verifier-gate {
+  width: 155px;
+  height: auto;
+  text-align: center;
+}
+.arena-world .verifier-gate > span {
+  font:
+    13px "Geist Mono Variable",
+    monospace;
+  letter-spacing: 0.16em;
+}
+.arena-world .verifier-gate strong {
+  font-size: 11px;
+  margin-top: 16px;
+}
+.arena-world .gate-aperture {
+  display: none;
+}
+.arena-world .mission-outcome {
+  width: 170px;
+  font-size: 11px;
+  transform: translateX(-100%);
+}
+.arena-world .mission-outcome strong {
+  font-size: 13px;
+}
+.arena-world .mission-outcome b {
+  font-size: 19px;
+}
+.arena-world .arena-instrument {
+  position: absolute;
+  z-index: 4;
+  right: 40px;
+  top: 110px;
+  width: 280px;
+  padding: 0 0 0 22px;
+  border: 0;
+  border-left: 1px solid #83908a;
+  background: transparent;
+  color: var(--text);
+  min-height: 0;
+}
+.arena-world .arena-instrument .instrument-capital > span {
+  color: #c2ccc5;
+  font-size: 11px;
+}
+.arena-world .arena-instrument h2 {
+  font:
+    28px Anton,
+    sans-serif;
+  text-transform: uppercase;
+  margin: 14px 0;
+}
+.arena-world .arena-instrument .instrument-meta {
+  color: #bbc7c0;
+  font-size: 10px;
+}
+.arena-world .arena-instrument .instrument-capital {
+  border: 0;
+  padding: 12px 0;
+  margin: 0;
+}
+.arena-world .arena-instrument .instrument-capital strong {
+  color: var(--mint);
+  font:
+    36px Anton,
+    sans-serif;
+}
+.arena-world .arena-instrument .instrument-capital strong small {
+  font:
+    20px Anton,
+    sans-serif;
+}
+.arena-world .arena-instrument p,
+.arena-world .arena-instrument .details,
+.arena-world .provenance-note {
+  color: #c2ccc5;
+  font-size: 10px;
+}
+.arena-world .settlement-checklist li {
+  border: 0;
+  min-height: 28px;
+  font-size: 10px;
+}
+.arena-world .settlement-checklist li strong {
+  color: #d4ddd6;
+}
+.arena-world .arena-instrument .dark {
+  background: var(--bone);
+  color: #17201d;
+  border: 0;
+  font-size: 12px;
+  min-height: 44px;
+  margin-top: 12px;
+}
+.arena-world .arena-instrument .details {
+  margin-top: 12px;
+}
+.arena-world .arena-instrument .details div {
+  border: 0;
+  padding: 5px 0;
+}
+.arena-world .arena-instrument .details dt,
+.arena-world .arena-instrument .details dd {
+  color: #c2ccc5;
+  font-size: 10px;
+}
+.arena-world .arena-instrument .provenance-note {
+  font-size: 8px;
+  padding-top: 10px;
+}
+.arena-world .arena-method {
+  border: 0;
+  padding: 0 54px 22px;
+  font-size: 11px;
+}
+.arena-world .evidence-dock {
+  margin: 0 54px;
+  border-top: 1px solid #424b4a;
+}
+.arena-world .arena-instrument.settled .settlement-checklist,
+.arena-world .arena-instrument.settled .details {
+  display: none;
+}
+.arena-world:has(.arena-loom[data-webgl="lost"]) .mission-stage {
+  display: none;
+}
+.arena-world:has(.arena-loom[data-webgl="lost"]) .mission-mobile {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 54px;
+  gap: 18px;
+}
+.arena-world:has(.arena-loom[data-webgl="lost"]) .mission-mobile > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.arena-world:has(.arena-loom[data-webgl="lost"]) .arena-heading {
+  position: relative;
+  inset: auto;
+  width: auto;
+  padding: 110px 54px 30px;
+}
+.arena-world:has(.arena-loom[data-webgl="lost"]) .arena-instrument {
+  position: relative;
+  inset: auto;
+  margin: 24px 54px;
+  width: auto;
+}
+.arena-world:has(.arena-loom[data-webgl="lost"]) .mission-switcher {
+  position: relative;
+  inset: auto;
+  margin: 24px 54px;
+}
+@media (max-width: 1399px) {
+  .world-header {
+    padding: 0 30px;
+  }
+  .persistent-story .story-editorial {
+    left: 30px;
+    width: 390px;
+    top: 135px;
+  }
+  .persistent-story .chapter-copy h1 {
+    font-size: 85px;
+  }
+  .persistent-story .chapter-copy h2 {
+    font-size: 65px;
+  }
+  .persistent-story .chapter-rail {
+    left: 30px;
+    gap: 16px;
+  }
+  .persistent-story .story-instrument {
+    left: 30px;
+    right: 30px;
+  }
+  .command-world .treasury-ledger {
+    left: 350px;
+    right: 250px;
+    gap: 14px;
+    padding: 0 15px;
+  }
+  .command-world .treasury-ledger strong {
+    font-size: 16px;
+  }
+  .command-world .treasury-ledger span {
+    font-size: 10px;
+  }
+  .command-world .bone-instrument {
+    padding: 25px;
+  }
+  .command-world .instrument-heading h2 {
+    font-size: 34px;
+  }
+  .flat-node {
+    width: 160px;
+  }
+  .flat-node strong {
+    font-size: 16px;
+  }
+  .flat-node strong small {
+    font-size: 12px;
+  }
+  .arena-world .arena-heading {
+    left: 30px;
+    width: 260px;
+  }
+  .arena-world .arena-heading h1 {
+    font-size: 65px;
+  }
+  .arena-world .arena-instrument {
+    right: 25px;
+    width: 240px;
+  }
+}
+@media (max-width: 1099px), (prefers-reduced-motion: reduce) {
+  .world-header:has(+ .route-plane .story-world),
+  .world-header:has(+ .route-plane .arena-world) {
+    position: relative;
+    background: var(--world);
+  }
+  .persistent-story.story-world {
+    min-height: 0;
+  }
+  .persistent-story .story-stage {
+    position: relative;
+    top: 0;
+    min-height: 0;
+    height: auto;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+  }
+  .persistent-story .story-editorial {
+    position: relative;
+    left: auto;
+    top: auto !important;
+    width: auto !important;
+    padding: 24px;
+    pointer-events: auto;
+  }
+  .persistent-story .chapter-copy h1 {
+    font-size: 58px;
+    max-width: none;
+  }
+  .persistent-story .chapter-copy h2 {
+    font-size: 48px !important;
+    max-width: 520px;
+  }
+  .persistent-story .chapter-copy p {
+    font-size: 14px;
+  }
+  .persistent-story .chapter-rail {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 18px;
+    margin-bottom: 22px;
+  }
+  .persistent-story .chapter-navigation {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    margin-top: 20px;
+    justify-content: flex-start;
+  }
+  .persistent-story .chapter-action {
+    position: relative !important;
+    right: auto !important;
+    bottom: auto !important;
+    margin-top: 20px;
+  }
+  .persistent-story .story-specimen {
+    position: relative;
+    inset: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+  .persistent-story .story-object {
+    position: relative;
+    inset: auto;
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+  }
+  .persistent-story .specimen-caption {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin: 0 24px 18px;
+    justify-content: space-between;
+  }
+  .spatial-loom.authority-loom {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    min-height: 0;
+  }
+  .loom-fallback {
+    position: relative;
+    inset: auto;
+    margin: 0 24px;
+  }
+  .persistent-story .story-instrument {
+    position: relative;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    display: block;
+    margin: 20px 24px;
+    max-width: none !important;
+  }
+  .persistent-story .story-instrument > div {
+    max-width: none;
+  }
+  .persistent-story .story-instrument > div + div {
+    border: 0;
+    padding: 20px 0 0;
+  }
+  .story-scroll-markers {
+    display: none;
+  }
+  .plane-inspector {
+    position: relative;
+    inset: auto;
+    width: auto;
+    margin: 20px 24px;
+    min-height: 0;
+    padding: 24px;
+  }
+  .flat-map {
+    display: none;
+  }
+  .flat-mobile {
+    display: block;
+  }
+  .flat-ledger-node {
+    width: 100%;
+    min-height: 76px;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    text-align: left;
+    font:
+      12px "Geist Mono Variable",
+      monospace;
+    padding-right: 8px;
+  }
+  .flat-ledger-node > span {
+    position: relative;
+    padding-left: 10px;
+  }
+  .flat-ledger-node .authority-dot {
+    width: 10px;
+    height: 10px;
+    left: -7px;
+    top: 3px;
+  }
+  .flat-ledger-node[aria-pressed="true"] .authority-dot {
+    background: var(--mint);
+    border-color: var(--mint);
+  }
+  .flat-ledger-node span small {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 0.01em;
+    margin-top: 8px;
+    color: #b5c1bb;
+    text-transform: uppercase;
+  }
+  .flat-ledger-node strong {
+    font-size: 14px;
+    white-space: nowrap;
+    font-weight: 450;
+  }
+  .flat-ledger-node strong small {
+    font-size: 8px;
+  }
+  .flat-ledger-node.revoked {
+    color: var(--red);
+  }
+  .flat-ledger-node.blocked {
+    color: #a7b3ac;
+  }
+  .flat-ledger-node.preview-affected {
+    border-left: 2px solid var(--copper);
+  }
+  .command-world .command-zones {
+    display: flex;
+    flex-direction: column;
+  }
+  .command-world .hierarchy-rail {
+    position: relative;
+    left: auto;
+    top: auto;
+    margin: 15px 24px;
+  }
+  .command-world .graph-toolbar {
+    padding: 0 24px;
+    flex-wrap: wrap;
+    height: auto;
+  }
+  .command-world .graph-toolbar > div {
+    flex-wrap: wrap;
+  }
+  .command-world .flat-authority {
+    padding: 0 24px;
+  }
+  .command-world .bone-instrument {
+    min-height: 0;
+    padding: 26px;
+    position: relative;
+    top: 0;
+    max-height: none;
+    width: 100%;
+    align-self: stretch;
+  }
+  .command-world .treasury-ledger {
+    position: relative;
+    inset: auto;
+    height: auto;
+    min-height: 76px;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding: 18px 24px;
+  }
+  .command-world .treasury-ledger strong {
+    font-size: 17px;
+  }
+  .command-world .ledger-freshness {
+    position: relative;
+    inset: auto;
+    width: auto;
+    border: 0;
+    padding: 0;
+  }
+  .arena-world .arena-heading {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    padding: 25px;
+  }
+  .arena-world .arena-heading h1 {
+    font-size: 58px;
+  }
+  .arena-world .arena-instrument {
+    position: relative;
+    right: auto;
+    top: auto;
+    border: 0;
+    margin: 24px;
+    padding: 24px;
+    background: var(--bone);
+    width: auto;
+    color: #17201d;
+  }
+  .arena-world .arena-instrument p,
+  .arena-world .arena-instrument .details dt,
+  .arena-world .arena-instrument .details dd,
+  .arena-world .arena-instrument .provenance-note,
+  .arena-world .arena-instrument .instrument-meta {
+    color: #43524c;
+  }
+  .arena-world .arena-instrument .instrument-capital strong {
+    color: #263d33;
+  }
+  .arena-world .settlement-checklist li strong {
+    color: #17201d;
+  }
+  .arena-world .mission-stage {
+    display: none;
+  }
+  .arena-world .mission-switcher {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    margin: 0 25px 12px;
+  }
+  .arena-world .mission-mobile {
+    display: block;
+    margin: 0 25px;
+  }
+  .arena-world .mission-mobile > div,
+  .arena-world .mission-mobile button {
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+  }
+  .arena-world .mission-mobile > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px 0;
+  }
+  .arena-world .mission-mobile small {
+    display: block;
+    font:
+      11px "Geist Mono Variable",
+      monospace;
+    color: var(--muted);
+  }
+  .arena-world .mission-mobile strong {
+    display: block;
+    font-size: 15px;
+  }
+  .arena-world .mission-mobile > button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 18px 8px;
+    background: transparent;
+    color: var(--text);
+    text-align: left;
+  }
+  .arena-world .arena-instrument .instrument-capital > span {
+    color: #43524c;
+  }
+  .arena-world .arena-method {
+    padding: 24px;
+  }
+  .arena-world .evidence-dock {
+    margin: 0 24px;
+  }
+}
+@media (min-width: 1100px) and (prefers-reduced-motion: reduce) {
+  .command-world .command-zones {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 29.5%;
+  }
+  .command-world .flat-map {
+    display: block;
+  }
+  .command-world .flat-mobile {
+    display: none;
+  }
+  .command-world .flat-authority {
+    padding: 0;
+  }
+}
+@media (max-width: 767px) {
+  .world-header {
+    height: 72px;
+    padding: 0 20px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .world-header .wordmark {
+    font-size: 10px;
+  }
+  .world-header nav {
+    margin-left: 12px;
+    gap: 16px;
+  }
+  .world-header nav a {
+    font-size: 10px;
+    padding: 20px 0;
+  }
+  .world-header .shell-controls {
+    gap: 5px;
+  }
+  .wallet-control span {
+    display: none;
+  }
+  .mode-control select {
+    font-size: 8px;
+  }
+  .world-header .wallet-control {
+    padding: 0 6px;
+    min-width: 32px;
+  }
+  .persistent-story .chapter-copy h1 {
+    font-size: 54px;
+  }
+  .chapter-copy {
+    margin: 0;
+  }
+}

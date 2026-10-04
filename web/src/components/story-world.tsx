@@ -11,7 +11,9 @@ import {
   statusOf,
   type AuthorityModel,
 } from "@/lib/authority";
-import AuthorityTree, { AuthorityTrace } from "./authority-tree";
+import { AuthorityTrace } from "./authority-tree";
+import SpatialLoom from "./spatial-loom";
+import { useWorld } from "./world-shell";
 
 const chapters = [
   {
@@ -41,13 +43,13 @@ const chapters = [
   {
     id: "cut",
     name: "Cascade",
-    title: "Cut one branch. Keep the rest alive.",
+    title: "ONE CUT. A WHOLE BRANCH LOSES AUTHORITY.",
     copy: "One local revoke. Descendants fail ancestor validation. Operations continues at the same coordinates, with the same authority.",
   },
   {
     id: "enter",
     name: "Plane Change",
-    title: "One human. A fleet of agents. A treasury under control.",
+    title: "ENTER COMMAND",
     copy: "Operate the same authority structure. Inspect the capital, review the consequence, and keep the evidence.",
   },
 ];
@@ -55,6 +57,7 @@ const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 export default function StoryWorld() {
   const router = useRouter();
+  const w = useWorld();
   const [chapter, setChapter] = useState(0);
   const [count, setCount] = useState(1);
   const [grant, setGrant] = useState<string>();
@@ -107,7 +110,7 @@ export default function StoryWorld() {
       setFlattening(false);
     };
     const update = () => {
-      if (innerWidth < 768) return;
+      if (innerWidth < 1100 || reduced()) return;
       const index = Math.max(
         0,
         Math.min(
@@ -130,7 +133,7 @@ export default function StoryWorld() {
         stop();
         chapterRef.current = index;
         setChapter(index);
-        if (innerWidth >= 768)
+        if (innerWidth >= 1100 && !reduced())
           window.scrollTo({
             top: root.offsetTop - 56 + index * innerHeight * 0.7,
             behavior: "instant",
@@ -159,7 +162,7 @@ export default function StoryWorld() {
     chapterRef.current = index;
     setChapter(index);
     history.replaceState(null, "", `#${chapters[index].id}`);
-    if (innerWidth >= 768 && world.current)
+    if (innerWidth >= 1100 && !reduced() && world.current)
       window.scrollTo({
         top: world.current.offsetTop - 56 + index * innerHeight * 0.7,
         behavior: "instant",
@@ -170,20 +173,21 @@ export default function StoryWorld() {
     cancel();
     setBuilding(true);
     const last = all ? 6 : count + 1;
-    const step = innerWidth < 768 ? 360 : 720;
+    const step = all ? 450 : 1150;
+    const immediate = reduced() || innerWidth < 1100;
     const create = (n: number) => {
       const before = genesis(n - 1),
         after = genesis(n),
         child = after.nodes[n - 1];
       const parent = before.nodes.find((p) => p.id === child.parent)!;
       setCount(n);
-      setGrant(reduced() ? undefined : child.id);
+      setGrant(immediate ? undefined : child.id);
       setSelected(child.id);
       setDelta(
         `${parent.name} −${amount(child.budget)} USDC own available · ${child.name} +${amount(child.budget)}`,
       );
     };
-    if (reduced()) {
+    if (immediate) {
       for (let n = count + 1; n <= last; n++) create(n);
       setBuilding(false);
       return;
@@ -234,12 +238,18 @@ export default function StoryWorld() {
   }
   function openCommand() {
     cancel();
-    if (reduced() || innerWidth < 768) {
+    // Preserve any independently funded Arena reservation and lifecycle.
+    if (w.mode === "demo") {
+      if (w.fixture.reserved === 0n && w.mission === "ready")
+        w.setFixture(model);
+      w.select(selected);
+    }
+    if (reduced() || innerWidth < 1100) {
       router.push("/app");
       return;
     }
     setFlattening(true);
-    later(() => router.push("/app"), 560);
+    later(() => router.push("/app"), 1200);
   }
   return (
     <main
@@ -266,8 +276,10 @@ export default function StoryWorld() {
               <h1>
                 DON’T GIVE
                 <br /> AGENTS WALLETS.
-                <br /> GIVE THEM
-                <br /> MANDATES.
+                <span>
+                  <br /> GIVE THEM
+                  <br /> MANDATES.
+                </span>
               </h1>
             ) : (
               <h2>{current.title}</h2>
@@ -278,7 +290,7 @@ export default function StoryWorld() {
             {chapter <= 1 && (
               <button
                 className="button bone"
-                onClick={() => construct(chapter === 1)}
+                onClick={() => construct(chapter === 1 || count > 1)}
                 disabled={building || cut || count === 6}
               >
                 {building
@@ -287,8 +299,8 @@ export default function StoryWorld() {
                     ? "Organization established"
                     : chapter === 0
                       ? count === 1
-                        ? "Delegate authority"
-                        : `Delegate ${next?.name}`
+                        ? "Delegate Research"
+                        : "Build demo hierarchy"
                       : "Build demo hierarchy"}
                 <ArrowRight size={18} />
               </button>
@@ -402,22 +414,19 @@ export default function StoryWorld() {
             <span>{current.name.toUpperCase()} / AUTHORITY WORLD</span>
             <span>{String(count).padStart(2, "0")} / 06 MANDATES</span>
           </div>
-          <div
-            className="story-object"
-            data-testid="persistent-authority-world"
-          >
-            <AuthorityTree
+          <div className="story-object">
+            <SpatialLoom
               model={model}
               selected={selected}
               onSelect={select}
-              spatial
-              director
+              chapter={current.id}
               flatten={flattening}
               grant={grant}
+              grantDuration={chapter === 0 && count === 2 ? 1150 : 450}
               preview={preview ? "research" : undefined}
               trace={trace}
               traceEpoch={traceEpoch}
-              cascade={cut ? 1 : undefined}
+              cascade={cut}
             />
           </div>
           <div
@@ -447,7 +456,7 @@ export default function StoryWorld() {
                   <span>
                     {rejected
                       ? "EXECUTION REJECTED / SIMULATED"
-                      : "EFFECTIVE AUTHORITY BLOCKED"}
+                      : "AUTHORITY CUT"}
                   </span>
                   <strong>Scraper → Data → Research × → Treasury</strong>
                   <p>
@@ -455,11 +464,12 @@ export default function StoryWorld() {
                   </p>
                 </div>
                 <div>
-                  <span>OPERATIONS / UNAFFECTED</span>
-                  <strong>
-                    200.00 <small>USDC own available</small>
-                  </strong>
-                  <p>Shared vault 1,590.00 USDC · reclaim is separate.</p>
+                  <span>CAPITAL RECOVERY</span>
+                  <strong>No token transfer shown</strong>
+                  <p>
+                    390.00 USDC capacity released to Treasury · reclaim is
+                    separate.
+                  </p>
                 </div>
               </>
             ) : trace ? (
@@ -507,6 +517,36 @@ export default function StoryWorld() {
               </>
             )}
           </div>
+          {(chapter === 5 || flattening) && (
+            <aside
+              className="plane-inspector bone-instrument"
+              aria-label="Plane change inspector"
+            >
+              <span>SELECTED MANDATE</span>
+              <h2>{node.name}</h2>
+              <span className={`status ${statusOf(model, node.id)}`}>
+                {statusOf(model, node.id)}
+              </span>
+              <dl className="details">
+                <div>
+                  <dt>Available</dt>
+                  <dd>{amount(node.available)} USDC</dd>
+                </div>
+                <div>
+                  <dt>Subtree remaining</dt>
+                  <dd>{amount(node.remaining)} USDC</dd>
+                </div>
+                <div>
+                  <dt>Authority path</dt>
+                  <dd>
+                    {authorityPath(model, node.id)
+                      .map((n) => n.name)
+                      .join(" → ")}
+                  </dd>
+                </div>
+              </dl>
+            </aside>
+          )}
         </div>
       </div>
       <div className="story-scroll-markers" aria-hidden="true">
