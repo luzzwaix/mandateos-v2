@@ -1,0 +1,158 @@
+/* Bounded state choreography. authored-fields.css owns the elevated presentation. */
+:root {
+  --motion-control: 160ms;
+  --motion-trace: 560ms;
+  --motion-branch: 780ms;
+  --motion-cascade: 1360ms;
+  --motion-handoff: 720ms;
+  --motion-settlement: 1500ms;
+  --motion-settle: cubic-bezier(0.16, 1, 0.3, 1);
+}
+.authority-motion-pulse {
+  animation: none !important;
+}
+.mandate-story .seal-root {
+  transition-duration: var(--motion-trace);
+}
+.mandate-story .seal-mandate,
+.mandate-story .seal-label,
+.mandate-story .mandate-ink,
+.mandate-story .trace-ray path,
+.mandate-story .trace-ray circle,
+.mandate-story .blast-boundary {
+  animation: none !important;
+}
+.mandate-story .grant-path {
+  fill: none;
+  stroke: none;
+}
+.mandate-story .authority-seal > svg {
+  transform-origin: 50% 50%;
+}
+.mandate-story .mandate-surface {
+  transition-duration: 340ms;
+}
+.mandate-story .severed .dependent .authority-joint {
+  transition-duration: 140ms;
+}
+.mandate-story .severed .dependent .seal-label {
+  animation: none;
+}
+.mandate-story .story-context > div {
+  position: relative;
+}
+.mandate-story .story-capacity {
+  position: absolute;
+  top: calc(100% + 9px);
+  left: 0;
+  white-space: nowrap;
+  font: 10px/1.4 var(--mono);
+  color: #a6b5ac;
+}
+.story-mobile-consequence {
+  display: none;
+}
+.command-world .flat-authority .flat-relation.blocked,
+.command-world .flat-authority .flat-relation.revoked {
+  stroke-dasharray: 0.045 0.045;
+}
+.command-world .flat-authority .flat-relation.revoked {
+  stroke-dasharray: 0.46 0.08 0.46;
+}
+.mandate-story .authority-seal .blast-boundary {
+  stroke-dasharray: 0.012 0.012;
+}
+.command-world .flat-authority .flat-impact {
+  stroke-dasharray: 0.006 0.006;
+}
+.command-world .flat-node.selected .flat-name {
+  font-weight: 600;
+}
+.command-world .flat-node.selected strong {
+  color: #eee9da;
+}
+.command-world .event-row > div > strong {
+  color: #eee9da;
+  font-weight: 550;
+}
+.command-world .event-row > span:last-child {
+  color: #c8d9c5;
+}
+.command-world
+  .flat-authority[data-motion="cascade"]
+  .flat-node:not(.blocked):not(.revoked) {
+  animation: none;
+}
+.arena-world .mission-stage .mission-channels .submission-channel {
+  animation: none;
+  stroke-dasharray: 0.008 0.015;
+}
+.arena-world .mission-stage .mission-channels .submission-channel.selected,
+.arena-world
+  .mission-stage
+  .mission-channels
+  .submission-channel.preview-route {
+  stroke-dasharray: none;
+}
+.arena-world .mission-channels .settlement-channel {
+  animation: none;
+}
+.arena-world .resolved .submission-channel:not(.selected) {
+  opacity: 0.4;
+  stroke-width: 1;
+}
+.arena-world .resolved .contender:not(.winner) {
+  opacity: 0.58;
+}
+.arena-world .resolved .submission-channel.selected {
+  stroke-width: 3;
+}
+.arena-world .resolved .contender.winner strong {
+  font-weight: 600;
+}
+.arena-world .resolved .mission-outcome strong {
+  font-weight: 600;
+}
+.arena-world .mission-outcome {
+  animation: none;
+}
+body:has([data-motion="cascade"]) .world-header nav,
+body:has([data-motion="settlement"]) .world-header nav {
+  opacity: 0.72;
+}
+.world-header nav {
+  transition: opacity var(--motion-control);
+}
+@media (max-width: 700px) {
+  .mandate-story .story-mobile-consequence {
+    display: block;
+    margin: -12px 0 24px;
+    color: #a6b5ac;
+    font: 10px/1.6 var(--mono);
+  }
+  .mandate-story .story-mobile-consequence p {
+    margin: 0 0 8px;
+  }
+  .mandate-story .story-mobile-consequence small {
+    font-size: 9px;
+  }
+  .mandate-story .story-capacity {
+    white-space: normal;
+    position: static;
+    display: block;
+    margin-top: 9px;
+    font-size: 9px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mandate-story .seal-root,
+  .mandate-story .mandate-surface,
+  .mandate-story .authority-joint,
+  .mandate-story .mandate-hatch,
+  .world-header nav {
+    transition: none;
+  }
+  .mandate-story .story-capacity {
+    opacity: 1;
+  }
+}

@@ -33,6 +33,8 @@ const click = (name) => {
   run("snapshot", "-i");
 };
 const shot = (name) => {
+  if (evaluate("location.pathname==='/arena'"))
+    evaluate("window.scrollTo(0,0);true");
   run(
     "screenshot",
     ...(evaluate(
@@ -48,7 +50,7 @@ function check(name, code) {
   const result = evaluate(code);
   results.push({ name, result });
   console.log((result ? "PASS " : "FAIL ") + name);
-  if (pass === "pass2") assert.equal(result, true, name);
+  if (pass.endsWith("pass2")) assert.equal(result, true, name);
 }
 function recording(name, action) {
   let status = JSON.parse(run("--json", "stream", "status")).data;
@@ -160,7 +162,8 @@ recording("story", () => {
   wait(900);
   shot("05-plane-change");
   click("Open Command");
-  wait(1400);
+  wait(1600);
+  shot("command-blocked");
   check(
     "Command receives Scraper selection and blocked state",
     "location.pathname==='/app' && document.querySelector('[data-testid=node-scraper]').getAttribute('aria-pressed')==='true' && document.querySelector('[aria-label=\"Mandate inspector\"]').innerText.includes('BLOCKED')",
@@ -226,7 +229,12 @@ for (const [route, selector] of [
   );
 }
 for (const width of [1280, 768, 390]) {
-  run("set", "viewport", String(width), width === 1280 ? "800" : "900");
+  run(
+    "set",
+    "viewport",
+    String(width),
+    width === 1280 ? "800" : width === 390 ? "844" : "900",
+  );
   for (const [route, name] of [
     ["/", "story"],
     ["/app", "command"],

@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { ArrowRight, RotateCcw, Check, Scissors } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
 import {
   amount,
   authorityPath,
@@ -11,555 +11,897 @@ import {
   statusOf,
   type AuthorityModel,
 } from "@/lib/authority";
-import { AuthorityTrace } from "./authority-tree";
-import SpatialLoom from "./spatial-loom";
 import { useWorld } from "./world-shell";
-import { loomMotion } from "@/lib/loom-motion";
+import { motionTiming, scopedTimeline } from "./authority-motion";
 
-const chapters = [
+const stages = ["Root", "Research", "Trace", "Blast Radius", "Cascade"];
+const descriptions = [
+  "One treasury. Give agents bounded authority over it. Keep control at the Root.",
+  "Research can delegate within its mandate. Every new permission inherits the limits above it.",
+  "Scraper answers to Data. Data answers to Research. Every path must reach the Root.",
+  "One Research revoke reaches three descendants. Operations sits outside the boundary.",
+  "Research is revoked. Its descendants lose effective authority. Operations continues.",
+];
+const polar = (radius: number, angle: number) => {
+  const radians = (angle * Math.PI) / 180;
+  return [390 + radius * Math.cos(radians), 360 + radius * Math.sin(radians)];
+};
+function sector(inner: number, outer: number, start: number, end: number) {
+  const a = polar(outer, start),
+    b = polar(outer, end),
+    c = polar(inner, end),
+    d = polar(inner, start);
+  const large = end - start > 180 ? 1 : 0;
+  return `M ${a} A ${outer} ${outer} 0 ${large} 1 ${b} L ${c} A ${inner} ${inner} 0 ${large} 0 ${d} Z`;
+}
+function authorityArc(radius: number, start: number, end: number) {
+  return `M ${polar(radius, start)} A ${radius} ${radius} 0 ${Math.abs(end - start) > 180 ? 1 : 0} ${end > start ? 1 : 0} ${polar(radius, end)}`;
+}
+const shapes = [
   {
-    id: "genesis",
-    name: "Genesis",
-    title: "DON’T GIVE AGENTS WALLETS. GIVE THEM MANDATES.",
-    copy: "One treasury. Recursive authority.",
+    id: "research",
+    inner: 140,
+    outer: 208,
+    start: -169,
+    end: 14,
+    x: 386,
+    y: 184,
+    delay: 0,
+    joint: -90,
+    dx: 0,
+    dy: -16,
   },
   {
-    id: "recursion",
-    name: "Recursion",
-    title: "An organization grows. Control stays at the Root.",
-    copy: "Research delegates to Data. Data delegates to Scraper. Analysis occupies its own Research branch. Operations holds independent Root authority.",
+    id: "operations",
+    inner: 140,
+    outer: 208,
+    start: 30,
+    end: 168,
+    x: 390,
+    y: 529,
+    delay: 0,
+    joint: 90,
+    dx: 36,
+    dy: 44,
   },
   {
-    id: "trace",
-    name: "Trace",
-    title: "Permission has a lineage.",
-    copy: "Select a mandate. Resolve every ancestor that makes it usable, all the way to the Root.",
+    id: "data",
+    inner: 220,
+    outer: 279,
+    start: -169,
+    end: -73,
+    x: 230,
+    y: 173,
+    delay: 300,
+    joint: -150,
+    dx: -22,
+    dy: -52,
   },
   {
-    id: "blast",
-    name: "Blast Radius",
-    title: "See the consequence before the cut.",
-    copy: "Research, Data, Analysis and Scraper sit inside one impact boundary. Every mandate stays active during preview.",
+    id: "analysis",
+    inner: 220,
+    outer: 279,
+    start: -68,
+    end: 14,
+    x: 614,
+    y: 251,
+    delay: 420,
+    joint: -35,
+    dx: 38,
+    dy: -24,
   },
   {
-    id: "cut",
-    name: "Cascade",
-    title: "ONE CUT. A WHOLE BRANCH LOSES AUTHORITY.",
-    copy: "One local revoke. Descendants fail ancestor validation. Operations continues at the same coordinates, with the same authority.",
-  },
-  {
-    id: "enter",
-    name: "Plane Change",
-    title: "ENTER COMMAND",
-    copy: "Operate the same authority structure. Inspect the capital, review the consequence, and keep the evidence.",
+    id: "scraper",
+    inner: 291,
+    outer: 345,
+    start: -169,
+    end: -73,
+    x: 201,
+    y: 106,
+    delay: 660,
+    joint: -150,
+    dx: -44,
+    dy: -104,
   },
 ];
-const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const pointOn = (
+  shape: (typeof shapes)[number],
+  radius: number,
+  angle: number,
+) => {
+  const p = polar(radius, angle);
+  return [p[0] + shape.dx, p[1] + shape.dy];
+};
+// The contour follows the stepped outer inheritance boundary; Operations is outside.
+const impactContour = () => {
+  const research = shapes[0],
+    data = shapes[2],
+    analysis = shapes[3],
+    scraper = shapes[4];
+  return `M ${pointOn(scraper, 352, -173)} A352 352 0 0 1 ${pointOn(scraper, 352, -73)} L ${pointOn(data, 286, -73)} L ${pointOn(analysis, 286, -68)} A286 286 0 0 1 ${pointOn(analysis, 286, 18)} L ${pointOn(research, 127, 18)} A127 127 0 1 0 ${pointOn(research, 127, -173)} Z`;
+};
+
+function AuthoritySeal({
+  model,
+  grant,
+  traced,
+  preview,
+  cut,
+  selected,
+  onSelect,
+}: {
+  model: AuthorityModel;
+  grant?: string;
+  traced: boolean;
+  preview: boolean;
+  cut: boolean;
+  selected: string;
+  onSelect: (id: string) => void;
+}) {
+  const surface = useRef<HTMLDivElement>(null);
+  const previousMotion = useRef({ cut, preview, traced, selected });
+  const expanded = model.nodes.length > 1;
+  const path = authorityPath(model, selected).map((n) => n.id);
+  const grantParent = model.nodes.find((node) => node.id === grant)?.parent;
+  useEffect(() => {
+    const element = surface.current;
+    if (!element) return;
+    const previous = previousMotion.current;
+    previousMotion.current = { cut, preview, traced, selected };
+    if (
+      !grant &&
+      !(cut && !previous.cut) &&
+      !(preview && !previous.preview) &&
+      !(traced && (!previous.traced || selected !== previous.selected))
+    )
+      return;
+    const timeline = scopedTimeline(
+      element,
+      cut ? "cascade" : preview ? "impact" : traced ? "trace" : "grant",
+      cut ? motionTiming.cascade : motionTiming.build,
+    );
+    if (grant) {
+      const route = element.querySelector(".grant-path");
+      timeline.pulse(route, 420);
+      const node = element.querySelector(`[data-authority-id="${grant}"]`);
+      timeline.animate(
+        node,
+        [
+          { opacity: 0 },
+          { opacity: 1 },
+        ],
+        120,
+        390,
+      );
+      node?.querySelectorAll(".authority-rail").forEach((rail) => timeline.draw(rail, 310, 430));
+      timeline.animate(node?.querySelector(".seal-label"), [{ opacity: 0, clipPath: "inset(0 0 100% 0)" }, { opacity: 1, clipPath: "inset(0)" }], 150, 630);
+      timeline.animate(
+        element.querySelector(
+          `[data-authority-id="${grantParent}"] .root-disc, [data-authority-id="${grantParent}"] .mandate-surface`,
+        ),
+        [
+          { strokeWidth: 1 },
+          { strokeWidth: 4, offset: 0.3 },
+          { strokeWidth: 1 },
+        ],
+        320,
+      );
+      timeline.draw(node?.querySelector(".mandate-ink"), 440, 300);
+      timeline.animate(
+        node?.querySelector(".mandate-ink"),
+        [{ opacity: 1 }, { opacity: 0 }],
+        440,
+        300,
+      );
+    } else if (cut) {
+      for (const shape of shapes.filter((shape) => shape.id !== "operations")) {
+        const node = element.querySelector(`[data-authority-id="${shape.id}"]`);
+        node?.querySelectorAll(".authority-rail").forEach((rail) => timeline.animate(rail, [{ stroke: "#c8d9c5", strokeDasharray: "1 0" }, { stroke: shape.id === "research" ? "#d97d72" : "#637166", strokeDasharray: ".035 .045" }], 360, shape.delay));
+        timeline.animate(
+          node?.querySelector(".mandate-cut-source"),
+          [{ opacity: 1 }, { opacity: 0 }],
+          430,
+          shape.delay,
+        );
+        const displacement =
+          shape.id === "research"
+            ? "translate(0px, -36px)"
+            : `translate(${shape.dx - shape.delay / 30}px, ${shape.dy - shape.delay / 20}px)`;
+        timeline.animate(
+          node,
+          [
+            { transform: `translate(${shape.dx}px, ${shape.dy}px)` },
+            { transform: displacement },
+          ],
+          520,
+          shape.delay,
+        );
+        timeline.animate(
+          node?.querySelector(".seal-label"),
+          [{ opacity: 0.65 }, { opacity: 1 }],
+          220,
+          shape.delay + 200,
+        );
+      }
+      timeline.animate(
+        element.querySelector(".cut-mark"),
+        [
+          { transform: "scaleY(.15)", opacity: 0 },
+          { transform: "scaleY(1.3)", opacity: 1, offset: 0.4 },
+          { transform: "scaleY(1)", opacity: 1 },
+        ],
+        360,
+      );
+      timeline.animate(
+        element.closest("main")?.querySelector(".story-capacity"),
+        [{ opacity: 0 }, { opacity: 1 }],
+        320,
+        900,
+      );
+    } else if (preview) {
+      timeline.draw(
+        element.querySelector(".blast-boundary"),
+        motionTiming.impact,
+      );
+    } else if (traced) {
+      timeline.draw(
+        element.querySelector(".trace-ray path"),
+        motionTiming.trace,
+      );
+      Array.from(element.querySelectorAll(".trace-ray circle")).forEach(
+        (point, i) =>
+          timeline.animate(
+            point,
+            [{ opacity: 0 }, { opacity: 1 }],
+            140,
+            i * 130,
+          ),
+      );
+      ["treasury", "research", "data", "scraper"].forEach((id, i) => {
+        element.querySelectorAll(`[data-authority-id="${id}"] .authority-rail`).forEach((rail) => timeline.draw(rail, 340, i * 130));
+        timeline.animate(
+          element.querySelector(
+            `[data-authority-id="${id}"] .root-disc, [data-authority-id="${id}"] .mandate-surface`,
+          ),
+          [
+            { strokeWidth: 0.7 },
+            { strokeWidth: 3, offset: 0.35 },
+            { strokeWidth: 1.5 },
+          ],
+          320,
+          i * 150,
+        );
+      });
+    }
+    return timeline.cancel;
+  }, [grant, grantParent, traced, preview, cut, selected]);
+  return (
+    <div
+      ref={surface}
+      className={`authority-seal ${expanded ? "expanded" : "root-only"} ${traced ? "tracing" : ""} ${preview ? "previewing" : ""} ${cut ? "severed" : ""}`}
+    >
+      <svg
+        viewBox="-35 -135 815 800"
+        aria-label="Nested authority boundaries: Treasury contains Research and Operations. Research contains Data and Analysis; Data contains Scraper."
+      >
+        <defs>
+          <linearGradient id="authority-bone" x1="0" y1="0" x2="0.85" y2="1">
+            <stop stopColor="#faf5e7" />
+            <stop offset="0.55" stopColor="#eee9da" />
+            <stop offset="1" stopColor="#b8c1ac" />
+          </linearGradient>
+          {shapes.map((shape, index) => (
+            <linearGradient
+              key={shape.id}
+              id={`authority-${shape.id}`}
+              x1="0"
+              y1="0"
+              x2="0.65"
+              y2="1"
+            >
+              <stop stopColor={index === 1 ? "#273e32" : "#30443a"} />
+              <stop
+                offset="0.45"
+                stopColor={index === 1 ? "#1c3026" : "#23382d"}
+              />
+              <stop
+                offset="1"
+                stopColor="#14241c"
+              />
+            </linearGradient>
+          ))}
+          <linearGradient id="authority-copper" x1="0" y1="0" x2="0.6" y2="1">
+            <stop stopColor="#efd0ae" />
+            <stop offset="0.5" stopColor="#d59b74" />
+            <stop offset="1" stopColor="#a87350" />
+          </linearGradient>
+          <filter
+            id="authority-shadow"
+            x="-25%"
+            y="-25%"
+            width="150%"
+            height="165%"
+          >
+            <feDropShadow
+              dx="0"
+              dy="12"
+              stdDeviation="10"
+              floodColor="#040b07"
+              floodOpacity="0.48"
+            />
+          </filter>
+          <pattern
+            id="lost-authority"
+            width="7"
+            height="7"
+            patternUnits="userSpaceOnUse"
+            patternTransform="rotate(35)"
+          >
+            <path d="M 0 0 V 7" stroke="currentColor" strokeWidth="1" />
+          </pattern>
+        </defs>
+        <g className="seal-registration" aria-hidden="true">
+          {[0, 180, 270].map((angle) => {
+            const a = polar(358, angle),
+              b = polar(369, angle);
+            return <path key={angle} d={`M ${a} L ${b}`} />;
+          })}
+        </g>
+        <g
+          className="seal-root"
+          data-authority-id="treasury"
+          data-name="Treasury"
+          data-available={amount(model.nodes[0].available)}
+        >
+          <path
+            className="root-relief"
+            d="M338 252 H442 Q498 252 498 308 V334 L472 360 L498 386 V412 Q498 468 442 468 H338 Q282 468 282 412 V386 L308 360 L282 334 V308 Q282 252 338 252 Z"
+            transform="translate(0 8)"
+          />
+          <path
+            className="root-edge"
+            d="M338 252 H442 Q498 252 498 308 V334 L472 360 L498 386 V412 Q498 468 442 468 H338 Q282 468 282 412 V386 L308 360 L282 334 V308 Q282 252 338 252 Z"
+          />
+          <path
+            className="root-disc"
+            d="M338 252 H442 Q498 252 498 308 V334 L472 360 L498 386 V412 Q498 468 442 468 H338 Q282 468 282 412 V386 L308 360 L282 334 V308 Q282 252 338 252 Z"
+          />
+          <path
+            className="root-emblem"
+            d="M 361 310 V 287 L 390 302 L 419 287 V 310 M 369 310 V 300 L 390 311 L 411 300 V 310"
+          />
+          <text className="root-name" x="390" y="357" textAnchor="middle">
+            ROOT
+          </text>
+          <text className="root-value" x="390" y="386" textAnchor="middle">
+            {amount(model.vault)}
+          </text>
+          <text className="root-unit" x="390" y="408" textAnchor="middle">
+            USDC · ONE TREASURY
+          </text>
+        </g>
+        {shapes.map((shape) => {
+          const node = model.nodes.find((n) => n.id === shape.id);
+          if (!node) return null;
+          const affected = shape.id !== "operations";
+          const status = statusOf(model, node.id);
+          return (
+            <g
+              key={shape.id}
+              data-authority-id={shape.id}
+              className={`seal-mandate ${shape.id} ${affected ? "dependent" : "independent"} ${grant === shape.id ? "granting" : ""} ${traced && path.includes(shape.id) ? "on-path" : ""}`}
+              style={
+                {
+                  "--cascade-delay": `${shape.delay}ms`,
+                  "--layer-x": `${shape.dx}px`,
+                  "--layer-y": `${shape.dy}px`,
+                } as CSSProperties
+              }
+              data-parent-id={node.parent}
+              data-name={node.name}
+              data-available={amount(node.available, model.decimals)}
+              role="button"
+              tabIndex={0}
+              aria-label={`Inspect ${node.name}`}
+              aria-pressed={selected === node.id}
+              onClick={() => onSelect(node.id)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onSelect(node.id);
+                }
+              }}
+            >
+              <path
+                className="authority-joint"
+                d={(() => {
+                  const parent = shapes.find((s) => s.id === node.parent);
+                  const a = parent
+                    ? pointOn(parent, parent.outer - 2, shape.joint)
+                    : polar(108, shape.joint);
+                  const b = polar(shape.inner + 2, shape.joint);
+                  return `M ${a[0] - shape.dx} ${a[1] - shape.dy} L ${b}`;
+                })()}
+              />
+              <path
+                className="mandate-relief"
+                d={sector(shape.inner, shape.outer, shape.start, shape.end)}
+                transform="translate(0 7)"
+              />
+              <path
+                className="mandate-surface"
+                d={sector(shape.inner, shape.outer, shape.start, shape.end)}
+              />
+              {[shape.start + 2, shape.end - 2].map((end, index) => (
+                <path key={index} className="authority-rail" pathLength="1" d={authorityArc(shape.inner + 5, shape.joint, end)} />
+              ))}
+              {cut && affected && (
+                <path
+                  className="mandate-cut-source"
+                  d={sector(shape.inner, shape.outer, shape.start, shape.end)}
+                />
+              )}
+              <path
+                className="mandate-hatch"
+                d={sector(shape.inner, shape.outer, shape.start, shape.end)}
+              />
+              <path
+                className="mandate-ink"
+                pathLength="1"
+                d={sector(shape.inner, shape.outer, shape.start, shape.end)}
+              />
+              <g
+                key={status}
+                className="seal-label"
+                transform={`translate(${shape.x} ${shape.y})`}
+              >
+                <text className="mandate-name" textAnchor="middle" y="0">
+                  {node.name}
+                </text>
+                <text className="mandate-value" textAnchor="middle" y="20">
+                  {cut && affected
+                    ? status === "revoked"
+                      ? "REVOKED"
+                      : "BLOCKED"
+                    : `${amount(node.budget, model.decimals)} USDC`}
+                </text>
+              </g>
+            </g>
+          );
+        })}
+        {preview && (
+          <path className="blast-boundary" pathLength="1" d={impactContour()} />
+        )}
+        {grant &&
+          (() => {
+            const shape = shapes.find((shape) => shape.id === grant)!;
+            const node = model.nodes.find((node) => node.id === grant)!;
+            const parent = shapes.find((shape) => shape.id === node.parent);
+            const origin = parent
+              ? pointOn(parent, (parent.inner + parent.outer) / 2, shape.joint)
+              : polar(75, shape.joint);
+            return (
+              <path
+                className="grant-path"
+                d={`M ${origin} L ${pointOn(shape, (shape.inner + shape.outer) / 2, shape.joint)}`}
+              />
+            );
+          })()}
+        {traced && !cut && (
+          <g key={selected} className="trace-ray" aria-hidden="true">
+            <path
+              d={`M ${polar(90, -150)} L ${pointOn(shapes[0], 174, -150)} L ${pointOn(shapes[2], 250, -150)} L ${pointOn(shapes[4], 318, -150)}`}
+              pathLength="1"
+            />
+            {[
+              polar(90, -150),
+              pointOn(shapes[0], 174, -150),
+              pointOn(shapes[2], 250, -150),
+              pointOn(shapes[4], 318, -150),
+            ].map((p, i) => {
+              return (
+                <circle
+                  key={i}
+                  cx={p[0]}
+                  cy={p[1]}
+                  r="5"
+                  style={{ animationDelay: `${i * 350}ms` }}
+                />
+              );
+            })}
+          </g>
+        )}
+        {cut && (
+          <g className="cut-mark" aria-hidden="true">
+            <path d="M382 216 L398 226 M382 228 L398 238" />
+            <path className="cut-gap" d="M390 207V214 M390 242V251" />
+          </g>
+        )}
+      </svg>
+      <div
+        className="seal-controls"
+        aria-label="Inspect mandates"
+        style={{ visibility: expanded ? "visible" : "hidden" }}
+      >
+        {model.nodes.map((node) => (
+          <button
+            key={node.id}
+            aria-pressed={selected === node.id}
+            onClick={() => onSelect(node.id)}
+          >
+            {node.name === "Treasury" ? "Root" : node.name}
+            <span className="seal-control-status">{statusOf(model, node.id)}</span>
+            <span className="seal-control-amount">{amount(node.available, model.decimals)} {model.unit}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function StoryWorld() {
-  const router = useRouter();
-  const w = useWorld();
-  const [chapter, setChapter] = useState(0);
-  const [count, setCount] = useState(1);
-  const [grant, setGrant] = useState<string>();
-  const [building, setBuilding] = useState(false);
-  const [selected, setSelected] = useState("treasury");
-  const [settled, setSettled] = useState<AuthorityModel>();
-  const [preview, setPreview] = useState(false);
-  const [rejected, setRejected] = useState(false);
-  const [trace, setTrace] = useState(false);
-  const [traceEpoch, setTraceEpoch] = useState(0);
-  const [flattening, setFlattening] = useState(false);
-  const [delta, setDelta] = useState("");
-  const world = useRef<HTMLElement>(null);
+  const router = useRouter(),
+    w = useWorld();
+  const [stage, setStage] = useState(0),
+    [count, setCount] = useState(1);
+  const [grant, setGrant] = useState<string>(),
+    [busy, setBusy] = useState(false);
+  const [traced, setTraced] = useState(false),
+    [preview, setPreview] = useState(false);
+  const [settled, setSettled] = useState<AuthorityModel>(),
+    [selected, setSelected] = useState("treasury");
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const generation = useRef(0);
-  const chapterRef = useRef(0);
+  const constructionTarget = useRef(1);
   const model = settled ?? genesis(count),
     cut = !!settled;
-  const current = chapters[chapter];
-  const research = model.nodes.find((n) => n.id === "research");
-  const node = model.nodes.find((n) => n.id === selected) ?? model.nodes[0];
-  const next = genesis().nodes[count];
-
-  function cancel() {
-    generation.current++;
-    timers.current.forEach(clearTimeout);
-    timers.current = [];
-    setGrant(undefined);
-    setBuilding(false);
-    setFlattening(false);
-  }
-  function later(callback: () => void, ms: number) {
-    const token = generation.current;
-    timers.current.push(
-      setTimeout(() => {
-        if (token === generation.current) callback();
-      }, ms),
-    );
-  }
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
   useEffect(() => {
-    const root = world.current;
-    const lifetime = generation;
-    if (!root) return;
-    const stop = () => {
-      lifetime.current++;
+    const preference = matchMedia("(prefers-reduced-motion: reduce)");
+    const finish = () => {
+      if (!preference.matches || !busy) return;
       timers.current.forEach(clearTimeout);
       timers.current = [];
+      setCount(constructionTarget.current);
       setGrant(undefined);
-      setBuilding(false);
-      setFlattening(false);
+      setBusy(false);
     };
-    const update = () => {
-      if (innerWidth < 1100 || reduced()) return;
-      const index = Math.max(
-        0,
-        Math.min(
-          5,
-          Math.round(
-            (56 - root.getBoundingClientRect().top) / (innerHeight * 0.7),
-          ),
-        ),
-      );
-      if (index === chapterRef.current) return;
-      stop();
-      chapterRef.current = index;
-      setChapter(index);
-    };
-    const hash = () => {
-      const id = location.hash.slice(1);
-      const index =
-        id === "mission" ? 5 : chapters.findIndex((c) => c.id === id);
-      if (index >= 0) {
-        stop();
-        chapterRef.current = index;
-        setChapter(index);
-        if (innerWidth >= 1100 && !reduced())
-          window.scrollTo({
-            top: root.offsetTop - 56 + index * innerHeight * 0.7,
-            behavior: "instant",
-          });
+    preference.addEventListener("change", finish);
+    return () => preference.removeEventListener("change", finish);
+  }, [busy]);
+  useEffect(() => {
+    const sync = () => {
+      if (w.mode === "demo") {
+        if (w.fixture.reserved === 0n && w.mission === "ready")
+          w.setFixture(model);
+        w.select(selected);
       }
     };
-    hash();
-    const hidden = () => {
-      if (document.hidden) stop();
-    };
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    window.addEventListener("hashchange", hash);
-    document.addEventListener("visibilitychange", hidden);
-    return () => {
-      lifetime.current++;
-      timers.current.forEach(clearTimeout);
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-      window.removeEventListener("hashchange", hash);
-      document.removeEventListener("visibilitychange", hidden);
-    };
-  }, []);
-  function navigate(index: number) {
-    cancel();
-    chapterRef.current = index;
-    setChapter(index);
-    history.replaceState(null, "", `#${chapters[index].id}`);
-    if (innerWidth >= 1100 && !reduced() && world.current)
-      window.scrollTo({
-        top: world.current.offsetTop - 56 + index * innerHeight * 0.7,
-        behavior: "instant",
-      });
+    window.addEventListener("mandateos:open-command", sync);
+    return () => window.removeEventListener("mandateos:open-command", sync);
+  }, [w, model, selected]);
+  const later = (fn: () => void, ms: number) => {
+    timers.current.push(
+      setTimeout(
+        fn,
+        matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : ms,
+      ),
+    );
+  };
+  function delegate() {
+    if (busy || count > 1) return;
+    setBusy(true);
+    constructionTarget.current = 2;
+    setCount(2);
+    setGrant("research");
+    setSelected("research");
+    setStage(1);
+    later(() => {
+      setGrant(undefined);
+      setBusy(false);
+    }, motionTiming.build);
   }
-  function construct(all = false) {
-    if (cut || building || count === 6) return;
-    cancel();
-    setBuilding(true);
-    const last = all ? 6 : count + 1;
-    const step = all ? loomMotion.recursion : loomMotion.genesis;
-    const immediate = reduced() || innerWidth < 1100;
-    const create = (n: number) => {
-      const before = genesis(n - 1),
-        after = genesis(n),
-        child = after.nodes[n - 1];
-      const parent = before.nodes.find((p) => p.id === child.parent)!;
-      setCount(n);
-      setGrant(immediate ? undefined : child.id);
-      setSelected(child.id);
-      setDelta(
-        `${parent.name} −${amount(child.budget)} USDC own available · ${child.name} +${amount(child.budget)}`,
+  function build() {
+    if (busy || count === 6) return;
+    setBusy(true);
+    constructionTarget.current = 6;
+    for (let n = count + 1; n <= 6; n++)
+      later(
+        () => {
+          setCount(n);
+          setGrant(genesis(n).nodes[n - 1].id);
+        },
+        (n - count - 1) * motionTiming.build,
       );
-    };
-    if (immediate) {
-      for (let n = count + 1; n <= last; n++) create(n);
-      setBuilding(false);
-      return;
-    }
-    create(count + 1);
-    for (let n = count + 2; n <= last; n++)
-      later(() => create(n), (n - count - 1) * step);
     later(
       () => {
-        setBuilding(false);
         setGrant(undefined);
+        setBusy(false);
       },
-      (last - count - 1) * step + step,
+      (6 - count) * motionTiming.build,
     );
   }
-  function select(id: string) {
-    cancel();
-    setSelected(id);
-    setTrace(true);
-    setTraceEpoch((old) => old + 1);
-  }
-  function inspectImpact() {
-    cancel();
-    setPreview(true);
-    setSelected("research");
-    setTrace(false);
-  }
-  function confirm() {
-    if (!preview || count < 6 || cut) return;
-    cancel();
-    setSettled(revokeDemo(model, "research"));
+  function trace() {
+    setStage(2);
+    setTraced(true);
     setPreview(false);
     setSelected("scraper");
-    setTrace(false);
-    setDelta("Research capacity released to Treasury · shared vault unchanged");
-    navigate(4);
+  }
+  function blast() {
+    setStage(3);
+    setTraced(false);
+    setPreview(true);
+    setSelected("research");
+  }
+  function confirm() {
+    if (!preview || cut) return;
+    setSettled(revokeDemo(model, "research"));
+    setStage(4);
+    setPreview(false);
+    setTraced(false);
+    setSelected("scraper");
+    w.record(
+      "Research revoked",
+      "Data · Analysis · Scraper effectively blocked · Operations remains active · demo",
+    );
+    w.record(
+      "Parent capacity released",
+      `${amount(model.nodes.find((node) => node.id === "research")!.remaining)} USDC → Root available · vault unchanged · demo`,
+    );
   }
   function reset() {
-    cancel();
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+    setStage(0);
     setCount(1);
+    setGrant(undefined);
+    setBusy(false);
+    setTraced(false);
+    setPreview(false);
     setSettled(undefined);
     setSelected("treasury");
-    setPreview(false);
-    setRejected(false);
-    setTrace(false);
-    setDelta("");
-    navigate(0);
+    constructionTarget.current = 1;
   }
   function openCommand() {
-    cancel();
-    // Preserve any independently funded Arena reservation and lifecycle.
-    if (w.mode === "demo") {
-      if (w.fixture.reserved === 0n && w.mission === "ready")
-        w.setFixture(model);
-      w.select(selected);
-    }
-    if (reduced() || innerWidth < 1100) {
-      router.push("/app");
-      return;
-    }
-    setFlattening(true);
-    later(() => router.push("/app"), loomMotion.plane);
+    window.dispatchEvent(
+      new CustomEvent("mandateos:open-command", {
+        detail: { navigate: () => router.push("/app") },
+      }),
+    );
   }
+  function inspect(id: string) {
+    setSelected(id);
+    if (count === 6 && !cut && !preview) {
+      setTraced(id === "scraper");
+    }
+  }
+  const cta =
+    count === 1
+      ? "Delegate Research"
+      : count < 6
+        ? "Delegate further"
+        : stage < 2
+          ? "Trace Scraper"
+          : stage === 2
+            ? "Preview Research revoke"
+            : stage === 3
+              ? "Confirm demo revoke"
+              : "Open Command";
+  const action =
+    count === 1
+      ? delegate
+      : count < 6
+        ? build
+        : stage < 2
+          ? trace
+          : stage === 2
+            ? blast
+            : stage === 3
+              ? confirm
+              : openCommand;
   return (
     <main
-      ref={world}
-      className={`story-world persistent-story ${flattening ? "plane-change" : ""}`}
-      data-chapter={current.id}
+      className={`mandate-story ${preview ? "is-preview" : ""} ${cut ? "is-cut" : ""}`}
+      data-stage={stage}
     >
-      <div className="story-stage">
-        <div className="story-editorial">
-          <nav className="chapter-rail" aria-label="Story chapters">
-            {chapters.map((c, i) => (
-              <button
-                key={c.id}
-                aria-current={chapter === i ? "step" : undefined}
-                onClick={() => navigate(i)}
-              >
-                <span>{String(i + 1).padStart(2, "0")}</span>
-                {c.name}
-              </button>
-            ))}
-          </nav>
-          <div className="chapter-copy">
-            {chapter === 0 ? (
+      <div className="story-composition">
+        <section className="story-voice">
+          <div className="story-title" key={stage}>
+            {stage === 0 ? (
               <h1>
-                DON’T GIVE
-                <br /> AGENTS WALLETS.
-                <span>
-                  <br /> GIVE THEM
-                  <br /> MANDATES.
-                </span>
+                Give them
+                <br />
+                <em>mandates.</em>
+              </h1>
+            ) : stage === 1 ? (
+              <h1>
+                Authority.
+                <br />
+                <em>Inherited.</em>
+              </h1>
+            ) : stage === 2 ? (
+              <h1>
+                Every grant.
+                <br />
+                <em>One origin.</em>
+              </h1>
+            ) : stage === 3 ? (
+              <h1>
+                Know the
+                <br />
+                <em>consequence.</em>
               </h1>
             ) : (
-              <h2>{current.title}</h2>
+              <h1>
+                One cut.
+                <br />
+                <em>Control stays.</em>
+              </h1>
             )}
-            <p>{current.copy}</p>
+            <p>{descriptions[stage]}</p>
           </div>
-          <div className="chapter-action">
-            {chapter <= 1 && (
+          <div className="story-action-block">
+            <button className="story-primary" onClick={action} disabled={busy}>
+              <span>{busy ? "Granting authority…" : cta}</span>
+              {stage === 3 ? <Scissors size={19} /> : <ArrowRight size={20} />}
+            </button>
+            {preview && (
               <button
-                className="button bone"
-                onClick={() => construct(chapter === 1 || count > 1)}
-                disabled={building || cut || count === 6}
+                className="story-cancel"
+                onClick={() => {
+                  setPreview(false);
+                  setStage(2);
+                  setTraced(true);
+                }}
               >
-                {building
-                  ? "Constructing authority…"
-                  : count === 6
-                    ? "Organization established"
-                    : chapter === 0
-                      ? count === 1
-                        ? "Delegate Research"
-                        : "Build demo hierarchy"
-                      : "Build demo hierarchy"}
-                <ArrowRight size={18} />
-              </button>
-            )}
-            {chapter >= 2 && count < 6 && (
-              <>
-                <p className="missing-ancestry">
-                  {count}/6 mandates exist. Build the missing ancestry to
-                  inspect the full organization.
-                </p>
-                <button
-                  className="button bone"
-                  disabled={building}
-                  onClick={() => construct(true)}
-                >
-                  {building
-                    ? "Constructing authority…"
-                    : "Build demo hierarchy"}
-                  <ArrowRight size={18} />
-                </button>
-              </>
-            )}
-            {chapter === 2 && count === 6 && (
-              <button
-                className="button subtle"
-                onClick={() => select("scraper")}
-              >
-                Trace Scraper
-                <ArrowRight size={18} />
-              </button>
-            )}
-            {(chapter === 3 || chapter === 4) && count === 6 && !cut && (
-              <button
-                className={`button ${preview ? "copper" : "bone"}`}
-                onClick={preview ? confirm : inspectImpact}
-              >
-                {preview ? "Confirm demo revoke" : "Preview Research revoke"}
-                <ArrowRight size={18} />
-              </button>
-            )}
-            {preview && !cut && (chapter === 3 || chapter === 4) && (
-              <button className="text-button" onClick={() => setPreview(false)}>
                 Cancel preview
               </button>
             )}
-            {chapter === 4 && cut && (
-              <button
-                className="button subtle"
-                onClick={() => {
-                  select("scraper");
-                  setRejected(true);
-                }}
-              >
-                Attempt Scraper spend
-                <ArrowRight size={18} />
-              </button>
-            )}
-            {chapter === 5 && (
-              <button
-                className="button bone"
-                disabled={flattening}
-                onClick={openCommand}
-              >
-                {flattening ? "Aligning Command…" : "Open Command"}
-                <ArrowRight size={18} />
-              </button>
-            )}
-            <span className="demo-caption">
-              INTERACTIVE SIMULATION · NO TRANSACTIONS
+            <span className="story-demo">
+              Interactive simulation · No transactions
             </span>
-            {delta && chapter <= 1 && (
-              <p className="authority-delta" role="status">
-                {delta}
+          </div>
+          <div className="story-context" aria-live="polite">
+            <span className="context-index">
+              {String(stage + 1).padStart(2, "0")} / 05
+            </span>
+            <div>
+              <strong>
+                {stage === 0
+                  ? "Capital stays in one place."
+                  : stage === 1
+                    ? "Authority moves. Tokens don’t."
+                    : stage === 2
+                      ? "No ancestor can be skipped."
+                      : stage === 3
+                        ? "Preview only. All mandates active."
+                        : "A local cut. An inherited consequence."}
+              </strong>
+              <p>
+                {stage === 0
+                  ? "Agents receive limits, not separate wallets."
+                  : stage === 1
+                    ? "Each child remains bounded by its parent."
+                    : stage === 2
+                      ? "Root → Research → Data → Scraper"
+                      : stage === 3
+                        ? "Research + Data + Analysis + Scraper"
+                        : "Root → Research (revoked) → Data → Scraper"}
               </p>
-            )}
+              {cut && (
+                <small className="story-capacity">
+                  <b>+{amount(genesis(6).nodes.find((node) => node.id === "research")!.remaining)} USDC capacity released</b>
+                  Root available {amount(model.nodes[0].available)} USDC · vault
+                  unchanged
+                </small>
+              )}
+            </div>
           </div>
-          <div className="chapter-navigation">
-            <button
-              className="text-button"
-              disabled={chapter === 0}
-              onClick={() => navigate(chapter - 1)}
-            >
-              <ArrowLeft size={14} />
-              Back
-            </button>
-            <button
-              className="text-button"
-              disabled={chapter === 5}
-              onClick={() => navigate(chapter + 1)}
-            >
-              Next
-              <ArrowRight size={14} />
-            </button>
-            <button className="text-button" onClick={reset}>
-              <RotateCcw size={13} />
-              Reset
-            </button>
+        </section>
+        <section className="story-exhibit" aria-label="Authority demonstration">
+          <div className="exhibit-topline">
+            <span>MANDATEOS / RECURSIVE AUTHORITY</span>
+            <span>
+              {cut
+                ? "BRANCH REVOKED"
+                : preview
+                  ? "IMPACT PREVIEW"
+                  : traced
+                    ? "LINEAGE VERIFIED"
+                    : "AUTHORITY INHERITANCE"}
+              <i />
+            </span>
           </div>
-          {chapter === 5 && (
-            <Link className="story-arena-invitation" href="/arena">
-              Capital enters. Work competes. Verification resolves.
+          <AuthoritySeal
+            model={model}
+            grant={grant}
+            traced={traced}
+            preview={preview}
+            cut={cut}
+            selected={selected}
+            onSelect={inspect}
+          />
+          <div className="exhibit-caption">
+            <div>
               <span>
-                Enter Arena
-                <ArrowRight size={14} />
+                {preview
+                  ? "WITHIN BLAST RADIUS"
+                  : cut
+                    ? "EFFECTIVE AUTHORITY LOST"
+                    : "ONE SHARED TREASURY"}
               </span>
-            </Link>
-          )}
-        </div>
-        <div className="story-specimen">
-          <div className="specimen-caption">
-            <span>{current.name.toUpperCase()} / AUTHORITY WORLD</span>
-            <span>{String(count).padStart(2, "0")} / 06 MANDATES</span>
-          </div>
-          <div className="story-object">
-            <SpatialLoom
-              model={model}
-              selected={selected}
-              onSelect={select}
-              chapter={current.id}
-              flatten={flattening}
-              grant={grant}
-              grantDuration={
-                chapter === 0 && count === 2
-                  ? loomMotion.genesis
-                  : loomMotion.recursion
-              }
-              preview={preview ? "research" : undefined}
-              trace={trace}
-              traceEpoch={traceEpoch}
-              cascade={cut}
-            />
-          </div>
-          <div
-            className={`story-instrument ${preview ? "impact" : ""} ${cut ? "cut" : ""}`}
-            aria-live="polite"
-          >
-            {preview ? (
-              <>
-                <div>
-                  <span>BLAST RADIUS / PREVIEW</span>
-                  <strong>
-                    1 local revoke · 3 descendants would be blocked
-                  </strong>
-                  <p>Operations unaffected. All mandates still active.</p>
-                </div>
-                <div>
-                  <span>RESEARCH SUBTREE REMAINING</span>
-                  <strong>
-                    {amount(research!.remaining)} <small>USDC</small>
-                  </strong>
-                  <p>Authority returns to Treasury. No token transfer.</p>
-                </div>
-              </>
-            ) : cut ? (
-              <>
-                <div>
-                  <span>
-                    {rejected
-                      ? "EXECUTION REJECTED / SIMULATED"
-                      : "AUTHORITY CUT"}
-                  </span>
-                  <strong>Scraper → Data → Research × → Treasury</strong>
-                  <p>
-                    Research is revoked. Descendant local records remain active.
-                  </p>
-                </div>
-                <div>
-                  <span>CAPITAL RECOVERY</span>
-                  <strong>No token transfer shown</strong>
-                  <p>
-                    390.00 USDC capacity released to Treasury · reclaim is
-                    separate.
-                  </p>
-                </div>
-              </>
-            ) : trace ? (
-              <>
-                <div>
-                  <span>
-                    COMPLETE ANCESTRY / {statusOf(model, node.id).toUpperCase()}
-                  </span>
-                  <strong>
-                    {authorityPath(model, node.id)
-                      .map((n) => n.name)
-                      .join(" → ")}
-                  </strong>
-                  <p>No ancestor can be skipped.</p>
-                </div>
-                <AuthorityTrace model={model} selected={node.id} />
-              </>
-            ) : (
-              <>
-                <div>
-                  <span>
-                    {chapter === 0
-                      ? "NEXT BOUNDED MANDATE"
-                      : "AUTHORITY / ONE SHARED VAULT"}
-                  </span>
-                  <strong>
-                    {next
-                      ? `${next.name} · ${amount(next.budget)} USDC`
-                      : "Six mandates. Five authority relations."}
-                  </strong>
-                  <p>
-                    Authority relations allocate capacity. Tokens stay in the
-                    shared vault.
-                  </p>
-                </div>
-                {research && (
-                  <div>
-                    <span>RESEARCH / OWN AVAILABLE</span>
-                    <strong>
-                      {amount(research.available)} <small>USDC</small>
-                    </strong>
-                    <p>{amount(research.remaining)} USDC subtree remaining</p>
-                  </div>
+              <strong>
+                {preview
+                  ? "4 mandates"
+                  : cut
+                    ? "Research + 3 descendants"
+                    : "1,590.00"}
+                {!preview && !cut && <small> USDC</small>}
+              </strong>
+            </div>
+            <div className={cut || preview ? "sibling-proof" : "capital-proof"}>
+              <span>
+                {cut || preview
+                  ? "OPERATIONS / INDEPENDENT"
+                  : "ROOT / OWN AVAILABLE"}
+              </span>
+              <strong>
+                {cut || preview ? (
+                  <>
+                    <Check size={16} /> 200 USDC · Active
+                  </>
+                ) : (
+                  <>
+                    {amount(model.nodes[0].available)}
+                    <small> USDC</small>
+                  </>
                 )}
-              </>
-            )}
+              </strong>
+            </div>
           </div>
-          {(chapter === 5 || flattening) && (
-            <aside
-              className="plane-inspector bone-instrument"
-              aria-label="Plane change inspector"
-            >
-              <span>SELECTED MANDATE</span>
-              <h2>{node.name}</h2>
-              <span className={`status ${statusOf(model, node.id)}`}>
-                {statusOf(model, node.id)}
-              </span>
-              <dl className="details">
-                <div>
-                  <dt>Available</dt>
-                  <dd>{amount(node.available)} USDC</dd>
-                </div>
-                <div>
-                  <dt>Subtree remaining</dt>
-                  <dd>{amount(node.remaining)} USDC</dd>
-                </div>
-                <div>
-                  <dt>Authority path</dt>
-                  <dd>
-                    {authorityPath(model, node.id)
-                      .map((n) => n.name)
-                      .join(" → ")}
-                  </dd>
-                </div>
-              </dl>
-            </aside>
+          {(traced || cut) && (
+            <div className="story-mobile-consequence">
+              <p>
+                {cut
+                  ? "Root → Research (revoked) → Data → Scraper"
+                  : "Root → Research → Data → Scraper"}
+              </p>
+              {cut && (
+                <small>
+                  Root available {amount(model.nodes[0].available)} USDC · vault
+                  unchanged
+                </small>
+              )}
+            </div>
           )}
-        </div>
+        </section>
       </div>
-      <div className="story-scroll-markers" aria-hidden="true">
-        {chapters.map((c) => (
-          <div key={c.id} id={c.id} />
-        ))}
-        <div id="mission" />
-      </div>
+      <footer className="story-bottom">
+        <nav aria-label="Story progress">
+          {stages.map((name, i) => (
+            <button
+              key={name}
+              disabled={busy || (i !== 0 && (i > stage || cut))}
+              aria-current={i === stage ? "step" : undefined}
+              onClick={() => {
+                if (i === 0) reset();
+                else if (i === 2) trace();
+                else if (i === 3) blast();
+                else {
+                  setStage(i);
+                  setTraced(false);
+                  setPreview(false);
+                }
+              }}
+            >
+              <span>{String(i + 1).padStart(2, "0")}</span>
+              {name}
+            </button>
+          ))}
+        </nav>
+        <button className="story-reset" onClick={reset}>
+          <RotateCcw size={14} /> Replay story
+        </button>
+      </footer>
     </main>
   );
 }

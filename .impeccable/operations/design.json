@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-05T10:24:53.7615923Z",
+  "title": "Design System: MandateOS operational surfaces",
+  "extensions": {
+    "scope": {
+      "routes": [
+        "/app",
+        "/arena"
+      ],
+      "authority": "Scoped shipped notes; approved Story materials remain canonical",
+      "sources": [
+        "web/src/components/work-language.css",
+        "web/src/components/flat-authority-tree.tsx",
+        "web/src/components/command-world.tsx",
+        "web/src/components/arena-world.tsx",
+        "web/src/app/globals.css"
+      ],
+      "reference": [
+        "artifacts/story-visual/story-final.mp4",
+        "artifacts/visual-unity/story-reference-stable.png"
+      ]
+    },
+    "colorMeta": {
+      "forest": {
+        "role": "neutral",
+        "displayName": "Forest ground"
+      },
+      "bone": {
+        "role": "neutral",
+        "displayName": "Bone text and instrument"
+      },
+      "sage": {
+        "role": "primary",
+        "displayName": "Sage authority and settlement"
+      },
+      "preview-copper": {
+        "role": "secondary",
+        "displayName": "Copper unpaid preview"
+      }
+    },
+    "typographyMeta": {
+      "editorial": {
+        "purpose": "Sans headings and operational names"
+      },
+      "emphasis": {
+        "purpose": "Italic heading emphasis and mission title"
+      },
+      "data": {
+        "purpose": "Amounts, depths, status, paths, and provenance"
+      }
+    },
+    "breakpoints": [
+      {
+        "name": "command-ledger",
+        "value": "900px"
+      },
+      {
+        "name": "command-stack",
+        "value": "700px"
+      },
+      {
+        "name": "arena-rail-stack",
+        "value": "1000px"
+      },
+      {
+        "name": "arena-sequential",
+        "value": "650px"
+      }
+    ],
+    "motion": [
+      {
+        "name": "control",
+        "value": "160ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
+      },
+      {
+        "name": "trace",
+        "value": "560ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
+      },
+      {
+        "name": "build",
+        "value": "780ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
+      },
+      {
+        "name": "impact",
+        "value": "700ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
+      },
+      {
+        "name": "cascade",
+        "value": "1360ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
+      },
+      {
+        "name": "handoff",
+        "value": "600ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
+      },
+      {
+        "name": "settlement",
+        "value": "1240ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
+      },
+      {
+        "name": "settle",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
+      }
+    ],
+    "review": {
+      "disposition": "ship",
+      "materialFindings": [],
+      "desktop": {
+        "size": "1440x900",
+        "files": [
+          "command-after.jpg",
+          "command-preview.jpg",
+          "arena-after.jpg",
+          "arena-preview.jpg"
+        ]
+      },
+      "mobile": {
+        "width": 390,
+        "capture": "full page, no browser chrome",
+        "files": [
+          "command-mobile.jpg",
+          "arena-mobile.jpg"
+        ]
+      },
+      "directory": "artifacts/visual-unity",
+      "detectorRan": false,
+      "fullIntegrationTestingClaimed": false,
+      "appliesTo": "Prior visual-unity pass only; current motion-pass review is not asserted."
+    },
+    "motionPass": {
+      "directory": "artifacts/motion-pass/final",
+      "recording": "motion-final.mp4",
+      "finalVerdictClaimed": false,
+      "fullIntegrationTestingClaimed": false,
+      "cleanup": "State interruption/replay, route/unmount, reduced-motion preference, hidden document, resize",
+      "mobile": "Command nested ledger; Arena sequential HTML state/verifier/outcome/evidence at 650px"
+    }
+  },
+  "components": [
+    {
+      "name": "Command action",
+      "kind": "button",
+      "description": "Dark action on the bone inspector",
+      "html": "<button class=\"ds-command-action\">Delegate →</button>",
+      "css": ".ds-command-action{background:#172c1d;color:#eee9da;border:1px solid #172c1d;border-radius:4px;min-height:43px;padding:12px 18px;font:500 12px 'Geist Variable',sans-serif;transition:background .2s}.ds-command-action:hover:not(:disabled){background:#314d37}.ds-command-action:focus-visible{outline:2px solid #50634e;outline-offset:4px}"
+    },
+    {
+      "name": "Arena action",
+      "kind": "button",
+      "description": "Bone primary action in the forest control rail",
+      "html": "<button class=\"ds-arena-action\">Fund demo mission →</button>",
+      "css": ".ds-arena-action{background:#eee9da;color:#172c1d;border:0;border-radius:4px;min-height:50px;padding:12px 18px;font:500 12px 'Geist Variable',sans-serif}.ds-arena-action:hover:not(:disabled){background:#314d37}.ds-arena-action:focus-visible{outline:2px solid #c8d9c5;outline-offset:4px}.ds-arena-action:disabled{opacity:.65}"
+    },
+    {
+      "name": "Command amount field",
+      "kind": "input",
+      "description": "Monospace financial input on bone",
+      "html": "<input class=\"ds-amount\" aria-label=\"Amount\" placeholder=\"Amount\" />",
+      "css": ".ds-amount{background:#f4f0e5;color:#172c1d;border:1px solid #a6b29e;border-radius:3px;min-height:40px;padding:11px 12px;font:12px 'Geist Mono Variable',monospace}.ds-amount:focus-visible{outline:2px solid #50634e;outline-offset:4px}"
+    },
+    {
+      "name": "Effective status",
+      "kind": "chip",
+      "description": "Active status in the Command inspector",
+      "html": "<span class=\"ds-active\">ACTIVE</span>",
+      "css": ".ds-active{display:inline-block;background:#c8d9c5;color:#314d37;border-radius:0;padding:7px 9px;font:9px 'Geist Mono Variable',monospace}"
+    },
+    {
+      "name": "Bone inspector",
+      "kind": "card",
+      "description": "Command financial instrument material",
+      "html": "<aside class=\"ds-inspector\"><small>SELECTED MANDATE</small><h2>Research</h2></aside>",
+      "css": ".ds-inspector{background:#eee9da;color:#172c1d;padding:25px 27px}.ds-inspector small{color:#50634e;font:9px 'Geist Mono Variable',monospace}.ds-inspector h2{margin:16px 0 18px;font:430 34px/1.1 'Geist Variable',sans-serif;letter-spacing:-.03em}"
+    }
+  ],
+  "narrative": {
+    "overview": "These notes capture /app Command and /arena Arena after the visual-unity pass. They inherit the approved Story materials and establish no new global design authority.",
+    "keyCharacteristics": [
+      "Dense flat actual authority hierarchy",
+      "Notched bone mission with separate commitments and verifier",
+      "Sans editorial, Georgia italic emphasis, mono data",
+      "Copper preview; sage authority and settled result"
+    ],
+    "dos": [
+      "Do retain real amounts, complete paths, state, eligibility, action handlers, and evidence provenance.",
+      "Do distinguish local status from effective authority, and demo simulation from observed account settlement."
+    ],
+    "donts": [
+      "Don't promote these compositions into Story or global rules, use copper for settled success, fabricate transaction evidence, or claim full integration testing from visual review."
+    ],
+    "productTruth": [
+      "Shared treasury vault → bounded mandates → delegation; branch revoke blocks descendants effectively while an independent sibling remains active.",
+      "Arena funding reserves Root available capital; commitments do not prove correctness; a trusted signer selects a submitted winner and settlement pays atomically from the shared vault."
+    ]
+  }
+}

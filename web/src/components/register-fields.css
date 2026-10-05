@@ -1,0 +1,309 @@
+/* Authority register: inherited plates carry a live rail, capital stays bone. */
+.mandate-story {
+  background: linear-gradient(115deg, #101a18 46%, #182b22 100%);
+}
+.mandate-story .story-composition { grid-template-columns: 38% 62%; }
+.mandate-story .story-voice { padding-top: 96px; }
+.mandate-story .story-title { animation: none; }
+.mandate-story .story-title h1 { font-size: clamp(60px, 6vw, 86px); line-height: 1.03; }
+.mandate-story[data-stage="0"] .story-title h1 {
+  animation: register-title 850ms var(--motion-settle) both;
+}
+@keyframes register-title {
+  from { clip-path: inset(0 0 100% 0); transform: translateY(18px); }
+  to { clip-path: inset(0); transform: translateY(0); }
+}
+.mandate-story .story-title p { max-width: 342px; line-height: 1.7; }
+.mandate-story .story-exhibit { border-left: 1px solid #394e3c70; padding-left: 28px; }
+.mandate-story .exhibit-topline { padding-top: 23px; }
+.mandate-story .authority-seal { margin-top: -18px; }
+.mandate-story .authority-seal > svg { height: calc(100svh - 306px); min-height: 480px; }
+.mandate-story .root-disc { stroke: #faf5e7; stroke-width: 1; }
+.mandate-story .root-relief { fill: #677967; }
+.mandate-story .root-unit { letter-spacing: .06em; }
+.mandate-story .mandate-relief { fill: #0a150f; }
+.mandate-story .mandate-surface { stroke: #657a62; stroke-width: .85; }
+.mandate-story .seal-label,
+.mandate-story .authority-seal.tracing .seal-mandate.operations .seal-label { fill: #eee9da; }
+.mandate-story .mandate-name { font-size: 24px; font-weight: 450; letter-spacing: -.03em; }
+.mandate-story .mandate-value { font-size: 11px; fill: #bdcbb7; letter-spacing: .04em; }
+.mandate-story .authority-joint { stroke: #91aa88; stroke-width: 2.2; }
+.mandate-story .authority-rail {
+  fill: none; stroke: #c8d9c5; stroke-width: 5; stroke-linecap: butt;
+  pointer-events: none;
+}
+.mandate-story .seal-mandate[aria-pressed="true"] .mandate-surface {
+  stroke: #eee9da; stroke-width: 1.6;
+}
+.mandate-story .tracing .on-path .authority-rail { stroke: #eee9da; stroke-width: 6; }
+.mandate-story .tracing .seal-mandate:not(.on-path) .mandate-surface { fill: #1b2b22; }
+.mandate-story .tracing .seal-mandate:not(.on-path) .mandate-relief { fill: #0a150f; }
+.mandate-story .previewing .dependent .mandate-surface { fill: #3b3328; stroke: #d59b74; }
+.mandate-story .previewing .dependent .mandate-relief { fill: #1e2017; }
+.mandate-story .previewing .dependent .seal-label { fill: #eee9da; }
+.mandate-story .previewing .blast-boundary { stroke-width: 2; fill: #d59b7409; }
+.mandate-story .severed .dependent .mandate-surface { fill: #1b2922; stroke: #526452; }
+.mandate-story .severed .dependent .mandate-relief { fill: #0a150f; }
+.mandate-story .severed .dependent .authority-rail { stroke: #637166; stroke-dasharray: .035 .045; }
+.mandate-story .severed .research .mandate-surface,
+.mandate-story .severed .research .authority-rail { stroke: #d97d72; }
+.mandate-story .severed .dependent .mandate-value { fill: #d99c8e; }
+.mandate-story .mandate-cut-source { fill: #3b3328; stroke: #d59b74; }
+.mandate-story .story-capacity b { display: block; color: #eee9da; font-weight: 400; margin-bottom: 8px; }
+.mandate-story .seal-controls { justify-content: center; gap: 20px; flex-shrink: 0; margin: 8px 0; }
+.mandate-story .seal-controls button { color: #bdcbb7; }
+.mandate-story .seal-controls button[aria-pressed="true"] { color: #eee9da; }
+.mandate-story .seal-control-amount { display: none; }
+.mandate-story .story-context { margin-bottom: 48px; }
+.mandate-story .exhibit-caption { padding-top: 16px; margin-top: 0; }
+.mandate-story .exhibit-caption strong { font-size: 25px; }
+.mandate-story.projecting .story-exhibit { border-color: transparent; }
+
+/* A dense operating register: one ancestry column, real sibling branches. */
+.command-world .treasury-ledger { align-items: start; }
+.command-world .treasury-ledger > div:nth-child(2) strong { font-size: 37px; color: #eee9da; }
+.command-world .treasury-ledger > div:nth-child(3) strong { font-size: 27px; color: #bdcbb7; }
+.command-world .treasury-ledger small { font-size: 10px; }
+.command-world .flat-node { width: 190px; }
+.command-world .flat-node .flat-name { font-size: 19px; }
+.command-world .flat-node.selected strong { text-decoration: none; }
+.command-world .flat-node.selected { border-bottom: 1px solid #eee9da; }
+.command-world .flat-node .status { font-size: 9px; letter-spacing: .03em; }
+.command-world .flat-node strong { font-size: 28px; }
+.command-world .flat-relation { stroke-width: 1.5; }
+.command-world .bone-instrument { padding: 20px 28px; }
+.command-world .instrument-heading { margin: 12px 0; }
+.command-world .instrument-heading h2 { font-size: 34px; }
+.command-world .instrument-capital { padding: 12px 0; }
+.command-world .instrument-capital strong { font-size: 44px; }
+.command-world .details div { padding: 6px 0; }
+.command-world .details dt { font-size: 11px; }
+.command-world .path-breadcrumb { padding: 10px 0; margin-top: 4px; }
+.command-world .path-breadcrumb p { font-size: 11px; }
+.command-world .bone-instrument .authority-trace { margin: 5px 0 12px; }
+.command-world .authority-trace li { min-height: 29px; padding: 3px 0; }
+.command-world .authority-trace li > div { flex-direction: row; align-items: baseline; gap: 7px; }
+.command-world .authority-trace li .status { font-size: 7px; }
+.command-world .action-choices { margin-top: 8px; }
+.command-world .action-choices button { min-height: 40px; }
+.command-world .provenance-note { font-size: 9px; }
+
+/* Arena is an execution field: a dark mission plate, a transparent gate,
+   and brass only when a winner has actually settled (demo or observed). */
+.arena-world { --brass: #cfb783; background: linear-gradient(115deg, #101a18 40%, #182b22 100%); }
+.arena-world .arena-heading h1 { font-size: 43px; }
+.arena-world .mission-stage .mission-channels .mission-plate {
+  fill: #20372b; stroke: #6e8267; stroke-width: 1;
+}
+.arena-world .mission-plate-relief { fill: #09150e; }
+.arena-world .mission-stage .mission-basin { color: #eee9da; }
+.arena-world .mission-stage .mission-basin h2 { color: #eee9da; font-size: 58px; }
+.arena-world .mission-stage .mission-basin > span,
+.arena-world .mission-stage .mission-basin > small,
+.arena-world .mission-stage .mission-bounty span { color: #bdcbb7; }
+.arena-world .mission-stage .mission-bounty strong { color: #eee9da; }
+.arena-world .mission-stage .mission-bounty > small,
+.arena-world .mission-stage .mission-bounty strong small { color: #bdcbb7; }
+.arena-world .mission-stage .mission-authority { stroke-width: 8; }
+.arena-world .mission-stage .verifier-gate { background: transparent; }
+.arena-world .gate-aperture i,
+.arena-world .gate-aperture i:last-child { width: 43px; border-width: 4px; }
+.arena-world .verifier-gate strong { font-size: 17px; max-width: 112px; }
+.arena-world .mission-stage.resolved .submission-channel.selected { stroke: #cfb783; stroke-width: 3; }
+.arena-world .mission-stage.resolved .settlement-channel.active { stroke: #cfb783; stroke-width: 2; }
+.arena-world .resolved .gate-aperture i { border-color: #cfb783; }
+.arena-world .resolved .mission-outcome { border-color: #cfb783; }
+.arena-world .resolved .mission-outcome strong { color: #cfb783; }
+.arena-world .mission-stage.resolved .mission-plate { stroke: #cfb783; }
+.arena-world .mission-outcome b { color: #eee9da; }
+.arena-world .contender.selected strong { color: #cfb783; }
+.arena-world .mission-stage .contender small { font-size: 9px; }
+.arena-world .mission-stage .funding-track-label { font-size: 10px; }
+
+@media (max-width: 1250px) {
+  .mandate-story .story-title h1 { font-size: clamp(48px, 6vw, 76px); }
+  .command-world .treasury-ledger > div:nth-child(2) strong { font-size: 28px; }
+  .arena-world .mission-stage .mission-basin h2 { font-size: 43px; }
+}
+@media (max-width: 700px) {
+  .mandate-story .story-voice { padding-top: 34px; }
+  .mandate-story .story-title h1 { font-size: 47px; }
+  .mandate-story .story-exhibit { border: 0; padding-left: 0; }
+  .mandate-story .authority-seal { margin-top: 0; }
+  .mandate-story .authority-seal > svg { height: auto; min-height: 0; margin-top: 12px; }
+  .mandate-story .mandate-name { font-size: 27px; }
+  .mandate-story .mandate-value { display: none; }
+  .mandate-story .seal-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; margin: 12px 0 16px; }
+  .mandate-story .seal-controls button { display: grid; text-align: left; gap: 4px; padding: 9px 0; font-size: 13px; border-bottom: 1px solid #354638; }
+  .mandate-story .seal-controls button[aria-pressed="true"] { border-color: #eee9da; }
+  .mandate-story .seal-controls .seal-control-status { display: inline; text-transform: uppercase; color: #a6b5ac; font: 8px var(--mono); }
+  .mandate-story .seal-controls .seal-control-amount { display: inline; color: #eee9da; font: 11px var(--mono); }
+  .mandate-story .exhibit-caption strong { font-size: 15px; }
+  .command-world .treasury-ledger > div:nth-child(2) strong { font-size: 25px; }
+  .command-world .treasury-ledger > div:nth-child(3) strong { font-size: 22px; }
+  .command-world .authority-trace li > div { flex-direction: column; gap: 3px; }
+  .command-world .authority-trace li { min-height: 40px; }
+  .arena-world .arena-heading h1 { font-size: 35px; }
+}
+@media (max-width: 650px) {
+  .arena-world .mission-stage .mission-basin {
+    background: #20372b; border: 1px solid #657a62; border-radius: 0;
+    clip-path: polygon(5% 0, 95% 0, 100% 6%, 100% 43%, 95% 50%, 100% 57%, 100% 94%, 95% 100%, 5% 100%, 0 94%, 0 57%, 5% 50%, 0 43%, 0 6%);
+  }
+  .arena-world .mission-stage .mission-basin h2 { font-size: 35px; }
+  .arena-world .mission-stage .verifier-gate { height: 110px; }
+  .arena-world .gate-aperture i,
+  .arena-world .gate-aperture i:last-child { height: 110px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mandate-story[data-stage="0"] .story-title h1 { animation: none; }
+}
+
+/* Final operating pass: ancestry is a connected instrument, not a bracket. */
+.command-world .flat-relation { stroke: #526452; stroke-width: 1.2; }
+.command-world .flat-relation.on-path.active { stroke: #c8d9c5; stroke-width: 3; }
+.command-world .flat-node.on-path .authority-segment { fill: #c8d9c5; }
+.command-world .flat-node.selected .authority-segment { fill: #eee9da; }
+.command-world .flat-node:not(.on-path):not(.preview-affected) { opacity: .55; }
+.command-world .flat-node:not(.on-path):hover,
+.command-world .flat-node:not(.on-path):focus-visible { opacity: 1; }
+.command-world .flat-node.on-path.blocked .authority-segment,
+.command-world .flat-node.on-path.revoked .authority-segment { fill: #3d4c3e; stroke: #e29a8b; stroke-width: .7; }
+.command-world .flat-relation.on-path.revoked { stroke: #e29a8b; stroke-width: 3; }
+.command-world .flat-relation.on-path.blocked { stroke: #e29a8b; stroke-width: 2; stroke-dasharray: .045 .045; }
+.command-world .bone-instrument:not(.impact-instrument) { display: flex; flex-direction: column; min-height: 0; }
+.command-world .inspector-trace { order: 1; margin-top: 14px; }
+.command-world .provenance-note { order: 2; }
+.command-world .path-breadcrumb { margin-top: 0; padding: 9px 0 12px; }
+.command-world .path-breadcrumb p { font-size: 11px; line-height: 1.6; color: #173125; }
+.command-world .action-choices { margin-top: 0; }
+.command-world .action-choices button { font-size: 13px; }
+.command-world .bone-instrument > .outline-copper { margin-top: 10px; min-height: 40px; }
+.command-world .inspector-trace h3 { margin: 0 0 8px; }
+.command-world .inspector-trace .authority-trace { margin-bottom: 0; }
+.command-world .evidence-dock.compact,
+.arena-world .evidence-dock.compact { display: grid; grid-template-columns: 150px minmax(0,1fr); gap: 20px; padding: 14px 0; }
+.command-world .evidence-dock.compact .section-line,
+.arena-world .evidence-dock.compact .section-line { display: flex; flex-direction: column; align-items: start; justify-content: center; gap: 8px; }
+.command-world .evidence-dock.compact .event-row,
+.arena-world .evidence-dock.compact .event-row { margin: 0; padding: 5px 0; min-height: 44px; border-bottom: 0; }
+.command-world .evidence-dock.compact .event-head,
+.arena-world .evidence-dock.compact .event-head { display: none; }
+.command-world .ledger-freshness { padding: 8px 0; }
+
+/* All entries meet one gate. Only a verified winner crosses its aperture. */
+.arena-world .mission-stage .verifier-gate { left: 78.5%; top: 36%; width: 13%; height: 152px; justify-content: start; gap: 0; }
+.arena-world .verifier-gate > span { margin-top: 12px; color: #bdcbb7; }
+.arena-world .verifier-gate strong { position: absolute; top: 85px; width: 100%; max-width: 130px; font-size: 15px; }
+.arena-world .verifier-gate > small { position: absolute; top: 137px; color: #bdcbb7; }
+.arena-world .gate-aperture i,
+.arena-world .gate-aperture i:last-child { width: 38px; height: 152px; border-width: 4px; border-color: #bdcbb7; }
+.arena-world .gate-aperture::after { content: ''; position: absolute; left: calc(50% - 1px); top: 60px; height: 32px; width: 2px; background: #bdcbb7; }
+.arena-world .verifier-preview .gate-aperture::after { background: #d59b74; }
+.arena-world .resolved .gate-aperture::after { display: none; }
+.arena-world .mission-channels .submission-channel { stroke-dasharray: none; stroke-width: 1.3; stroke: #6e8267; }
+.arena-world .verifier-preview .submission-channel:not(.preview-route) { opacity: .4; }
+.arena-world .mission-channels .submission-channel.preview-route { stroke: #d59b74; stroke-width: 2.6; }
+.arena-world .mission-channels .verifier-pass { fill: none; stroke: #cfb783; stroke-width: 3; }
+.arena-world .mission-stage .mission-outcome { left: 43%; top: 71%; width: 29%; padding-top: 12px; }
+.arena-world .mission-outcome strong { font-size: 24px; }
+.arena-world .mission-stage .mission-outcome b { font-size: 33px; }
+.arena-world .resolved .contender.winner strong,
+.arena-world .resolved .contender.winner small { color: #cfb783; }
+.arena-world .arena-method { padding: 10px 0; }
+.arena-world .arena-method p { font-size: 11px; }
+
+@media (max-width: 700px) {
+  .command-world .command-zones { margin-top: 18px; gap: 20px; }
+  .command-world .bone-instrument { order: -1; padding: 18px 22px; }
+  .command-world .instrument-heading { margin: 9px 0; }
+  .command-world .instrument-heading h2 { font-size: 30px; }
+  .command-world .instrument-capital { padding: 9px 0; }
+  .command-world .instrument-capital strong { font-size: 38px; }
+  .command-world .details div { padding: 5px 0; }
+  .command-world .inspector-trace { margin-top: 14px; }
+  .command-world .authority-trace li > div { flex-direction: row; gap: 5px; }
+  .command-world .authority-trace li { min-height: 27px; }
+  .command-world .flat-ledger-node { position: relative; }
+  .command-world .flat-ledger-node.on-path { background: #182b22; }
+  .command-world .flat-ledger-node:not(.on-path):not(.preview-affected) { opacity: .65; }
+  .command-world .flat-ledger-node.on-path .authority-dot { border-radius: 0; width: 7px; height: 15px; background: #c8d9c5; }
+  .command-world .flat-ledger-node[aria-pressed='true'] { background: #2c4031; outline: 1px solid #bdcbb7; outline-offset: -1px; }
+  .command-world .evidence-dock.compact,
+  .arena-world .evidence-dock.compact { grid-template-columns: 1fr; gap: 10px; }
+  .command-world .evidence-dock.compact .section-line,
+  .arena-world .evidence-dock.compact .section-line { flex-direction: row; align-items: center; justify-content: space-between; }
+}
+@media (max-width: 650px) {
+  .arena-world .arena-heading { position: relative; gap: 12px; padding-bottom: 14px; }
+  .arena-world .arena-heading h1 { font-size: 31px; max-width: 310px; }
+  .arena-world .arena-heading button { position: absolute; bottom: 14px; right: 0; }
+  .arena-world .arena-zones { margin-top: 15px; }
+  .arena-world .mission-switcher { padding-bottom: 6px; }
+  .arena-world .mission-stage { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); grid-template-areas: 'capital funding' 'mission mission' 'lanes verifier' 'outcome outcome'; gap: 16px 12px; padding: 14px 0 18px; }
+  .arena-world .mission-stage .capital-source { grid-area: capital; width: auto; padding-left: 18px; }
+  .arena-world .capital-source strong { font-size: 18px; }
+  .arena-world .mission-stage .capital-source b { font-size: 21px; }
+  .arena-world .capital-source > span { font-size: 8px; }
+  .arena-world .capital-source > small { font-size: 7px; }
+  .arena-world .mission-stage .funding-track-label { grid-area: funding; width: auto; align-self: center; padding-left: 12px; font-size: 8px; }
+  .arena-world .mission-stage .mission-basin { grid-area: mission; width: 100%; min-height: 180px; padding: 20px 18px; }
+  .arena-world .mission-stage .mission-basin h2 { font-size: 32px; margin: 10px 0; }
+  .arena-world .mission-stage .mission-bounty { margin-top: 12px; padding-top: 0; }
+  .arena-world .mission-stage .mission-bounty strong { font-size: 30px; }
+  .arena-world .mission-stage .contender-lanes { grid-area: lanes; width: auto; gap: 8px; padding: 0; border: 0; }
+  .arena-world .mission-stage .contender { height: 48px; padding: 5px 0; position: relative; }
+  .arena-world .mission-stage .contender strong { font-size: 15px; }
+  .arena-world .mission-stage .contender small { font-size: 6.5px; }
+  .arena-world .contender > span { font-size: 7px; }
+  .arena-world .contender::after { content: ''; position: absolute; right: -12px; top: 50%; width: 12px; height: 1px; background: #6e8267; }
+  .arena-world .contender[aria-pressed='true']::after { background: #d59b74; }
+  .arena-world .resolved .contender.winner::after { background: #cfb783; }
+  .arena-world .mission-stage .verifier-gate { grid-area: verifier; left: auto; top: auto; width: 100%; height: 152px; align-self: center; }
+  .arena-world .verifier-gate strong { font-size: 13px; top: 86px; }
+  .arena-world .verifier-gate > small { font-size: 7px; top: 133px; }
+  .arena-world .gate-aperture i,
+  .arena-world .gate-aperture i:last-child { height: 152px; width: 28px; }
+  .arena-world .mission-stage .mission-outcome { grid-area: outcome; left: auto; top: auto; width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 5px 12px; padding-top: 12px; }
+  .arena-world .mission-outcome > span,
+  .arena-world .mission-outcome > small { grid-column: 1 / -1; }
+  .arena-world .mission-outcome strong { font-size: 20px; }
+  .arena-world .mission-stage .mission-outcome b { font-size: 27px; }
+  .arena-world .arena-method { grid-template-columns: 1fr; gap: 6px; }
+  .arena-world .arena-method p { font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .command-world .flat-node,
+  .arena-world .contender { transition: none; }
+}
+
+/* Detail pass: keep the complete trace visible and clear the receipt's measure. */
+.command-world .flat-node[data-node-id='treasury'] .authority-segment { fill: #eee9da; }
+.command-world .flat-node:not(.on-path):not(.preview-affected) { opacity: .72; }
+.command-world .instrument-heading h2 { margin: 0; }
+.command-world .local-state { padding-bottom: 9px; margin-bottom: 0; }
+.command-world .instrument-capital { border-top: 0; padding: 12px 0 8px; }
+.command-world .details { margin: 8px 0; }
+.command-world .inspector-trace { margin-top: 10px; }
+.command-world .provenance-note { margin-top: 10px; padding-top: 9px; }
+.arena-world .resolved .gate-aperture i,
+.arena-world .resolved .gate-aperture i:last-child { border-color: #cfb783; }
+@media (max-width: 700px) {
+  .command-world .bone-instrument { position: relative; top: auto; }
+}
+.arena-world .mobile-gate-channels { display: none; }
+@media (max-width: 650px) {
+  .arena-world .mission-stage .mission-basin { min-height: 150px; display: grid; grid-template-columns: 1fr auto; align-content: center; gap: 7px 12px; padding: 18px; }
+  .arena-world .mission-basin > span:first-child,
+  .arena-world .mission-stage .mission-basin h2 { grid-column: 1 / -1; }
+  .arena-world .mission-stage .mission-basin h2 { margin: 0; line-height: 1.2; }
+  .arena-world .mission-basin .mission-status { justify-self: start; text-align: left; font-size: 8px; }
+  .arena-world .mission-stage .mission-bounty { margin: 0; padding: 0; display: flex; flex-direction: column; align-items: end; gap: 3px; }
+  .arena-world .mission-stage .mission-bounty strong { font-size: 26px; line-height: 1.1; margin: 0; }
+  .arena-world .mobile-gate-channels { display: block; position: absolute; inset: 0; width: 100%; height: 152px; pointer-events: none; overflow: visible; }
+  .arena-world .mobile-verifier-path { fill: none; stroke: #d59b74; stroke-width: 2; }
+  .arena-world .resolved .mobile-verifier-path { stroke: #cfb783; }
+}
+.command-world .bone-instrument:not(.impact-instrument) .instrument-meta { margin-bottom: 0; }
+.command-world .local-state { margin-top: 0; }
+.command-world .details { margin: 4px 0; }

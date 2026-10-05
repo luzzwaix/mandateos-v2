@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 const bin = process.env.AGENT_BROWSER_BIN ?? "agent-browser";
 const session = process.env.QA_BROWSER_SESSION ?? "mandate-high-end";
 const base = process.argv[2] ?? "http://127.0.0.1:3000";
-const out = resolve("artifacts/high-end/resilience");
+const out = resolve("artifacts/high-end/rebuild-resilience");
 mkdirSync(out, { recursive: true });
 const run = (...args) => {
   const r = spawnSync(bin, ["--session", session, ...args], {
@@ -65,7 +65,7 @@ check(
   "document.querySelectorAll('.loom-label').length<6 && !document.querySelector('[data-resolved=false]')",
 );
 click("Reset");
-run("set", "viewport", "390", "900");
+run("set", "viewport", "390", "844");
 click("Delegate Research");
 click("Build demo hierarchy");
 click("Trace");

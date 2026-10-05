@@ -1,14 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
-import { ArrowRight, Check, RotateCcw } from "lucide-react";
+import { ArrowRight, RotateCcw } from "lucide-react";
 import { amount, fundDemoMission, settleDemoMission } from "@/lib/authority";
 import { short, toBaseUnits } from "@/lib/solana/pdas";
 import { ConnectionInstrument, useWorld } from "./world-shell";
 import { EvidenceLedger } from "./command-world";
 import CapitalNumber from "./capital-number";
-import SpatialLoom from "./spatial-loom";
-import NativeExecution from "./native-execution";
+import { scopedTimeline } from "./authority-motion";
+import { operatingMotion } from "./operating-motion";
 
 export default function ArenaWorld() {
   const w = useWorld();
@@ -21,7 +21,7 @@ export default function ArenaWorld() {
     [error, setError] = useState("");
   const [previewResult, setPreviewResult] = useState(false);
   const executionField = useRef<HTMLDivElement>(null);
-  const pulseTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
   const s = w.live.snapshot,
     bounty =
       s?.bounties.find((b) => b.publicKey.toBase58() === selected) ??
@@ -54,35 +54,148 @@ export default function ArenaWorld() {
     funded = status !== "ready",
     settled = status === "settled";
   const root = w.model?.nodes.find((n) => n.id === w.model?.root);
-  const previousStatus = useRef(status);
+  const previousScene = useRef({
+    status,
+    previewResult,
+    candidate,
+    mission: selected,
+  });
   useEffect(() => {
-    const before = previousStatus.current;
-    previousStatus.current = status;
-    clearTimeout(pulseTimer.current);
+    const before = previousScene.current;
+    previousScene.current = {
+      status,
+      previewResult,
+      candidate,
+      mission: selected,
+    };
+    const element = executionField.current;
     if (
-      before !== status &&
-      !document.hidden &&
-      !matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      const event =
-        status === "funded"
-          ? "fund"
-          : status === "settled"
-            ? "settle"
-            : undefined;
-      if (executionField.current && event)
-        executionField.current.dataset.pulse = event;
-      pulseTimer.current = setTimeout(
-        () => {
-          if (executionField.current)
-            delete executionField.current.dataset.pulse;
-        },
-        event === "settle" ? 800 : 420,
+      !element ||
+      (before.status === status &&
+        before.previewResult === previewResult &&
+        before.candidate === candidate &&
+        before.mission === selected)
+    )
+      return;
+    const timeline = scopedTimeline(
+      element,
+      settled ? "settlement" : previewResult ? "preview" : status,
+      settled ? operatingMotion.settlement : operatingMotion.funding,
+    );
+    const routes = Array.from(element.querySelectorAll(".submission-channel"));
+    if (status === "funded" && before.status !== status) {
+      timeline.pulse(element.querySelector(".funding-channel"), 560);
+      timeline.animate(
+        element.querySelector(".mission-basin"),
+        [
+          { translate: `0 ${operatingMotion.travel}px`, opacity: 0.65 },
+          { translate: "0 0", opacity: 1 },
+        ],
+        operatingMotion.focus,
+        operatingMotion.stagger,
       );
-    } else if (executionField.current)
-      delete executionField.current.dataset.pulse;
-    return () => clearTimeout(pulseTimer.current);
-  }, [status]);
+      timeline.animate(
+        element.querySelector(".mission-bounty"),
+        [{ opacity: 0.45 }, { opacity: 1 }],
+        260,
+        450,
+      );
+    } else if (status === "submitted" && before.status !== status) {
+      routes.forEach((route, i) => {
+        timeline.draw(route, 440, i * 100);
+        timeline.animate(
+          element.querySelector(`[data-arena-label="lane-${i}"]`),
+          [{ opacity: 0 }, { opacity: 1 }],
+          220,
+          i * 100,
+        );
+      });
+      // Mobile has the same commitments and final information without SVG routes.
+      Array.from(element.querySelectorAll(".contender")).forEach((lane, i) => {
+        timeline.animate(
+          lane,
+          [
+            { translate: `${operatingMotion.travel}px 0`, opacity: 0.6 },
+            { translate: "0 0", opacity: 1 },
+          ],
+          operatingMotion.focus,
+          i * operatingMotion.stagger,
+        );
+      });
+    } else if (settled && before.status !== status) {
+      const chosen = routes.find((route) =>
+        route.classList.contains("selected"),
+      );
+      timeline.draw(chosen, 280);
+      timeline.pulse(chosen, 280);
+      timeline.animate(
+        element.querySelector(".gate-aperture i"),
+        [
+          { transform: "translateX(0)" },
+          { transform: "translateX(-9px)", offset: 0.5 },
+          { transform: "translateX(0)" },
+        ],
+        300,
+        160,
+      );
+      timeline.animate(
+        element.querySelector(".gate-aperture i:last-child"),
+        [
+          { transform: "translateX(0)" },
+          { transform: "translateX(9px)", offset: 0.5 },
+          { transform: "translateX(0)" },
+        ],
+        300,
+        160,
+      );
+      timeline.pulse(
+        element.querySelector(".verifier-pass"),
+        200,
+        280,
+        false,
+        "#eee9da",
+      );
+      timeline.draw(element.querySelector(".verifier-pass"), 200, 280);
+
+      timeline.pulse(
+        element.querySelector(".settlement-channel"),
+        260,
+        480,
+        false,
+        "#eee9da",
+      );
+      timeline.draw(element.querySelector(".settlement-channel"), 260, 480);
+      timeline.animate(
+        element.querySelector(".mission-outcome"),
+        [
+          { opacity: 0, clipPath: "inset(0 0 100% 0)" },
+          { opacity: 1, clipPath: "inset(0 0 0% 0)" },
+        ],
+        180,
+        740,
+      );
+      timeline.animate(
+        element.closest("main")?.querySelector(".event-row"),
+        [{ opacity: 0 }, { opacity: 1 }],
+        180,
+        740,
+      );
+    } else if (previewResult && !settled) {
+      timeline.pulse(
+        routes[candidate.charCodeAt(0) - 65],
+        operatingMotion.trace,
+        0,
+        false,
+        "#d59b74",
+      );
+      timeline.animate(
+        element.querySelector('.contender[aria-pressed="true"]'),
+        [{ translate: `${-operatingMotion.travel}px 0` }, { translate: "0 0" }],
+        operatingMotion.focus,
+      );
+    }
+    return timeline.cancel;
+  }, [status, previewResult, candidate, selected, settled]);
   function choose(index: number) {
     setCandidate(String.fromCharCode(65 + index));
     setPreviewResult(true);
@@ -172,15 +285,13 @@ export default function ArenaWorld() {
       </main>
     );
   return (
-    <main className="arena-world">
+    <main
+      className={`arena-world ${w.demo ? "demo-execution" : "account-backed"}`}
+    >
       <section className="arena-heading">
         <div>
           <h1>
-            WORK
-            <br />
-            RESOLVES
-            <br />
-            <em>TO CAPITAL.</em>
+            Work resolves. <em>To capital.</em>
           </h1>
           <span>
             {w.demo
@@ -235,78 +346,38 @@ export default function ArenaWorld() {
             className={`mission-stage ${status} ${settled ? "resolved" : ""} ${submitted && previewResult && !settled ? "verifier-preview" : ""}`}
             data-testid="mission-execution-field"
           >
-            <SpatialLoom
-              model={w.model!}
-              selected={w.selected}
-              onSelect={w.select}
-              arena={{
-                status,
-                candidate: candidate.charCodeAt(0) - 65,
-                preview: previewResult,
-                names,
-                winnerIndex: w.demo
-                  ? w.missionWinner.charCodeAt(0) - 65
-                  : names.findIndex((n) => n === winner),
-              }}
-            />
             <svg
               className="mission-channels"
-              viewBox="0 0 1000 530"
+              viewBox="0 0 1000 500"
               preserveAspectRatio="none"
               aria-hidden="true"
             >
-              <defs>
-                <marker
-                  id="mission-arrow"
-                  markerWidth="6"
-                  markerHeight="6"
-                  refX="5"
-                  refY="3"
-                  orient="auto"
-                >
-                  <path d="M0 0L6 3L0 6" fill="context-stroke" />
-                </marker>
-              </defs>
               <path
                 className={`funding-channel ${funded ? "active" : ""}`}
-                d="M220 78H460Q480 78 480 98V142"
-                markerEnd="url(#mission-arrow)"
+                pathLength="1"
+                d="M465 28V70"
               />
-              {funded && (
-                <path
-                  className="financial-pulse funding-pulse"
-                  d="M220 78H460Q480 78 480 98V142"
-                  pathLength="1"
-                />
-              )}
               {submitted &&
                 names.map((name, i) => (
                   <path
                     key={name}
                     className={`submission-channel ${settled && name === winner ? "selected" : !settled && previewResult && i === candidate.charCodeAt(0) - 65 ? "preview-route" : ""}`}
-                    d={`M570 ${344 + i * 62}H${700 + i * 14}V260H780`}
+                    d={`M245 ${147 + i * 88}H275Q295 ${147 + i * 88} 330 230H352V330H718V230H735`}
                     pathLength="1"
-                    markerEnd="url(#mission-arrow)"
                   />
                 ))}
-              {submitted && (
+              {settled && names.includes(winner) && (
                 <path
-                  className={`verification-channel ${settled ? "active" : previewResult ? "preview-route" : ""}`}
-                  d="M650 220H780"
+                  className="verifier-pass"
+                  pathLength="1"
+                  d="M735 230H810"
                 />
               )}
               {settled && (
                 <path
                   className="settlement-channel active"
-                  d="M830 260H945V342H780V358"
-                  markerEnd="url(#mission-arrow)"
-                />
-              )}
-              {settled && (
-                <path
-                  className="financial-pulse payout-pulse"
-                  d="M830 260H945V342H780V358"
                   pathLength="1"
+                  d="M810 230H895V277H860"
                 />
               )}
             </svg>
@@ -330,7 +401,7 @@ export default function ArenaWorld() {
               </small>
             </div>
             <span className="funding-track-label">
-              {funded ? "FUNDED AUTHORITY" : "CAPITAL RESERVATION"}
+              {funded ? "FUNDED FROM ROOT" : "CAPITAL RESERVATION"}
               <b>
                 {funded
                   ? `${amount(value, w.model!.decimals)} ${w.model?.unit}`
@@ -397,6 +468,158 @@ export default function ArenaWorld() {
                   <small>{w.model?.unit}</small>
                 </strong>
               </div>
+              <div className="arena-actions">
+                {w.demo ? (
+                  <>
+                    <button
+                      className="button dark full"
+                      disabled={settled}
+                      onClick={() => void advance()}
+                    >
+                      {status === "ready"
+                        ? "Fund demo mission"
+                        : status === "funded"
+                          ? "Submit 3 demo results"
+                          : status === "submitted"
+                            ? `Select ${candidate} & settle in demo`
+                            : "Settlement complete"}
+                      <ArrowRight size={14} />
+                    </button>
+                    {status === "submitted" && (
+                      <p className="instrument-explainer">
+                        Select a submission lane, then simulate verifier
+                        selection and atomic payout.
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {(!bounty || creating) && (
+                      <form
+                        className="action-form"
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          void create();
+                        }}
+                      >
+                        <label>
+                          Reward
+                          <input
+                            aria-label="Bounty reward"
+                            inputMode="decimal"
+                            value={reward}
+                            onChange={(e) => setReward(e.target.value)}
+                          />
+                        </label>
+                        <label>
+                          Verifier address
+                          <input
+                            aria-label="Bounty verifier"
+                            value={verifier}
+                            onChange={(e) => setVerifier(e.target.value)}
+                          />
+                        </label>
+                        <button
+                          className="button dark full"
+                          disabled={
+                            !hasOwner || !w.live.canTransact || !!w.live.busy
+                          }
+                        >
+                          Create funded bounty
+                        </button>
+                      </form>
+                    )}
+                    {bounty && !settled && (
+                      <>
+                        <form
+                          className="action-form"
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            void w.live.run("Submit result commitment", () =>
+                              w.live.client.submitResult(
+                                bounty.publicKey,
+                                result,
+                              ),
+                            );
+                          }}
+                        >
+                          <label>
+                            Result to commit
+                            <input
+                              aria-label="Result commitment"
+                              value={result}
+                              onChange={(e) => setResult(e.target.value)}
+                            />
+                          </label>
+                          <p>Only the SHA-256 commitment is stored.</p>
+                          <button
+                            className="button dark full"
+                            disabled={
+                              !w.live.wallet ||
+                              !w.live.canTransact ||
+                              !!w.live.busy ||
+                              !result ||
+                              submissions.some((sub) =>
+                                sub.account.agent.equals(
+                                  w.live.wallet!.publicKey,
+                                ),
+                              )
+                            }
+                          >
+                            Submit result
+                          </button>
+                        </form>
+                        {submissions.map((sub) => (
+                          <div
+                            className="real-submission"
+                            key={sub.publicKey.toBase58()}
+                          >
+                            <strong>{short(sub.account.agent)}</strong>
+                            <small className="address">
+                              SHA-256{" "}
+                              {sub.account.resultHash
+                                .map((byte) =>
+                                  byte.toString(16).padStart(2, "0"),
+                                )
+                                .join("")}
+                            </small>
+                            <button
+                              className="button dark full"
+                              disabled={
+                                !hasVerifier ||
+                                !w.live.canTransact ||
+                                !!w.live.busy
+                              }
+                              onClick={() =>
+                                void w.live.run(
+                                  "Settle bounty and pay winner",
+                                  () =>
+                                    w.live
+                                      .forSigner(bounty.account.verifier)
+                                      .settleBounty(s!, bounty.publicKey, sub),
+                                )
+                              }
+                            >
+                              Select and settle winner
+                            </button>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                    {!w.live.canTransact && (
+                      <p className="eligibility-note">
+                        Transactions disabled. The current Devnet deployment and
+                        IDL are incompatible.
+                      </p>
+                    )}
+                  </>
+                )}
+                {error && (
+                  <p className="error-text" role="alert">
+                    {error}
+                  </p>
+                )}
+              </div>
             </div>
             <div className="verifier-gate" data-arena-label="verifier">
               <span>VERIFIER</span>
@@ -435,30 +658,6 @@ export default function ArenaWorld() {
               </div>
             )}
           </div>
-          <NativeExecution
-            funded={funded}
-            submitted={submitted}
-            settled={settled}
-            preview={previewResult}
-            candidate={candidate}
-            winner={winner}
-            names={names}
-            title={
-              w.demo
-                ? "Research brief"
-                : bounty
-                  ? `Funded task ${bounty.account.bountyId.toString()}`
-                  : "Awaiting funded work"
-            }
-            bounty={
-              w.demo || bounty
-                ? amount(value, w.model!.decimals)
-                : "Unavailable"
-            }
-            unit={w.model?.unit}
-            demo={w.demo}
-            choose={choose}
-          />
           <div className="arena-method">
             <span>
               {settled ? "SETTLEMENT RESOLVED" : "EXECUTION SEQUENCE"}
@@ -469,195 +668,11 @@ export default function ArenaWorld() {
               atomically from the shared vault.
             </p>
           </div>
-          <EvidenceLedger />
+          <EvidenceLedger compact />
         </section>
         <aside
           className={`bone-instrument arena-instrument ${settled ? "settled" : ""}`}
         >
-          <div className="instrument-meta">
-            <span>{settled ? "SETTLEMENT" : "MISSION INSTRUMENT"}</span>
-            <span>{w.demo ? "DEMO" : status.toUpperCase()}</span>
-          </div>
-          <h2>
-            {settled
-              ? winner
-              : w.demo
-                ? "Research brief"
-                : bounty
-                  ? `Bounty ${bounty.account.bountyId.toString()}`
-                  : "Create a funded mission"}
-          </h2>
-          <div className="instrument-capital">
-            <span>{settled ? "PAYOUT" : "MISSION BOUNTY"}</span>
-            <strong>
-              {w.demo
-                ? "100.00"
-                : bounty
-                  ? amount(value, w.model!.decimals)
-                  : "Unavailable"}{" "}
-              <small>{w.model?.unit}</small>
-            </strong>
-            <p>
-              {settled
-                ? w.demo
-                  ? "Simulated settlement · no onchain transaction"
-                  : "Winner recorded in observed bounty account"
-                : funded
-                  ? "Reserved from Root available"
-                  : "Not yet reserved"}
-            </p>
-          </div>
-          <ol className="settlement-checklist">
-            {[
-              ["Fund mission", funded],
-              ["Submit commitments", submitted],
-              ["Verifier selects result", settled],
-              ["Settle winner payout", settled],
-            ].map(([label, done], i) => (
-              <li key={String(label)} className={done ? "done" : ""}>
-                <span>{String(i + 1).padStart(2, "0")}</span>
-                <strong>{label}</strong>
-                {done ? <Check size={15} /> : <span className="pending-mark" />}
-              </li>
-            ))}
-          </ol>
-          {w.demo ? (
-            <>
-              <button
-                className="button dark full"
-                disabled={settled}
-                onClick={() => void advance()}
-              >
-                {status === "ready"
-                  ? "Fund demo mission"
-                  : status === "funded"
-                    ? "Submit 3 demo results"
-                    : status === "submitted"
-                      ? `Select ${candidate} & settle in demo`
-                      : "Settlement complete"}
-                <ArrowRight size={14} />
-              </button>
-              {status === "submitted" && (
-                <p className="instrument-explainer">
-                  Select a submission lane, then simulate verifier selection and
-                  atomic payout.
-                </p>
-              )}
-            </>
-          ) : (
-            <>
-              {(!bounty || creating) && (
-                <form
-                  className="action-form"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    void create();
-                  }}
-                >
-                  <label>
-                    Reward
-                    <input
-                      aria-label="Bounty reward"
-                      inputMode="decimal"
-                      value={reward}
-                      onChange={(e) => setReward(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    Verifier address
-                    <input
-                      aria-label="Bounty verifier"
-                      value={verifier}
-                      onChange={(e) => setVerifier(e.target.value)}
-                    />
-                  </label>
-                  <button
-                    className="button dark full"
-                    disabled={!hasOwner || !w.live.canTransact || !!w.live.busy}
-                  >
-                    Create funded bounty
-                  </button>
-                </form>
-              )}
-              {bounty && !settled && (
-                <>
-                  <form
-                    className="action-form"
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      void w.live.run("Submit result commitment", () =>
-                        w.live.client.submitResult(bounty.publicKey, result),
-                      );
-                    }}
-                  >
-                    <label>
-                      Result to commit
-                      <input
-                        aria-label="Result commitment"
-                        value={result}
-                        onChange={(e) => setResult(e.target.value)}
-                      />
-                    </label>
-                    <p>Only the SHA-256 commitment is stored.</p>
-                    <button
-                      className="button dark full"
-                      disabled={
-                        !w.live.wallet ||
-                        !w.live.canTransact ||
-                        !!w.live.busy ||
-                        !result ||
-                        submissions.some((sub) =>
-                          sub.account.agent.equals(w.live.wallet!.publicKey),
-                        )
-                      }
-                    >
-                      Submit result
-                    </button>
-                  </form>
-                  {submissions.map((sub) => (
-                    <div
-                      className="real-submission"
-                      key={sub.publicKey.toBase58()}
-                    >
-                      <strong>{short(sub.account.agent)}</strong>
-                      <small className="address">
-                        SHA-256{" "}
-                        {sub.account.resultHash
-                          .map((byte) => byte.toString(16).padStart(2, "0"))
-                          .join("")}
-                      </small>
-                      <button
-                        className="button dark full"
-                        disabled={
-                          !hasVerifier || !w.live.canTransact || !!w.live.busy
-                        }
-                        onClick={() =>
-                          void w.live.run("Settle bounty and pay winner", () =>
-                            w.live
-                              .forSigner(bounty.account.verifier)
-                              .settleBounty(s!, bounty.publicKey, sub),
-                          )
-                        }
-                      >
-                        Select and settle winner
-                      </button>
-                    </div>
-                  ))}
-                </>
-              )}
-              {!w.live.canTransact && (
-                <p className="eligibility-note">
-                  Transactions disabled. The current Devnet deployment and IDL
-                  are incompatible.
-                </p>
-              )}
-            </>
-          )}
-          {error && (
-            <p className="error-text" role="alert">
-              {error}
-            </p>
-          )}
           <dl className="details">
             <div>
               <dt>Capital source</dt>
@@ -688,6 +703,13 @@ export default function ArenaWorld() {
               <dd>{settled ? "Final" : "Awaiting verification"}</dd>
             </div>
           </dl>
+          {settled && (
+            <p className="settlement-provenance">
+              {w.demo
+                ? "Simulated settlement · no onchain transaction"
+                : "Winner recorded in observed bounty account"}
+            </p>
+          )}
           <div className="provenance-note">
             {w.demo
               ? "ALL AMOUNTS AND RESULTS ARE SIMULATED"

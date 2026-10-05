@@ -1,505 +1,266 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-04T17:22:50Z",
+  "generatedAt": "2026-10-05T10:23:39.013Z",
   "title": "Design System: MandateOS V2",
   "extensions": {
     "colorMeta": {
-      "world": {
+      "forest": {
         "role": "neutral",
-        "displayName": "World Graphite",
+        "displayName": "Deep Forest",
         "tonalRamp": [
-          "oklch(15% 0.0079 211.10)",
-          "oklch(26% 0.0079 211.10)",
-          "oklch(38% 0.0079 211.10)",
-          "oklch(49% 0.0079 211.10)",
-          "oklch(61% 0.0079 211.10)",
-          "oklch(72% 0.0079 211.10)",
-          "oklch(84% 0.0079 211.10)",
-          "oklch(95% 0.0079 211.10)"
-        ]
-      },
-      "field": {
-        "role": "neutral",
-        "displayName": "Field Graphite",
-        "tonalRamp": [
-          "oklch(15% 0.0092 208.75)",
-          "oklch(26% 0.0092 208.75)",
-          "oklch(38% 0.0092 208.75)",
-          "oklch(49% 0.0092 208.75)",
-          "oklch(61% 0.0092 208.75)",
-          "oklch(72% 0.0092 208.75)",
-          "oklch(84% 0.0092 208.75)",
-          "oklch(95% 0.0092 208.75)"
+          "hsl(168.0 23.8% 15%)",
+          "hsl(168.0 23.8% 26%)",
+          "hsl(168.0 23.8% 38%)",
+          "hsl(168.0 23.8% 49%)",
+          "hsl(168.0 23.8% 61%)",
+          "hsl(168.0 23.8% 72%)",
+          "hsl(168.0 23.8% 84%)",
+          "hsl(168.0 23.8% 95%)"
         ]
       },
       "bone": {
         "role": "neutral",
         "displayName": "Bone",
         "tonalRamp": [
-          "oklch(15% 0.0140 88.69)",
-          "oklch(26% 0.0140 88.69)",
-          "oklch(38% 0.0140 88.69)",
-          "oklch(49% 0.0140 88.69)",
-          "oklch(61% 0.0140 88.69)",
-          "oklch(72% 0.0140 88.69)",
-          "oklch(84% 0.0140 88.69)",
-          "oklch(95% 0.0140 88.69)"
+          "hsl(45.0 37.0% 15%)",
+          "hsl(45.0 37.0% 26%)",
+          "hsl(45.0 37.0% 38%)",
+          "hsl(45.0 37.0% 49%)",
+          "hsl(45.0 37.0% 61%)",
+          "hsl(45.0 37.0% 72%)",
+          "hsl(45.0 37.0% 84%)",
+          "hsl(45.0 37.0% 95%)"
         ]
       },
-      "text": {
-        "role": "neutral",
-        "displayName": "Warm Text",
-        "tonalRamp": [
-          "oklch(15% 0.0080 98.88)",
-          "oklch(26% 0.0080 98.88)",
-          "oklch(38% 0.0080 98.88)",
-          "oklch(49% 0.0080 98.88)",
-          "oklch(61% 0.0080 98.88)",
-          "oklch(72% 0.0080 98.88)",
-          "oklch(84% 0.0080 98.88)",
-          "oklch(95% 0.0080 98.88)"
-        ]
-      },
-      "muted": {
-        "role": "neutral",
-        "displayName": "Muted Text",
-        "tonalRamp": [
-          "oklch(15% 0.0098 171.72)",
-          "oklch(26% 0.0098 171.72)",
-          "oklch(38% 0.0098 171.72)",
-          "oklch(49% 0.0098 171.72)",
-          "oklch(61% 0.0098 171.72)",
-          "oklch(72% 0.0098 171.72)",
-          "oklch(84% 0.0098 171.72)",
-          "oklch(95% 0.0098 171.72)"
-        ]
-      },
-      "mint": {
+      "sage": {
         "role": "primary",
-        "displayName": "Authority Mint",
+        "displayName": "Authority Sage",
         "tonalRamp": [
-          "oklch(15% 0.0615 170.22)",
-          "oklch(26% 0.0615 170.22)",
-          "oklch(38% 0.0615 170.22)",
-          "oklch(49% 0.0615 170.22)",
-          "oklch(61% 0.0615 170.22)",
-          "oklch(72% 0.0615 170.22)",
-          "oklch(84% 0.0615 170.22)",
-          "oklch(95% 0.0615 170.22)"
+          "hsl(111.0 20.8% 15%)",
+          "hsl(111.0 20.8% 26%)",
+          "hsl(111.0 20.8% 38%)",
+          "hsl(111.0 20.8% 49%)",
+          "hsl(111.0 20.8% 61%)",
+          "hsl(111.0 20.8% 72%)",
+          "hsl(111.0 20.8% 84%)",
+          "hsl(111.0 20.8% 95%)"
         ]
       },
-      "copper": {
+      "preview-copper": {
         "role": "secondary",
-        "displayName": "Impact Copper",
+        "displayName": "Preview Copper",
         "tonalRamp": [
-          "oklch(15% 0.1063 58.90)",
-          "oklch(26% 0.1063 58.90)",
-          "oklch(38% 0.1063 58.90)",
-          "oklch(49% 0.1063 58.90)",
-          "oklch(61% 0.1063 58.90)",
-          "oklch(72% 0.1063 58.90)",
-          "oklch(84% 0.1063 58.90)",
-          "oklch(95% 0.1063 58.90)"
-        ]
-      },
-      "red": {
-        "role": "tertiary",
-        "displayName": "Authority Cut",
-        "tonalRamp": [
-          "oklch(15% 0.1928 25.90)",
-          "oklch(26% 0.1928 25.90)",
-          "oklch(38% 0.1928 25.90)",
-          "oklch(49% 0.1928 25.90)",
-          "oklch(61% 0.1928 25.90)",
-          "oklch(72% 0.1928 25.90)",
-          "oklch(84% 0.1928 25.90)",
-          "oklch(95% 0.1928 25.90)"
-        ]
-      },
-      "brass": {
-        "role": "secondary",
-        "displayName": "Settlement Brass",
-        "tonalRamp": [
-          "oklch(15% 0.0867 74.16)",
-          "oklch(26% 0.0867 74.16)",
-          "oklch(38% 0.0867 74.16)",
-          "oklch(49% 0.0867 74.16)",
-          "oklch(61% 0.0867 74.16)",
-          "oklch(72% 0.0867 74.16)",
-          "oklch(84% 0.0867 74.16)",
-          "oklch(95% 0.0867 74.16)"
-        ]
-      },
-      "line": {
-        "role": "neutral",
-        "displayName": "Structural Line",
-        "tonalRamp": [
-          "oklch(15% 0.0118 188.61)",
-          "oklch(26% 0.0118 188.61)",
-          "oklch(38% 0.0118 188.61)",
-          "oklch(49% 0.0118 188.61)",
-          "oklch(61% 0.0118 188.61)",
-          "oklch(72% 0.0118 188.61)",
-          "oklch(84% 0.0118 188.61)",
-          "oklch(95% 0.0118 188.61)"
+          "hsl(24.1 53.6% 15%)",
+          "hsl(24.1 53.6% 26%)",
+          "hsl(24.1 53.6% 38%)",
+          "hsl(24.1 53.6% 49%)",
+          "hsl(24.1 53.6% 61%)",
+          "hsl(24.1 53.6% 72%)",
+          "hsl(24.1 53.6% 84%)",
+          "hsl(24.1 53.6% 95%)"
         ]
       },
       "ink": {
         "role": "neutral",
         "displayName": "Financial Ink",
         "tonalRamp": [
-          "oklch(15% 0.0149 166.35)",
-          "oklch(26% 0.0149 166.35)",
-          "oklch(38% 0.0149 166.35)",
-          "oklch(49% 0.0149 166.35)",
-          "oklch(61% 0.0149 166.35)",
-          "oklch(72% 0.0149 166.35)",
-          "oklch(84% 0.0149 166.35)",
-          "oklch(95% 0.0149 166.35)"
+          "hsl(137.1 31.3% 15%)",
+          "hsl(137.1 31.3% 26%)",
+          "hsl(137.1 31.3% 38%)",
+          "hsl(137.1 31.3% 49%)",
+          "hsl(137.1 31.3% 61%)",
+          "hsl(137.1 31.3% 72%)",
+          "hsl(137.1 31.3% 84%)",
+          "hsl(137.1 31.3% 95%)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Green",
+        "tonalRamp": [
+          "hsl(144.0 9.2% 15%)",
+          "hsl(144.0 9.2% 26%)",
+          "hsl(144.0 9.2% 38%)",
+          "hsl(144.0 9.2% 49%)",
+          "hsl(144.0 9.2% 61%)",
+          "hsl(144.0 9.2% 72%)",
+          "hsl(144.0 9.2% 84%)",
+          "hsl(144.0 9.2% 95%)"
         ]
       },
       "ink-muted": {
         "role": "neutral",
-        "displayName": "Muted Ink",
+        "displayName": "Muted Financial Ink",
         "tonalRamp": [
-          "oklch(15% 0.0265 159.35)",
-          "oklch(26% 0.0265 159.35)",
-          "oklch(38% 0.0265 159.35)",
-          "oklch(49% 0.0265 159.35)",
-          "oklch(61% 0.0265 159.35)",
-          "oklch(72% 0.0265 159.35)",
-          "oklch(84% 0.0265 159.35)",
-          "oklch(95% 0.0265 159.35)"
+          "hsl(114.3 11.9% 15%)",
+          "hsl(114.3 11.9% 26%)",
+          "hsl(114.3 11.9% 38%)",
+          "hsl(114.3 11.9% 49%)",
+          "hsl(114.3 11.9% 61%)",
+          "hsl(114.3 11.9% 72%)",
+          "hsl(114.3 11.9% 84%)",
+          "hsl(114.3 11.9% 95%)"
         ]
       },
-      "inspector-ink": {
+      "divider": {
         "role": "neutral",
-        "displayName": "Inspector Ink",
+        "displayName": "Structural Divider",
         "tonalRamp": [
-          "oklch(15% 0.0142 172.68)",
-          "oklch(26% 0.0142 172.68)",
-          "oklch(38% 0.0142 172.68)",
-          "oklch(49% 0.0142 172.68)",
-          "oklch(61% 0.0142 172.68)",
-          "oklch(72% 0.0142 172.68)",
-          "oklch(84% 0.0142 172.68)",
-          "oklch(95% 0.0142 172.68)"
-        ]
-      },
-      "copper-ink": {
-        "role": "secondary",
-        "displayName": "Copper Ink",
-        "tonalRamp": [
-          "oklch(15% 0.0837 56.11)",
-          "oklch(26% 0.0837 56.11)",
-          "oklch(38% 0.0837 56.11)",
-          "oklch(49% 0.0837 56.11)",
-          "oklch(61% 0.0837 56.11)",
-          "oklch(72% 0.0837 56.11)",
-          "oklch(84% 0.0837 56.11)",
-          "oklch(95% 0.0837 56.11)"
-        ]
-      },
-      "red-ink": {
-        "role": "tertiary",
-        "displayName": "Cut Ink",
-        "tonalRamp": [
-          "oklch(15% 0.1397 31.26)",
-          "oklch(26% 0.1397 31.26)",
-          "oklch(38% 0.1397 31.26)",
-          "oklch(49% 0.1397 31.26)",
-          "oklch(61% 0.1397 31.26)",
-          "oklch(72% 0.1397 31.26)",
-          "oklch(84% 0.1397 31.26)",
-          "oklch(95% 0.1397 31.26)"
-        ]
-      },
-      "relation": {
-        "role": "neutral",
-        "displayName": "Flat Relation",
-        "tonalRamp": [
-          "oklch(15% 0.0097 179.44)",
-          "oklch(26% 0.0097 179.44)",
-          "oklch(38% 0.0097 179.44)",
-          "oklch(49% 0.0097 179.44)",
-          "oklch(61% 0.0097 179.44)",
-          "oklch(72% 0.0097 179.44)",
-          "oklch(84% 0.0097 179.44)",
-          "oklch(95% 0.0097 179.44)"
+          "hsl(130.6 13.8% 15%)",
+          "hsl(130.6 13.8% 26%)",
+          "hsl(130.6 13.8% 38%)",
+          "hsl(130.6 13.8% 49%)",
+          "hsl(130.6 13.8% 61%)",
+          "hsl(130.6 13.8% 72%)",
+          "hsl(130.6 13.8% 84%)",
+          "hsl(130.6 13.8% 95%)"
         ]
       }
     },
     "typographyMeta": {
-      "display": {
-        "displayName": "Arrival Display",
-        "purpose": "Anton thesis with authored line breaks and mint emphasis."
+      "editorial": {
+        "displayName": "Editorial Sans",
+        "purpose": "Approved Story display scale; Command and Arena use their own smaller source sizes."
       },
-      "headline": {
-        "displayName": "Story Headline",
-        "purpose": "Condensed chapter statement; exact size adapts by chapter and viewport."
+      "emphasis": {
+        "displayName": "Georgia Italic",
+        "purpose": "Selected heading emphasis and mission title."
       },
-      "arena-headline": {
-        "displayName": "Arena Thesis",
-        "purpose": "The recurring work-to-capital statement."
-      },
-      "inspector-title": {
-        "displayName": "Selected Mandate",
-        "purpose": "Geist title inside the flat financial inspector."
-      },
-      "body": {
-        "displayName": "Interface Body",
-        "purpose": "Readable operating text."
-      },
-      "story-support": {
-        "displayName": "Story Support",
-        "purpose": "Bounded supporting paragraph beside the cast subject."
-      },
-      "control": {
-        "displayName": "Control",
-        "purpose": "Native action labels."
-      },
-      "label": {
-        "displayName": "Mono Label",
-        "purpose": "Status, metadata, and provenance."
-      },
-      "spatial-label": {
-        "displayName": "Projected Name",
-        "purpose": "Uppercase mandate name beside desktop geometry."
-      },
-      "input": {
-        "displayName": "Financial Input",
-        "purpose": "Native mono field values."
-      },
-      "amount-flat": {
-        "displayName": "Flat Amount",
-        "purpose": "Own available capital in the native Command tree."
-      },
-      "amount-inspector": {
-        "displayName": "Inspector Amount",
-        "purpose": "Primary available amount in the full-motion desktop financial instrument."
-      },
-      "amount-spatial": {
-        "displayName": "Projected Amount",
-        "purpose": "Exact formatted amount in native desktop annotations."
+      "data": {
+        "displayName": "Mono Data",
+        "purpose": "Exact amounts, ancestry, state and evidence provenance."
       }
     },
-    "shadows": [
-      {
-        "name": "wallet-popover",
-        "value": "0 16px 40px #0005",
-        "purpose": "Inherited floating wallet surface; the financial inspector and spatial annotations have no decorative shadows."
-      }
-    ],
+    "shadows": [],
     "motion": [
       {
-        "name": "genesis",
-        "value": "850ms",
-        "purpose": "Initial delegation event."
-      },
-      {
-        "name": "recursion",
-        "value": "550ms",
-        "purpose": "Each ordered recursive delegation; relation grows in first 48%, child resolves after 50%, native label appears after 85%."
+        "name": "control",
+        "value": "160ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
       },
       {
         "name": "trace",
-        "value": "650ms",
-        "purpose": "One bounded traversal of selected ancestry; no idle pulse."
+        "value": "560ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
+      },
+      {
+        "name": "build",
+        "value": "780ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
       },
       {
         "name": "impact",
-        "value": "500ms",
-        "purpose": "Copper perimeter volume draw while authority remains active."
+        "value": "700ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
       },
       {
         "name": "cascade",
-        "value": "1100ms",
-        "purpose": "Research relation cut and power loss through its descendants."
+        "value": "1360ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
       },
       {
-        "name": "depth-interval",
-        "value": "200ms",
-        "purpose": "Depth delay in the power-loss sequence; Operations retains its coordinates and authority."
-      },
-      {
-        "name": "plane",
-        "value": "850ms",
-        "purpose": "Cast depth collapses toward native Command relation anchors."
+        "name": "handoff",
+        "value": "600ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
       },
       {
         "name": "settlement",
-        "value": "850ms",
-        "purpose": "Distinct funding, submission, verifier, and receipt routes resolve in Arena."
+        "value": "1240ms",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
       },
       {
-        "name": "resolve-ease",
-        "value": "1 - (1 - clamp(t))^4",
-        "purpose": "Clamped quartic event progress used by the scene director."
-      },
-      {
-        "name": "selection",
-        "value": "140ms",
-        "purpose": "Native button background and border-color state transitions."
-      },
-      {
-        "name": "button-press",
-        "value": "80ms",
-        "purpose": "Native one-pixel downward active press."
-      },
-      {
-        "name": "amount-delta",
-        "value": "240ms",
-        "purpose": "CapitalNumber interpolates between observed balances with a cubic ease and native asset precision; initial load and reduced motion show the target immediately."
+        "name": "settle",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Bounded scoped timeline token from authority-motion.ts; reduced motion resolves final state directly."
       }
     ],
     "breakpoints": [
       {
-        "name": "compact-desktop-max",
-        "value": "1399px"
+        "name": "story-stack-command-inspector",
+        "value": "700px"
       },
       {
-        "name": "spatial-min",
-        "value": "1100px"
+        "name": "command-ledger",
+        "value": "900px"
       },
       {
-        "name": "mobile-shell-max",
-        "value": "767px"
+        "name": "arena-stack",
+        "value": "1000px"
+      },
+      {
+        "name": "arena-sequential",
+        "value": "650px"
       }
-    ]
+    ],
+    "notes": "Tonal ramps are panel metadata, not additional shipped state colors. Snapshot snippets are source-derived excerpts; product state/evidence stays in the existing application."
   },
   "components": [
     {
-      "name": "Bone Action",
+      "name": "Story Bone Action",
       "kind": "button",
       "refersTo": "button-bone",
-      "description": "Primary Story action on graphite; flat bone with an inline arrow.",
-      "html": "<button class=\"ds-bone-action\">Delegate Research <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
-      "css": ".ds-bone-action{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;border-radius:0;min-height:48px;padding:12px 16px;font:500 13px/1.5 \"Geist Variable\",sans-serif;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;min-height:56px;min-width:190px;padding:0 20px;background:var(--bone,#ede9df);color:var(--inspector-ink,#17201d);border:1px solid var(--bone,#ede9df)}.ds-bone-action:hover:not(:disabled){background:#fffaf0}.ds-bone-action:active:not(:disabled){translate:0 1px}.ds-bone-action:focus-visible{outline:2px solid var(--mint,#b9efdb);outline-offset:5px;}.ds-bone-action:disabled{opacity:.5;cursor:not-allowed}"
+      "description": "Canonical Story action; labels remain native controls.",
+      "html": "<button class=\"ds-sample ds-story-action\">Delegate Research →</button>",
+      "css": ".ds-story-action{min-width:256px;padding:20px 23px;border:0;border-radius:0;background:#eee9da;color:#17231d;font:550 14px \"Geist Variable\",sans-serif;text-align:left;cursor:pointer;transition:background .3s,transform .3s}.ds-story-action:hover{background:#c8d9c5;transform:translateY(-3px)}.ds-sample:focus-visible{outline:2px solid #c8d9c5;outline-offset:4px}"
     },
     {
-      "name": "Dark Financial Action",
+      "name": "Command Financial Action",
       "kind": "button",
       "refersTo": "button-dark",
-      "description": "A compact execution action on the bone financial surface.",
-      "html": "<button class=\"ds-dark-action\">Delegate <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
-      "css": ".ds-dark-action{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;border-radius:0;min-height:48px;padding:12px 16px;font:500 13px/1.5 \"Geist Variable\",sans-serif;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;background:var(--ink,#1b2420);color:var(--bone,#ede9df);border:1px solid var(--ink,#1b2420)}.ds-dark-action:hover:not(:disabled){background:#34453a}.ds-dark-action:active:not(:disabled){translate:0 1px}.ds-dark-action:focus-visible{outline:2px solid #2c6655;outline-offset:5px;}.ds-dark-action:disabled{opacity:.5;cursor:not-allowed}"
-    },
-    {
-      "name": "Subtle Action",
-      "kind": "button",
-      "refersTo": "button-subtle",
-      "description": "Secondary action with transparent fill and a muted structural border.",
-      "html": "<button class=\"ds-subtle-action\">Cancel preview</button>",
-      "css": ".ds-subtle-action{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;border-radius:0;min-height:48px;padding:12px 16px;font:500 13px/1.5 \"Geist Variable\",sans-serif;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;background:transparent;color:var(--text,#f6f5ef);border:1px solid #647369}.ds-subtle-action:hover:not(:disabled){background:#ffffff08}.ds-subtle-action:active:not(:disabled){translate:0 1px}.ds-subtle-action:focus-visible{outline:2px solid var(--mint,#b9efdb);outline-offset:5px;}.ds-subtle-action:disabled{opacity:.5;cursor:not-allowed}"
-    },
-    {
-      "name": "Copper Confirmation",
-      "kind": "button",
-      "refersTo": "button-copper",
-      "description": "Consequence confirmation using copper ink and bone text.",
-      "html": "<button class=\"ds-copper-action\">Confirm demo revoke <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
-      "css": ".ds-copper-action{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;border-radius:0;min-height:48px;padding:12px 16px;font:500 13px/1.5 \"Geist Variable\",sans-serif;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;background:var(--copper-ink,#81502b);color:var(--bone,#ede9df);border:1px solid var(--copper-ink,#81502b)}.ds-copper-action:hover:not(:disabled){background:#6a3d20}.ds-copper-action:active:not(:disabled){translate:0 1px}.ds-copper-action:focus-visible{outline:2px solid var(--mint,#b9efdb);outline-offset:5px;}.ds-copper-action:disabled{opacity:.5;cursor:not-allowed}"
-    },
-    {
-      "name": "Revoke Review Row",
-      "kind": "button",
-      "refersTo": "button-outline-copper",
-      "description": "The Command inspector's transparent, top-divided consequence control.",
-      "html": "<button class=\"ds-revoke-review\">Preview revoke <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
-      "css": ".ds-revoke-review{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;border-radius:0;min-height:48px;padding:12px 16px;font:500 13px/1.5 \"Geist Variable\",sans-serif;cursor:pointer;transition:background 140ms,border-color 140ms,translate 80ms;width:100%;padding:18px 0;border:0;border-top:1px solid #c4c6bc;background:transparent;color:var(--copper-ink,#81502b)}.ds-revoke-review:hover:not(:disabled){background:#d69b681a}.ds-revoke-review:active:not(:disabled){translate:0 1px}.ds-revoke-review:focus-visible{outline:2px solid #2c6655;outline-offset:5px;}.ds-revoke-review:disabled{opacity:.5;cursor:not-allowed}"
+      "description": "Dark action on the bone inspector.",
+      "html": "<button class=\"ds-sample ds-dark\">Delegate →</button>",
+      "css": ".ds-dark{min-height:43px;padding:12px 16px;border:1px solid #172c1d;border-radius:0;background:#172c1d;color:#eee9da;font:500 12px \"Geist Variable\",sans-serif;cursor:pointer;transition:background 150ms}.ds-dark:hover{background:#314d37}.ds-dark:focus-visible{outline:2px solid #50634e;outline-offset:4px}"
     },
     {
       "name": "Financial Field",
       "kind": "input",
       "refersTo": "input-field",
-      "description": "Native amount input with a compact mono value and surface-aware focus.",
-      "html": "<label class=\"ds-field-label\">Amount<input class=\"ds-financial-field\" inputmode=\"decimal\" value=\"30.00\" aria-label=\"Amount\"/></label>",
-      "css": ".ds-field-label{display:flex;flex-direction:column;gap:6px;color:var(--ink-muted,#4b5c52);font:11px/1.5 \"Geist Variable\",sans-serif}.ds-financial-field{width:100%;min-height:42px;border:1px solid #8c9a8b;border-radius:3px;padding:10px 12px;background:transparent;color:var(--ink,#1b2420);font:12px \"Geist Mono Variable\",monospace;caret-color:var(--ink,#1b2420)}.ds-financial-field:focus-visible{outline:2px solid #2c6655;outline-offset:5px;}.ds-financial-field:disabled{opacity:.5;cursor:not-allowed}"
+      "description": "Native mono field in a Command action form.",
+      "html": "<label class=\"ds-field-label\">Amount<input class=\"ds-field\" placeholder=\"Amount\" inputmode=\"decimal\"/></label>",
+      "css": ".ds-field-label{display:block;color:#172c1d;font:11px \"Geist Variable\",sans-serif}.ds-field{display:block;width:100%;min-height:40px;margin-top:8px;padding:10px 12px;border:1px solid #a6b29e;border-radius:3px;background:#f4f0e5;color:#172c1d;caret-color:#172c1d;font:12px \"Geist Mono Variable\",monospace}.ds-field:hover{border-color:#50634e}.ds-field:focus-visible{outline:2px solid #50634e;outline-offset:4px}"
     },
     {
       "name": "Main Navigation",
       "kind": "nav",
       "refersTo": "navigation-item",
-      "description": "Story, Command, and Arena with a mint active route rule.",
-      "html": "<nav class=\"ds-main-nav\" aria-label=\"Main navigation\"><a href=\"/\">Story</a><a href=\"/app\" aria-current=\"page\">Command</a><a href=\"/arena\">Arena</a></nav>",
-      "css": ".ds-main-nav{display:flex;gap:38px;align-items:stretch;font:12px/1.5 \"Geist Variable\",sans-serif;background:var(--world,#111617)}.ds-main-nav a{display:flex;align-items:center;padding:30px 0;border-bottom:2px solid transparent;color:#b6bcba;letter-spacing:.12em;text-transform:uppercase;text-decoration:none}.ds-main-nav a[aria-current=\"page\"]{color:var(--text,#f6f5ef);border-bottom-color:var(--mint,#b9efdb)}.ds-main-nav a:hover{color:var(--text,#f6f5ef)}.ds-main-nav a:focus-visible{outline:2px solid var(--mint,#b9efdb);outline-offset:5px;}"
+      "description": "Existing Story, Command, and Arena routes.",
+      "html": "<nav class=\"ds-nav\"><a href=\"/\" class=\"ds-sample\">Story</a><a href=\"/app\" class=\"ds-sample\" aria-current=\"page\">Command</a><a href=\"/arena\" class=\"ds-sample\">Arena</a></nav>",
+      "css": ".ds-nav{display:flex;gap:32px;background:#101a18;font:14px \"Geist Variable\",sans-serif}.ds-nav a{display:flex;align-items:center;padding:16px 2px;color:#a6b5ac;text-decoration:none;border-bottom:2px solid transparent}.ds-nav a[aria-current]{color:#eee9da;border-color:#c8d9c5}.ds-nav a:hover{color:#eee9da}.ds-sample:focus-visible{outline:2px solid #c8d9c5;outline-offset:4px}"
     },
     {
-      "name": "Inspector State Chips",
-      "kind": "chip",
-      "refersTo": "status-active-instrument",
-      "description": "Explicit active, blocked, and revoked states on the bone inspector.",
-      "html": "<div class=\"ds-state-chips\"><span class=\"ds-state ds-state-active\">Active</span><span class=\"ds-state ds-state-blocked\">Blocked</span><span class=\"ds-state ds-state-revoked\">Revoked</span></div>",
-      "css": ".ds-state-chips{display:flex;flex-wrap:wrap;gap:12px}.ds-state{padding:8px 11px;border-radius:2px;font:11px \"Geist Mono Variable\",monospace;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}.ds-state-active{background:#b9d9cc;color:#1b493b}.ds-state-blocked{background:#dddcd2;color:#535c56}.ds-state-revoked{background:#efd1c4;color:#963b2f}"
-    },
-    {
-      "name": "Bone Financial Inspector",
+      "name": "Bone Inspector",
       "kind": "card",
       "refersTo": "bone-inspector",
-      "description": "Flat financial inspection with exact own available capital and lineage.",
-      "html": "<aside class=\"ds-inspector\"><div class=\"ds-inspector-meta\"><span>SELECTED MANDATE</span><span>D1</span></div><div class=\"ds-inspector-heading\"><h2>Research</h2><span class=\"ds-inspector-status\">ACTIVE</span></div><div class=\"ds-inspector-capital\"><span>AVAILABLE</span><strong>250.00 <small>USDC</small></strong></div><dl class=\"ds-inspector-details\"><div><dt>Subtree remaining</dt><dd>390.00 USDC</dd></div><div><dt>Parent</dt><dd>Treasury</dd></div></dl><div class=\"ds-inspector-path\"><span>AUTHORITY PATH</span><p>Treasury → Research</p></div><p class=\"ds-inspector-provenance\">SIMULATED STATE · NO ONCHAIN TRANSACTION</p></aside>",
-      "css": ".ds-inspector{max-width:425px;padding:32px;background:var(--bone,#ede9df);color:var(--ink,#1b2420);border-radius:0;font:14px/1.5 \"Geist Variable\",sans-serif}.ds-inspector-meta{display:flex;justify-content:space-between;font:11px \"Geist Mono Variable\",monospace;letter-spacing:.04em;color:var(--ink-muted,#4b5c52)}.ds-inspector-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 25px}.ds-inspector-heading h2{margin:0;font:430 42px/1.2 \"Geist Variable\",sans-serif;letter-spacing:-.03em}.ds-inspector-status{padding:8px 11px;background:#b9d9cc;color:#1b493b;border-radius:2px;font:11px \"Geist Mono Variable\",monospace}.ds-inspector-capital{padding:25px 0 20px;border-top:1px solid #c4c6bc}.ds-inspector-capital>span,.ds-inspector-path>span{font:11px \"Geist Mono Variable\",monospace;color:var(--ink-muted,#4b5c52)}.ds-inspector-capital strong{display:block;margin-top:12px;font:36px/1.4 \"Geist Mono Variable\",monospace;letter-spacing:-.04em}.ds-inspector-capital small{font-size:15px;letter-spacing:0}.ds-inspector-details{margin:0}.ds-inspector-details>div{display:flex;justify-content:space-between;gap:16px;padding:16px 0}.ds-inspector-details dt{font-size:13px;color:var(--ink-muted,#4b5c52)}.ds-inspector-details dd{margin:0;font:16px \"Geist Mono Variable\",monospace}.ds-inspector-path{border-top:1px solid #c4c6bc;padding:24px 0;margin-top:12px}.ds-inspector-path p{margin:12px 0 0;font:14px/1.7 \"Geist Mono Variable\",monospace}.ds-inspector-provenance{border-top:1px solid #a7aca1;margin:0;padding-top:16px;font:11px/1.7 \"Geist Mono Variable\",monospace;color:var(--ink-muted,#4b5c52)}"
+      "description": "Compact excerpt of native selected mandate inspection; no financial evidence is synthesized.",
+      "html": "<aside class=\"ds-inspector\"><span>SELECTED MANDATE · D1</span><div><h2>Research</h2><small>ACTIVE</small></div><p>Authority path</p><strong>Treasury → Research</strong></aside>",
+      "css": ".ds-inspector{max-width:350px;padding:25px 27px;background:#eee9da;color:#172c1d;border-radius:0}.ds-inspector>span{font:9px \"Geist Mono Variable\",monospace;color:#50634e}.ds-inspector>div{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 0 18px}.ds-inspector h2{margin:0;font:430 34px/1.1 \"Geist Variable\",sans-serif;letter-spacing:-.03em}.ds-inspector small{padding:7px 9px;background:#c8d9c5;color:#314d37;font:9px \"Geist Mono Variable\",monospace}.ds-inspector p{border-top:1px solid #c5c9b9;padding-top:15px;color:#50634e;font:9px \"Geist Mono Variable\",monospace}.ds-inspector>strong{font:11px/1.7 \"Geist Mono Variable\",monospace}"
     },
     {
-      "name": "Flat Authority Node",
+      "name": "Selected Flat Authority Node",
       "kind": "custom",
       "refersTo": "flat-authority-node",
-      "description": "A native selected tree node with its own available amount and ancestry marker.",
-      "html": "<button class=\"ds-flat-node\" aria-label=\"Select Research\" aria-pressed=\"true\"><i class=\"ds-authority-dot\" aria-hidden=\"true\"></i><span class=\"ds-flat-name\">Research</span><strong>250.00 <small>USDC</small></strong></button>",
-      "css": ".ds-flat-node{position:relative;width:184px;min-height:80px;padding:0 0 12px 27px;text-align:left;border:0;border-radius:0;border-bottom:2px solid var(--mint,#b9efdb);background:var(--world,#111617);color:var(--text,#f6f5ef);font:12px \"Geist Mono Variable\",monospace;cursor:pointer}.ds-authority-dot{position:absolute;left:-8px;top:11px;width:16px;height:16px;border:1.6px solid var(--mint,#b9efdb);border-radius:50%;background:var(--mint,#b9efdb)}.ds-flat-name{display:block;letter-spacing:.09em;text-transform:uppercase}.ds-flat-node strong{display:block;margin-top:7px;font-size:19px;font-weight:450;white-space:nowrap}.ds-flat-node small{font-size:15px}.ds-flat-node:focus-visible{outline:2px solid var(--mint,#b9efdb);outline-offset:5px;}"
+      "description": "Selected Research from the full six-node demo; own available capital is 250.00 USDC, not subtree remaining.",
+      "html": "<button class=\"ds-sample ds-node\" aria-label=\"Select Research\" aria-pressed=\"true\"><svg viewBox=\"0 0 40 40\" aria-hidden=\"true\"><path d=\"M25 2A18 18 0 0 0 25 38L25 30A10 10 0 0 1 25 10Z\" fill=\"#c8d9c5\"/></svg><span>Research <small>D1</small></span><strong>250.00 <small>USDC</small></strong><small>ACTIVE</small></button>",
+      "css": ".ds-node{position:relative;width:170px;min-height:84px;padding:0 0 12px 28px;text-align:left;border:0;border-bottom:1px solid transparent;background:transparent;color:#eee9da;cursor:pointer;font:12px \"Geist Mono Variable\",monospace}.ds-node svg{position:absolute;width:36px;height:36px;left:-18px;top:-1px}.ds-node>span{display:block;color:#c8d9c5;text-decoration:underline;text-underline-offset:5px;font-weight:600}.ds-node strong{display:block;margin:7px 0;font:450 19px \"Geist Mono Variable\",monospace}.ds-node small{font-size:9px}.ds-node:hover{color:#c8d9c5}.ds-sample:focus-visible{outline:2px solid #c8d9c5;outline-offset:4px}"
     }
   ],
   "narrative": {
-    "northStar": "Authority Loom",
-    "overview": "Authority Loom expresses recursive capital authority as one asymmetric cast object. An oversized open Root source feeds a broad Research neck, a smaller Data bend, a tapered Scraper termination, an Analysis spur, and an independent Operations arm. Rounded shoulders, a deep underside, taper, and restrained studio reflections make the hierarchy legible through silhouette. Large Anton theses share the graphite field with the object; the scene has no architectural room, repeated node boxes, columns, stairs, or portal stacks.\n\nThe same authority becomes a flat native financial tree in Command. Geist and Geist Mono carry labels, exact amounts, status, lineage, controls, and evidence. Mint indicates effective authority, copper contains an active impact preview, red marks the local revoked relation, and brass marks resolved settlement with explicit provenance. Arena shares the cast material through a mission basin, three converging submission bands, an asymmetric verifier clamp, and a receipt wing.\n\nThis document extracts the current implementation. PRODUCT.md remains authoritative for product semantics. The visual system consumes the existing authority and mission state; geometry, projection, and motion do not establish transaction evidence or alter accounting. Sources are web/src/app/globals.css and loom.css; the topology, geometry, scene, native projection, Story, Arena, and flat tree components; and web/src/lib/loom-motion.ts.",
+    "northStar": "Approved Story",
+    "overview": "The visual authority is `artifacts/story-visual/story-final.mp4`: a notched Root seal, radial inherited bands, deep forest, bone, sage, copper preview, editorial sans, Georgia italic, and mono data. Preserve the approved Story object and desktop composition. Command and Arena inherit its materials; their surface notes remain in `.impeccable/operations/DESIGN.md`.\nThis refresh supersedes the earlier Anton/WebGL/cast-loom guidance; its byte-identical archive is `artifacts/motion-pass/DESIGN-before.md`. Sources: `story-authority.css`, `work-language.css`, `authority-motion.ts/css`, `story-world.tsx`, `flat-authority-tree.tsx`, `command-continuity.tsx`, and `arena-world.tsx` under `web/src/components/`.\nPRODUCT.md and AGENTS.md own accounting and integrations. This document describes presentation; animation and captures do not establish transaction evidence.",
     "keyCharacteristics": [
-      "One asymmetric cast authority silhouette with unequal branch widths and open negative space.",
-      "Reflective shoulders and dark undersides give the spatial subject depth.",
-      "Anton display type, Geist interface text, and Geist Mono financial detail.",
-      "Native DOM labels and controls projected beside desktop geometry.",
-      "Static SVG projection of the same authored topology on mobile and reduced motion.",
-      "A flat Command tree and bone inspector preserve exact operational inspection."
+      "Notched Root and radial inherited bands.",
+      "Flat financial Command and separate bone inspector.",
+      "Institutional mission and verifier in Arena.",
+      "Bounded native motion with explicit mobile/reduced-motion consequences."
     ],
-    "rules": [
-      {
-        "name": "The State Color Rule",
-        "body": "Copper previews a consequence while authority remains active. Red marks the local cut; blocked descendants lose power and retain explicit blocked text. Brass accompanies resolved settlement and its provenance. Mint alone never means transaction confirmation.",
-        "section": "colors"
-      },
-      {
-        "name": "The Exact Text Rule",
-        "body": "Names, amounts, units, status, addresses, lineage, actions, and evidence remain native DOM/SVG driven by the existing model. Rendered geometry never supplies financial values or transaction evidence.",
-        "section": "typography"
-      },
-      {
-        "name": "The Material Depth Rule",
-        "body": "Depth belongs to the cast profile, its underside, and studio reflections. Native operating surfaces remain flat; do not add spatial effects to the financial inspector.",
-        "section": "elevation"
-      },
-      {
-        "name": "The Continuous Authority Rule",
-        "body": "A branch joins its actual parent through the cast connector and conductor. Preserve the unequal widths, bends, tapers, and independent Operations arm; do not turn each mandate into the same repeated box.",
-        "section": "shapes"
-      }
-    ],
+    "rules": [],
     "dos": [
-      "Do preserve graphite and bone as the field and financial instrument, with mint, copper, red, and brass bound to their implemented meanings.",
-      "Do keep Anton for condensed theses, Geist for readable interface text, and Geist Mono for exact financial detail.",
-      "Do preserve the open Root, broad Research neck, Data bend, Scraper taper, Analysis spur, and separate Operations arm.",
-      "Do keep desktop labels and actions as real projected DOM controls, with restrained guides and clear space around the cast contour.",
-      "Do preserve the same authored subject as a static SVG projection on narrow viewports, reduced motion, and unavailable WebGL.",
-      "Do place the mobile Story subject directly after its thesis and support copy, before the chapter actions.",
-      "Do keep Command flat, with own available amounts in the tree and complete financial inspection in the bone instrument.",
-      "Do retain visible simulation or observed-state provenance beside mission state, actions, and receipts."
+      "Do preserve the canonical Story, flat financial Command, exact native values, complete paths, and simulation/observed-state provenance.",
+      "Do keep Operations operational outside Research's blast radius and make consequences clear without motion."
     ],
     "donts": [
-      "Don't restore the rejected rectangular Root frame, repeated beveled node boxes, CAD room, columns, stairs, card stacks, or portal stacks.",
-      "Don't render labels, amounts, status, buttons, lineage, or receipts as pixels inside the 3D scene or a full-screen mockup image.",
-      "Don't use copper preview as a revoked state, mark blocked descendants as locally revoked, or imply that tokens move during delegation or revoke.",
-      "Don't move, reshape, extinguish, or cut Operations when Research is revoked.",
-      "Don't introduce perpetual scene motion, looping ancestry pulses, or perspective-dependent mobile controls.",
-      "Don't use decorative shadows, gradients, or glass panels to replace the flat financial inspector.",
-      "Don't interpret a rendered receipt, screenshot, or animation as proof of a live transaction or successful Devnet execution."
+      "Don't restore superseded Anton/WebGL/cast-loom direction, redesign the frozen Story, or introduce decorative loops.",
+      "Don't imply delegation or revoke transfers tokens, label effectively blocked descendants as locally revoked, or invent settlement proof."
     ]
   }
 }

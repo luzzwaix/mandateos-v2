@@ -16,3 +16,7 @@ The wedge is recursive capital authority. Core semantics must not be silently re
 - Frontend uses the generated IDL and complete canonical ancestor paths. Never fabricate signatures, confirmations or rejected transactions. LOCALNET disposable wallets remain in ignored files/tab memory; never embed signer material in the source or bundle.
 - Never commit keys, wallet JSON, credentials, secrets, `.env`, build output, or local ledgers. Local tests use isolated generated wallets and an ignored working copy.
 - Before checkpointing: `cargo fmt --all -- --check`, `cargo check --locked`, `npm run typecheck`, `npm run test:local` with the supported Windows or Linux toolchain. Never describe unexecuted validator tests as passing.
+
+## Frontend freeze — 6 October 2026
+
+Frontend design is FROZEN after the Command/Arena finish. `docs/FRONTEND-FROZEN.md` is the current visual handoff; older visual measurements and exploration documents are historical context. Preserve approved Story and the final Command/Arena composition. The next workstream is Devnet deployment/integration and submission readiness. Make only integration or correctness fixes needed for that work unless the user explicitly reopens visual design.

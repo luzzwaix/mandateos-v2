@@ -23,7 +23,7 @@ import {
 import { short, toBaseUnits } from "@/lib/solana/pdas";
 import { explorer } from "@/lib/solana/program";
 import { AuthorityTrace } from "./authority-tree";
-import AuthorityTree from "./flat-authority-tree";
+import AuthorityTree from "./capital-authority-instrument";
 import CapitalNumber from "./capital-number";
 import { useWorld, ConnectionInstrument } from "./world-shell";
 
@@ -186,6 +186,8 @@ export default function CommandWorld() {
   function select(id: string) {
     reviewToken.current++;
     w.select(id);
+    if (model?.nodes.find((node) => node.id === id)?.depth === 3)
+      setTrace(true);
     if (model) {
       const path = new Set(authorityPath(model, id).map((n) => n.id));
       setCollapsed((old) => old.filter((id) => !path.has(id)));
@@ -300,7 +302,7 @@ export default function CommandWorld() {
         <div>
           <strong>Treasury</strong>
           <small>
-            {w.demo ? "BALANCED DEMO FIXTURE" : "VERIFIED ACCOUNT STATE"}
+            {w.demo ? "SIMULATED ACCOUNT STATE" : "VERIFIED ACCOUNT STATE"}
           </small>
         </div>
         <div>
@@ -366,7 +368,9 @@ export default function CommandWorld() {
         </aside>
         <section className="command-field">
           <div className="graph-toolbar">
-            <h1>Capital tree</h1>
+            <h1>
+              Authority <em>structure.</em>
+            </h1>
             <div>
               <button
                 className="text-button"
@@ -428,7 +432,6 @@ export default function CommandWorld() {
             }
             collapsed={collapsed}
           />
-          <EvidenceLedger compact />
           <div className="ledger-freshness">
             <small>
               {w.demo
@@ -502,292 +505,311 @@ export default function CommandWorld() {
                   <X size={16} />
                 </button>
               </div>
-              <h2 className="impact-heading">Revoke {target.name}?</h2>
-              <span className="preview-label">PREVIEW · NO TRANSACTION</span>
-              <div className="impact-count">
-                <strong>1</strong>
-                <div>
-                  <b>mandate will be revoked</b>
-                  <p>{target.name} · locally active</p>
-                </div>
-              </div>
-              <div className="impact-count">
-                <strong>{affected.length}</strong>
-                <div>
-                  <b>descendants lose effective authority</b>
-                  <p>{affected.map((n) => n.name).join(" · ")}</p>
-                </div>
-              </div>
-              <div className="instrument-capital">
-                <span>BRANCH REMAINING</span>
-                <strong>
-                  {amount(target.remaining, model.decimals)}{" "}
-                  <small>{model.unit}</small>
-                </strong>
-                <p>
-                  {w.demo ? "Demo account model" : "Observed account"} ·
-                  subtree_remaining
-                </p>
-              </div>
-              <dl className="details">
-                <div>
-                  <dt>Released to</dt>
-                  <dd>
-                    {model.nodes.find((n) => n.id === target.parent)?.name}{" "}
-                    available
-                  </dd>
-                </div>
-                <div>
-                  <dt>Token transfer</dt>
-                  <dd>None on revoke</dd>
-                </div>
-                <div>
-                  <dt>Unaffected</dt>
-                  <dd>
-                    {unaffected.length
-                      ? unaffected.map((n) => n.name).join(", ") + " · active"
-                      : "No active sibling identified"}
-                  </dd>
-                </div>
-              </dl>
-              <p className="instrument-explainer">
-                Only the selected mandate is locally revoked. Descendants remain
-                stored and fail ancestor validation.
-              </p>
-              {previewNotice && (
-                <p className="error-text" role="alert">
-                  {previewNotice}
-                </p>
-              )}
-              {review ? (
-                <div className="revoke-review" role="status">
-                  <strong>Review complete</strong>
+              <div className="impact-identity">
+                <h2 className="impact-heading">Revoke {target.name}?</h2>
+                <span className="preview-label">PREVIEW · NO TRANSACTION</span>
+                <div className="instrument-capital">
+                  <span>BRANCH REMAINING</span>
+                  <strong>
+                    {amount(target.remaining, model.decimals)}{" "}
+                    <small>{model.unit}</small>
+                  </strong>
                   <p>
-                    {w.demo ? "Simulate" : "Request wallet approval for"} this
-                    branch cut and release{" "}
-                    {amount(target.remaining, model.decimals)} {model.unit} of
-                    authority to the parent.
+                    {w.demo ? "Demo account model" : "Observed account"} ·
+                    subtree_remaining
                   </p>
+                </div>
+              </div>
+              <div className="impact-scope">
+                <div className="impact-count">
+                  <strong>1</strong>
+                  <div>
+                    <b>mandate will be revoked</b>
+                    <p>{target.name} · locally active</p>
+                  </div>
+                </div>
+                <div className="impact-count">
+                  <strong>{affected.length}</strong>
+                  <div>
+                    <b>descendants lose effective authority</b>
+                    <p>{affected.map((n) => n.name).join(" · ")}</p>
+                  </div>
+                </div>
+                <dl className="details">
+                  <div>
+                    <dt>Released to</dt>
+                    <dd>
+                      {model.nodes.find((n) => n.id === target.parent)?.name}{" "}
+                      available
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Token transfer</dt>
+                    <dd>None on revoke</dd>
+                  </div>
+                  <div>
+                    <dt>Unaffected</dt>
+                    <dd>
+                      {unaffected.length
+                        ? unaffected.map((n) => n.name).join(", ") + " · active"
+                        : "No active sibling identified"}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+              <div className="impact-actions">
+                <p className="instrument-explainer">
+                  Only the selected mandate is locally revoked. Descendants
+                  remain stored and fail ancestor validation.
+                </p>
+                {previewNotice && (
+                  <p className="error-text" role="alert">
+                    {previewNotice}
+                  </p>
+                )}
+                {review ? (
+                  <div className="revoke-review" role="status">
+                    <strong>Review complete</strong>
+                    <p>
+                      {w.demo ? "Simulate" : "Request wallet approval for"} this
+                      branch cut and release{" "}
+                      {amount(target.remaining, model.decimals)} {model.unit} of
+                      authority to the parent.
+                    </p>
+                    <button
+                      className="button copper full"
+                      disabled={
+                        revalidating ||
+                        !!w.live.busy ||
+                        (!w.demo && (!w.live.wallet || !w.live.canTransact))
+                      }
+                      onClick={() => void revoke()}
+                    >
+                      {revalidating
+                        ? "Revalidating accounts…"
+                        : w.demo
+                          ? "Confirm demo revoke"
+                          : "Approve revoke in wallet"}
+                      <ArrowRight size={16} />
+                    </button>
+                  </div>
+                ) : (
                   <button
                     className="button copper full"
-                    disabled={
-                      revalidating ||
-                      !!w.live.busy ||
-                      (!w.demo && (!w.live.wallet || !w.live.canTransact))
-                    }
-                    onClick={() => void revoke()}
+                    onClick={() => {
+                      previewFingerprint.current = fingerprint;
+                      setReview(true);
+                    }}
                   >
-                    {revalidating
-                      ? "Revalidating accounts…"
-                      : w.demo
-                        ? "Confirm demo revoke"
-                        : "Approve revoke in wallet"}
-                    <ArrowRight size={16} />
+                    Review revoke <ArrowRight size={16} />
                   </button>
-                </div>
-              ) : (
+                )}
                 <button
-                  className="button copper full"
-                  onClick={() => {
-                    previewFingerprint.current = fingerprint;
-                    setReview(true);
-                  }}
+                  className="text-button cancel-button"
+                  onClick={cancelPreview}
                 >
-                  Review revoke <ArrowRight size={16} />
+                  Cancel preview
                 </button>
-              )}
-              <button
-                className="text-button cancel-button"
-                onClick={cancelPreview}
-              >
-                Cancel preview
-              </button>
+              </div>
             </>
           ) : node ? (
             <>
-              <div className="instrument-meta">
-                <span>SELECTED MANDATE</span>
-                <span>D{node.depth}</span>
+              <div className="capital-identity">
+                <div className="instrument-meta">
+                  <span>SELECTED MANDATE</span>
+                  <span>D{node.depth}</span>
+                </div>
+                <div className="instrument-heading">
+                  <h2>{node.name}</h2>
+                  <span className={`status ${status}`}>{status}</span>
+                </div>
+                <div className="local-state">
+                  LOCAL <b>{node.local.toUpperCase()}</b>
+                  <span>
+                    EFFECTIVE <b>{status.toUpperCase()}</b>
+                  </span>
+                </div>
+                {!w.demo && (
+                  <button
+                    className="copy-address"
+                    onClick={() => void navigator.clipboard.writeText(node.id)}
+                  >
+                    <span>{short(node.id)}</span>
+                    <Copy size={12} />
+                  </button>
+                )}
               </div>
-              <div className="instrument-heading">
-                <h2>{node.name}</h2>
-                <span className={`status ${status}`}>{status}</span>
-              </div>
-              <div className="local-state">
-                LOCAL <b>{node.local.toUpperCase()}</b>
-                <span>
-                  EFFECTIVE <b>{status.toUpperCase()}</b>
-                </span>
-              </div>
-              {!w.demo && (
-                <button
-                  className="copy-address"
-                  onClick={() => void navigator.clipboard.writeText(node.id)}
-                >
-                  <span>{short(node.id)}</span>
-                  <Copy size={12} />
-                </button>
-              )}
-              {
-                <>
-                  <div className="instrument-capital">
-                    <span>
-                      {status === "blocked"
-                        ? "STORED AVAILABLE · BLOCKED"
-                        : "AVAILABLE"}
-                    </span>
-                    <strong>
-                      <CapitalNumber
-                        value={node.available}
-                        decimals={model.decimals}
-                      />{" "}
-                      <small>{model.unit}</small>
-                    </strong>
-                  </div>
-                  <dl className="details">
-                    <div>
-                      <dt>Subtree remaining</dt>
-                      <dd>
-                        {amount(node.remaining, model.decimals)} {model.unit}
-                      </dd>
+              <div className="capital-finances">
+                {
+                  <>
+                    <div className="instrument-capital">
+                      <span>
+                        {status === "blocked"
+                          ? "STORED AVAILABLE · BLOCKED"
+                          : "AVAILABLE"}
+                      </span>
+                      <strong>
+                        <CapitalNumber
+                          value={node.available}
+                          decimals={model.decimals}
+                        />{" "}
+                        <small>{model.unit}</small>
+                      </strong>
                     </div>
-                    <div>
-                      <dt>Depth / children</dt>
-                      <dd>
-                        {node.depth} /{" "}
-                        {model.nodes.filter((n) => n.parent === node.id).length}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Parent</dt>
-                      <dd>
-                        {model.nodes.find((n) => n.id === node.parent)?.name ??
-                          "Organization authority"}
-                      </dd>
-                    </div>
-                  </dl>
-                  <div className="path-breadcrumb">
-                    <span>AUTHORITY PATH</span>
-                    <p>
-                      {authorityPath(model, node.id)
-                        .map((n) => n.name)
-                        .join(" → ")}
-                    </p>
-                  </div>
-                </>
-              }
-              {(status === "blocked" || trace) && (
-                <>
-                  <h3>Effective authority</h3>
-                  <AuthorityTrace model={model} selected={node.id} />
-                </>
-              )}
-              {status === "blocked" ? (
-                <>
-                  <div className="blocked-proof">
-                    <X size={28} />
-                    <div>
-                      <h3>
-                        {proof || nodeRejection
-                          ? "EXECUTION REJECTED"
-                          : "AUTHORITY BLOCKED"}
-                      </h3>
-                      <p>
-                        Blocked by revoked ancestor:{" "}
-                        <b>
+                    <dl className="details">
+                      <div>
+                        <dt>Subtree remaining</dt>
+                        <dd>
+                          {amount(node.remaining, model.decimals)} {model.unit}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Depth / children</dt>
+                        <dd>
+                          {node.depth} /{" "}
                           {
-                            authorityPath(model, node.id).find(
-                              (n) => n.local === "revoked",
-                            )?.name
+                            model.nodes.filter((n) => n.parent === node.id)
+                              .length
                           }
-                        </b>
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Parent</dt>
+                        <dd>
+                          {model.nodes.find((n) => n.id === node.parent)
+                            ?.name ?? "Organization authority"}
+                        </dd>
+                      </div>
+                    </dl>
+                    <div className="path-breadcrumb">
+                      <span>AUTHORITY PATH</span>
+                      <p>
+                        {authorityPath(model, node.id)
+                          .map((n) => n.name)
+                          .join(" → ")}
                       </p>
-                      <small>
-                        {w.demo
-                          ? proof
-                            ? "SIMULATED PROGRAM OUTCOME · NOT DEVNET EVIDENCE"
-                            : "DERIVED DEMO STATE · LOCAL RECORD REMAINS ACTIVE"
-                          : nodeRejection
-                            ? `PROGRAM RESULT · ${w.live.rejection?.code ?? "REJECTED"}`
-                            : "DERIVED FROM OBSERVED ACCOUNTS · NO EXECUTION ATTEMPTED"}
-                      </small>
                     </div>
+                  </>
+                }
+              </div>
+              <div className="capital-controls">
+                {(status === "blocked" || trace) && (
+                  <div className="inspector-trace">
+                    <h3>Effective authority</h3>
+                    <AuthorityTrace model={model} selected={node.id} />
                   </div>
-                  {w.demo ? (
-                    <button
-                      className="button dark full"
-                      onClick={() => {
-                        if (w.demo) {
-                          setProof(true);
-                          w.record(
-                            "Descendant execution rejected",
-                            `${node.name} blocked by revoked ancestor · simulated`,
-                          );
-                        }
-                      }}
-                    >
-                      {" "}
-                      {w.demo
-                        ? "Attempt demo spend"
-                        : "Review descendant spend"}
-                      <ArrowRight size={14} />
-                    </button>
-                  ) : (
-                    <ActionInstrument key={node.id} node={node} blockedProof />
-                  )}
-                  {!w.demo && (
-                    <p>
-                      A legitimate controller and destination token account are
-                      required.
-                    </p>
-                  )}
-                  <dl className="details financial-impact">
-                    <div>
-                      <dt>Authority cut</dt>
-                      <dd>
-                        {w.demo ? "Confirmed in demo" : "Account revoked"}
-                      </dd>
+                )}
+                {status === "blocked" ? (
+                  <>
+                    <div className="blocked-proof">
+                      <X size={28} />
+                      <div>
+                        <h3>
+                          {proof || nodeRejection
+                            ? "EXECUTION REJECTED"
+                            : "AUTHORITY BLOCKED"}
+                        </h3>
+                        <p>
+                          Blocked by revoked ancestor:{" "}
+                          <b>
+                            {
+                              authorityPath(model, node.id).find(
+                                (n) => n.local === "revoked",
+                              )?.name
+                            }
+                          </b>
+                        </p>
+                        <small>
+                          {w.demo
+                            ? proof
+                              ? "SIMULATED PROGRAM OUTCOME · NOT DEVNET EVIDENCE"
+                              : "DERIVED DEMO STATE · LOCAL RECORD REMAINS ACTIVE"
+                            : nodeRejection
+                              ? `PROGRAM RESULT · ${w.live.rejection?.code ?? "REJECTED"}`
+                              : "DERIVED FROM OBSERVED ACCOUNTS · NO EXECUTION ATTEMPTED"}
+                        </small>
+                      </div>
                     </div>
-                    <div>
-                      <dt>Capacity release</dt>
-                      <dd>
+                    {w.demo ? (
+                      <button
+                        className="button dark full"
+                        onClick={() => {
+                          if (w.demo) {
+                            setProof(true);
+                            w.record(
+                              "Descendant execution rejected",
+                              `${node.name} blocked by revoked ancestor · simulated`,
+                            );
+                          }
+                        }}
+                      >
+                        {" "}
                         {w.demo
-                          ? "Parent available updated"
-                          : "Inspect parent account"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Reclaim</dt>
-                      <dd>Separate operation</dd>
-                    </div>
-                    <div>
-                      <dt>Token movement</dt>
-                      <dd>None from revoke</dd>
-                    </div>
-                  </dl>
-                </>
-              ) : status === "revoked" ? (
-                <p className="instrument-explainer">
-                  This mandate was locally revoked. Its zeroed capacity was
-                  released to its parent. It cannot be reactivated.
-                </p>
-              ) : status === "unknown" ? (
-                <p className="instrument-explainer">
-                  The complete Root-to-mandate path could not be verified.
-                  Refresh accounts before acting.
-                </p>
-              ) : (
-                <ActionInstrument key={`${w.demo}-${node.id}`} node={node} />
-              )}
-              {status === "active" && node.parent && (
-                <button
-                  className="button outline-copper full"
-                  onClick={openPreview}
-                  ref={previewTrigger}
-                >
-                  Preview revoke <ArrowRight size={14} />
-                </button>
-              )}
+                          ? "Attempt demo spend"
+                          : "Review descendant spend"}
+                        <ArrowRight size={14} />
+                      </button>
+                    ) : (
+                      <ActionInstrument
+                        key={node.id}
+                        node={node}
+                        blockedProof
+                      />
+                    )}
+                    {!w.demo && (
+                      <p>
+                        A legitimate controller and destination token account
+                        are required.
+                      </p>
+                    )}
+                    <dl className="details financial-impact">
+                      <div>
+                        <dt>Authority cut</dt>
+                        <dd>
+                          {w.demo ? "Confirmed in demo" : "Account revoked"}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Capacity release</dt>
+                        <dd>
+                          {w.demo
+                            ? "Parent available updated"
+                            : "Inspect parent account"}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Reclaim</dt>
+                        <dd>Separate operation</dd>
+                      </div>
+                      <div>
+                        <dt>Token movement</dt>
+                        <dd>None from revoke</dd>
+                      </div>
+                    </dl>
+                  </>
+                ) : status === "revoked" ? (
+                  <p className="instrument-explainer">
+                    This mandate was locally revoked. Its zeroed capacity was
+                    released to its parent. It cannot be reactivated.
+                  </p>
+                ) : status === "unknown" ? (
+                  <p className="instrument-explainer">
+                    The complete Root-to-mandate path could not be verified.
+                    Refresh accounts before acting.
+                  </p>
+                ) : (
+                  <ActionInstrument key={`${w.demo}-${node.id}`} node={node} />
+                )}
+                {status === "active" && node.parent && (
+                  <button
+                    className="button outline-copper full"
+                    onClick={openPreview}
+                    ref={previewTrigger}
+                  >
+                    Preview revoke <ArrowRight size={14} />
+                  </button>
+                )}
+              </div>
               <div className="provenance-note">
                 {w.demo
                   ? "SIMULATED STATE · NO ONCHAIN TRANSACTION"
@@ -796,6 +818,9 @@ export default function CommandWorld() {
             </>
           ) : null}
         </aside>
+      </div>
+      <div className="command-history">
+        <EvidenceLedger />
       </div>
     </main>
   );

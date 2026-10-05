@@ -8,7 +8,8 @@ import {
   useRef,
 } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import CommandContinuity from "./command-continuity";
 import { ArrowRight, Wallet, X, ChevronDown } from "lucide-react";
 import { useConsole } from "@/lib/use-console";
 import { genesis, fromSnapshot, type AuthorityModel } from "@/lib/authority";
@@ -128,6 +129,7 @@ export default function WorldShell({
 }) {
   const world = useWorldState();
   const pathname = usePathname();
+  const router = useRouter();
   const [walletOpen, setWalletOpen] = useState(false);
   const walletButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -161,6 +163,23 @@ export default function WorldShell({
               href={href}
               key={href}
               aria-current={pathname === href ? "page" : undefined}
+              onClick={(event) => {
+                if (
+                  pathname === "/" &&
+                  href === "/app" &&
+                  !event.metaKey &&
+                  !event.ctrlKey &&
+                  !event.shiftKey &&
+                  !event.altKey
+                ) {
+                  event.preventDefault();
+                  window.dispatchEvent(
+                    new CustomEvent("mandateos:open-command", {
+                      detail: { navigate: () => router.push("/app") },
+                    }),
+                  );
+                }
+              }}
             >
               {label}
             </Link>
@@ -289,6 +308,7 @@ export default function WorldShell({
             : `${NETWORK} · ${world.live.stale ? "UNVERIFIED / STALE" : world.live.lastRead ? "CONFIRMED ACCOUNT READS" : "AWAITING ACCOUNT READS"}`}
         </span>
       </footer>
+      <CommandContinuity pathname={pathname} />
     </WorldContext.Provider>
   );
 }
