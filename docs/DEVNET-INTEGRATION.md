@@ -1,5 +1,7 @@
 # Devnet integration release report — 6 October 2026
 
+**Earlier-pass snapshot:** the identity and authorization constraints below describe the work checkpointed at `c48bbca`. The user subsequently authorized a new Devnet identity after a bounded key search and fresh account audit. See [DEVNET-RELEASE.md](DEVNET-RELEASE.md) for current results. The Rust semantics truth table below remains applicable.
+
 Release status: **local integration implemented; Devnet deployment blocked**. No Devnet lifecycle transaction was submitted. No replacement program ID, deployment, merge, push, or history rewrite occurred.
 
 Repository: `C:/Users/ford5/Desktop/Solana Collosseum/mandateos-visual-pass`. The supplied parent directory is not a Git repository. This checkout was clean on `mandateos-visual-pass` at frozen HEAD `324fe7ae4c184279537130d928f53d0e07ff3213`. Created `devnet-integration` from that exact HEAD. Ending HEAD remains that commit; integration edits are uncommitted. The separate `mandateos-v2` checkout at `aaa2a7f` has user changes and was untouched.

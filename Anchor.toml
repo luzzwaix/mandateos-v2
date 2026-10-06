@@ -6,10 +6,10 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-mandateos = "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG"
+mandateos = "125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd"
 
 [programs.devnet]
-mandateos = "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG"
+mandateos = "125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd"
 
 [provider]
 cluster = "Localnet"

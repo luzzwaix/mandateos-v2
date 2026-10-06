@@ -4,7 +4,7 @@
 
 MandateOS is recursive capital authority for autonomous organizations on Solana. An organization keeps tokens in one program-controlled vault, delegates bounded authority down an agent tree, and cuts an entire branch with one revocation transaction. Arena Lite reserves treasury capital for external work and pays one verified winner.
 
-**Current frontend pass:** Devnet-only motion refinement. The requested program `CvRjAHwEQbawsH5otEPDjD7dp8S89yWrqano6XSatf63` is absent on Devnet and its requested ABI differs from the checked-in Core IDL. Transactions are deliberately disabled; this is not a completed Devnet demo. See [audit, motion and QA](docs/MOTION-DEVNET.md). The localnet screenshots, commands and Vercel preview below describe the verified `submission-v1.0.3` checkpoint; the current Devnet-only console cannot run that localnet demo.
+**Current integration:** frontend design is frozen. The authorized Devnet-only source/IDL identity is `125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd`; deployment is blocked by the unfunded dedicated Devnet payer. The real client uses all nine actual instructions and checks Devnet genesis plus deployed binary before transactions. DEMO remains visibly simulated. See [current release evidence](docs/DEVNET-RELEASE.md). The localnet screenshots, commands and Vercel preview below describe the historical `submission-v1.0.3` checkpoint; no current hosted Devnet lifecycle is claimed.
 
 [Open the Vercel preview](https://mandateos-v2-qdi2zz8ve-luzzwaixs-projects.vercel.app) · **LOCALNET frontend**. A live validator is required for transactions; the hosted empty state is explicitly illustrative.
 

@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-10-06T09:28:17.138Z",
+  "genesis": "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG",
+  "rpc": "https://api.devnet.solana.com",
+  "program": "125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd",
+  "payer": "3ws8XCWXKg5oCn9Bv3x6HaVAPgaxBfHTpmQ27Z9oqKAm",
+  "payerBalanceLamports": 0,
+  "programExists": false,
+  "readSlot": 508047748,
+  "sourceBuild": {
+    "address": "125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd",
+    "sha256": "ecf178ec3a259f3d1ddd48441b86ce9470ae3db74aa60ab7e8fadcae089edd35",
+    "byteLength": 462984
+  },
+  "rentLamports": {
+    "program": 833120,
+    "programData": 2352837560,
+    "writeBuffer": 2352796920
+  },
+  "deploymentAttempted": false,
+  "programOwnedAccounts": 0,
+  "configuredOrganization": null,
+  "blocker": "Dedicated Devnet payer has 0 lamports; faucet requests returned no signature. No deployment was attempted."
+}

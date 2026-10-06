@@ -1,17 +1,17 @@
 {
-  "checkedAt": "2026-10-06T08:56:48.803Z",
+  "checkedAt": "2026-10-06T09:20:26.181Z",
   "rpc": "https://api.devnet.solana.com",
   "genesis": "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG",
   "networkVerified": true,
-  "program": "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG",
-  "slot": 508039857,
+  "program": "125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd",
+  "slot": 508045779,
   "exists": false,
   "executable": false,
   "deployment": null,
   "publishedIdl": null,
   "publishedIdlMatches": null,
   "localIdl": {
-    "address": "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG",
+    "address": "125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd",
     "instructions": [
       "create_bounty",
       "create_organization",
@@ -35,11 +35,11 @@
     "spend",
     "submit_result"
   ],
-  "configuredDevnetProgram": "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG",
+  "configuredDevnetProgram": "125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd",
   "compatible": true,
   "sourceBuild": {
-    "address": "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG",
-    "sha256": "4a17098cc44a0cfedea7f995bd8f27769e6ac9623c8bc7f8db430254fbcee44a",
+    "address": "125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd",
+    "sha256": "ecf178ec3a259f3d1ddd48441b86ce9470ae3db74aa60ab7e8fadcae089edd35",
     "byteLength": 462984
   },
   "localBinaryMatches": true,

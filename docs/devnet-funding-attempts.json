@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-06T09:17:44.642Z",
+  "rpc": "https://api.devnet.solana.com",
+  "payer": "3ws8XCWXKg5oCn9Bv3x6HaVAPgaxBfHTpmQ27Z9oqKAm",
+  "balanceBeforeLamports": 0,
+  "result": "faucet rejected before signature",
+  "error": "airdrop to 3ws8XCWXKg5oCn9Bv3x6HaVAPgaxBfHTpmQ27Z9oqKAm failed: Internal error",
+  "balanceAfterLamports": 0,
+  "secondRequest": {
+    "method": "solana airdrop 1 --url https://api.devnet.solana.com",
+    "result": "faucet rejected before signature",
+    "exitCode": 1,
+    "error": "Error: airdrop request failed. This can happen when the rate limit is reached.",
+    "signature": null
+  }
+}

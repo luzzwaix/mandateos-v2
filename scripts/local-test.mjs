@@ -145,7 +145,11 @@ if (process.argv[2] === "--reuse") {
     JSON.stringify(Array.from(program.secretKey)),
     { mode: 0o600 },
   );
-  const baselineId = "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG";
+  const baselineId = readFileSync(
+    join(root, "programs/mandateos/src/lib.rs"),
+    "utf8",
+  ).match(/declare_id!\("([^"]+)"\)/)?.[1];
+  if (!baselineId) throw new Error("Source program ID missing");
   for (const path of ["Anchor.toml", "programs/mandateos/src/lib.rs"]) {
     const file = join(workspace, path);
     writeFileSync(

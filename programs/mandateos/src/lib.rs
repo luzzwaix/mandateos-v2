@@ -10,7 +10,7 @@ pub mod validation;
 
 use instructions::*;
 
-declare_id!("Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG");
+declare_id!("125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd");
 
 #[program]
 pub mod mandateos {

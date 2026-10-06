@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-10-06T09:16:50.867Z",
+  "rpc": "https://api.devnet.solana.com",
+  "genesis": "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG",
+  "observations": [
+    {
+      "id": "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG",
+      "readSlot": 508044881,
+      "exists": false,
+      "executable": false,
+      "programOwnedAccounts": 0,
+      "upgradeAuthority": null
+    },
+    {
+      "id": "CvRjAHwEQbawsH5otEPDjD7dp8S89yWrqano6XSatf63",
+      "readSlot": 508044881,
+      "exists": false,
+      "executable": false,
+      "programOwnedAccounts": 0,
+      "upgradeAuthority": null
+    }
+  ],
+  "keySearch": {
+    "roots": [
+      "mandateos-visual-pass",
+      "mandateos-v2",
+      "mandateos-visual-jump-checkpoint-1791225978274",
+      "mandateos-visual-preservation-1791216784638",
+      "mandateos-final-finish-rollback-1791232061889"
+    ],
+    "jsonFiles": 2019,
+    "validKeypairFiles": 114,
+    "exactMatches": []
+  },
+  "historyKeySearch": {
+    "smallJsonBlobs": 6,
+    "validKeypairBlobs": 0,
+    "exactMatches": []
+  },
+  "historyEvidence": {
+    "initialConfigurationCommit": "06605a575c2f94b460067c9e5aaa26460869fda4",
+    "firstRustImplementationCommit": "4edca988162f5956d68e7ee4a00ec899abcdaede",
+    "finding": "Fg6Pa was configured at project foundation and copied into the initial Rust implementation. No keypair or deployment provenance was recorded. Replacement-key instructions appeared in deployment documentation before this task. Treating this as a placeholder is an inference; no documented deliberate signer-backed identity was found."
+  }
+}

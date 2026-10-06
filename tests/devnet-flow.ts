@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
-import { mkdirSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { resolve, relative, isAbsolute } from "node:path";
+import { homedir } from "node:os";
 import { BN } from "@coral-xyz/anchor";
 import { Keypair, SystemProgram, Transaction } from "@solana/web3.js";
 import {
@@ -11,6 +12,7 @@ import {
   createMintToInstruction,
   getAssociatedTokenAddressSync,
   getAccount,
+  getMint,
 } from "@solana/spl-token";
 import {
   MandateClient,
@@ -24,13 +26,33 @@ import {
   RPC_URL,
 } from "../web/src/lib/solana/program";
 import { fromSnapshot, statusOf } from "../web/src/lib/authority";
+import type {
+  SigningWallet,
+  TransactionObserver,
+} from "../web/src/lib/solana/types";
 
-// Disposable Devnet verification only. No production wallet input or replacement program ID.
+let captureFailure: ((error: unknown) => void) | undefined;
+
+// Disposable Devnet verification only. --wallet accepts an existing dedicated
+// test wallet only within MandateOS's private directory outside the repository.
 async function main() {
   const probe = new MandateClient();
   const slot = await probe.verifyDeployment(); // Abort before creating keys if undeployed/mismatched.
-  const directory = resolve(".localnet", `devnet-${Date.now()}`);
+  const run = `lifecycle-${Date.now()}`;
+  const directory = resolve("artifacts", "devnet-release", run);
   mkdirSync(directory, { recursive: true });
+  const privateRoot = resolve(
+    process.env.LOCALAPPDATA ?? homedir(),
+    "MandateOS",
+    "devnet-private",
+  );
+  const privateRelative = relative(resolve(), privateRoot);
+  assert(
+    privateRelative.startsWith("..") || isAbsolute(privateRelative),
+    "Devnet signing material must remain outside the repository",
+  );
+  const privateDirectory = resolve(privateRoot, run);
+  mkdirSync(privateDirectory, { recursive: true });
   const evidence: Record<string, unknown>[] = [];
   const save = () =>
     writeFileSync(
@@ -46,7 +68,23 @@ async function main() {
         2,
       ) + "\n",
     );
-  const owner = Keypair.generate(),
+  const walletArgument = process.argv.indexOf("--wallet");
+  const walletPath =
+    walletArgument < 0 ? undefined : process.argv[walletArgument + 1];
+  if (walletArgument >= 0 && !walletPath)
+    throw Error("--wallet requires a local path");
+  if (walletPath) {
+    const child = relative(privateRoot, resolve(walletPath));
+    assert(
+      child && !child.startsWith("..") && !isAbsolute(child),
+      "Use a dedicated Devnet test wallet in the external MandateOS private directory",
+    );
+  }
+  const owner = walletPath
+      ? Keypair.fromSecretKey(
+          Uint8Array.from(JSON.parse(readFileSync(walletPath, "utf8"))),
+        )
+      : Keypair.generate(),
     mint = Keypair.generate();
   const controllers = {
     research: Keypair.generate(),
@@ -55,8 +93,9 @@ async function main() {
     operations: Keypair.generate(),
   };
   for (const [name, pair] of Object.entries({ owner, mint, ...controllers })) {
+    if (name === "owner" && walletPath) continue; // Never copy an existing signer.
     writeFileSync(
-      resolve(directory, `${name}-keypair.json`),
+      resolve(privateDirectory, `${name}-keypair.json`),
       JSON.stringify(Array.from(pair.secretKey)),
       { flag: "wx", mode: 0o600 },
     );
@@ -73,7 +112,47 @@ async function main() {
       tx.partialSign(mint);
     return originalSign(tx);
   };
-  const c = new MandateClient(wallet);
+  let lastProgress: Parameters<TransactionObserver>[0] | undefined;
+  const observedClient = (signer: SigningWallet, role: string) =>
+    new MandateClient(signer, (progress) => {
+      lastProgress = progress;
+      evidence.push({
+        step: "transaction transport observation",
+        signer: role,
+        phase: progress.phase,
+        signature: progress.signature,
+        rpcObservationSlot: progress.slot,
+      });
+      save();
+    });
+  captureFailure = (error) => {
+    const failure =
+      error instanceof ProtocolRejection || error instanceof SimulationRejection
+        ? {
+            result:
+              error instanceof ProtocolRejection
+                ? "transaction submitted and failed on-chain"
+                : "RPC/program simulation rejected before submission",
+            signature: error.signature,
+            code: error.code,
+            logs: error.logs,
+            ...(error instanceof ProtocolRejection
+              ? { slot: error.slot, feeLamports: error.fee }
+              : {}),
+          }
+        : {
+            result:
+              "verification stopped; inspect recorded transport observations for submission/confirmation state",
+          };
+    evidence.push({
+      step: "verification stopped",
+      ...failure,
+      lastTransportObservation: lastProgress,
+      message: error instanceof Error ? error.message : String(error),
+    });
+    save();
+  };
+  const c = observedClient(wallet, "treasury authority");
   async function receipt(step: string, signature: string) {
     const tx = await c.rpc.getTransaction(signature, {
       commitment: "confirmed",
@@ -81,6 +160,13 @@ async function main() {
     });
     const status = await c.rpc.getSignatureStatus(signature);
     assert(!status.value?.err && !tx?.meta?.err, `${step} failed`);
+    assert(
+      tx ||
+        ["confirmed", "finalized"].includes(
+          status.value?.confirmationStatus ?? "",
+        ),
+      `${step}: confirmation receipt unavailable`,
+    );
     evidence.push({
       step,
       result: "transaction confirmed on Devnet",
@@ -97,13 +183,18 @@ async function main() {
     wallet: owner.publicKey.toBase58(),
     network: "Devnet",
     result:
-      "genesis and deployed binary verified; browser extension connection tested separately",
+      "genesis and deployed binary verified; dedicated script signer (browser extension connection unverified)",
   });
   save();
-  const funding = await c.rpc.requestAirdrop(owner.publicKey, 2_000_000_000);
-  const airdrop = await c.rpc.confirmTransaction(funding, "confirmed");
-  assert(!airdrop.value.err);
-  await receipt("fund test wallet through Devnet faucet", funding);
+  const balance = await c.rpc.getBalance(owner.publicKey);
+  evidence.push({ step: "dedicated wallet balance", balanceLamports: balance });
+  save();
+  if (balance < 200_000_000) {
+    const funding = await c.rpc.requestAirdrop(owner.publicKey, 1_000_000_000);
+    const airdrop = await c.rpc.confirmTransaction(funding, "confirmed");
+    assert(!airdrop.value.err);
+    await receipt("fund test wallet through Devnet faucet", funding);
+  }
   await receipt(
     "fund controller rent/fees",
     await c.send(
@@ -154,6 +245,25 @@ async function main() {
     "create classic SPL six-decimal test mint (not USDC)",
     await c.send(mintTx),
   );
+  const verifiedMint = await getMint(
+    c.rpc,
+    mint.publicKey,
+    "confirmed",
+    TOKEN_PROGRAM_ID,
+  );
+  assert.equal(verifiedMint.decimals, 6);
+  assert.equal(verifiedMint.supply, 1_000_000_000n);
+  assert(verifiedMint.mintAuthority?.equals(owner.publicKey));
+  assert.equal(verifiedMint.freezeAuthority, null);
+  evidence.push({
+    step: "verify actual test mint",
+    mint: mint.publicKey.toBase58(),
+    tokenProgram: TOKEN_PROGRAM_ID.toBase58(),
+    decimals: verifiedMint.decimals,
+    supplyBaseUnits: verifiedMint.supply.toString(),
+    isUSDC: false,
+  });
+  save();
   const created = await c.createOrganization(mint.publicKey);
   await receipt("initialize treasury", created.signature);
   let s = await c.load(created.organization);
@@ -180,6 +290,7 @@ async function main() {
     });
     save();
   };
+  observe("initialized treasury");
   await receipt(
     "deposit 1000 test tokens",
     await c.deposit(s, u(1000), source),
@@ -194,6 +305,7 @@ async function main() {
   );
   await receipt("Root to Research", research.signature);
   s = await c.load(s.address);
+  observe("Research delegation read");
   const operations = await c.delegate(
     s,
     row(root),
@@ -202,7 +314,8 @@ async function main() {
   );
   await receipt("Root to Operations sibling", operations.signature);
   s = await c.load(s.address);
-  const rc = new MandateClient(keypairWallet(controllers.research));
+  observe("Operations delegation read");
+  const rc = observedClient(keypairWallet(controllers.research), "Research");
   const data = await rc.delegate(
     s,
     row(research.child.toBase58()),
@@ -211,7 +324,8 @@ async function main() {
   );
   await receipt("Research to Data", data.signature);
   s = await c.load(s.address);
-  const dc = new MandateClient(keypairWallet(controllers.data));
+  observe("Data delegation read");
+  const dc = observedClient(keypairWallet(controllers.data), "Data");
   const scraper = await dc.delegate(
     s,
     row(data.child.toBase58()),
@@ -220,7 +334,8 @@ async function main() {
   );
   await receipt("Data to Scraper", scraper.signature);
   s = await c.load(s.address);
-  const sc = new MandateClient(keypairWallet(controllers.scraper));
+  observe("Scraper delegation read");
+  const sc = observedClient(keypairWallet(controllers.scraper), "Scraper");
   await receipt(
     "valid Scraper spend 10",
     await sc.spend(s, row(scraper.child.toBase58()), u(10), destination),
@@ -273,7 +388,10 @@ async function main() {
   }
   s = await c.load(s.address);
   assert.equal(s.vaultBalance, 990_000_000n);
-  const oc = new MandateClient(keypairWallet(controllers.operations));
+  const oc = observedClient(
+    keypairWallet(controllers.operations),
+    "Operations",
+  );
   await receipt(
     "Operations valid spend 5 after Research revoke",
     await oc.spend(s, row(operations.child.toBase58()), u(5), destination),
@@ -300,6 +418,7 @@ async function main() {
   );
 }
 main().catch((e: unknown) => {
+  captureFailure?.(e);
   console.error(
     `Devnet flow blocked/failed: ${e instanceof Error ? e.message : String(e)}`,
   );

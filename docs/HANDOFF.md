@@ -1,6 +1,6 @@
 # Two-laptop handoff
 
-**Current integration, 6 October 2026:** [DEVNET-INTEGRATION.md](DEVNET-INTEGRATION.md) supersedes the five-instruction/`CvRj...` gate described below. The client targets the existing nine-instruction Rust/IDL program and uses preflight plus source-binary verification. No Devnet deployment exists at the intended address in the fresh audit; no successful Devnet lifecycle is claimed.
+**Current integration, 6 October 2026:** [DEVNET-RELEASE.md](DEVNET-RELEASE.md) supersedes the historical identity/gate notes below. The authorized Devnet-only program ID is `125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd`, consistent across source, Anchor, regenerated IDL and frontend configuration. The client uses the nine actual instructions, preflight and source-binary verification. Program and dedicated payer keys exist outside Git, but the payer is unfunded; no Devnet deployment or successful lifecycle is claimed.
 
 ## Current Devnet-only frontend refinement
 
