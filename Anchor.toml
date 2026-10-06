@@ -8,6 +8,9 @@ skip-lint = false
 [programs.localnet]
 mandateos = "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG"
 
+[programs.devnet]
+mandateos = "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG"
+
 [provider]
 cluster = "Localnet"
 wallet = ".localnet/test-authority.json"

@@ -357,7 +357,7 @@ export function ConnectionInstrument() {
                 new PublicKey(mint),
               );
               live.setOrganization(result.organization.toBase58());
-              return result.signature;
+              return result;
             })
           }
         >
@@ -380,7 +380,9 @@ export function ConnectionInstrument() {
         <div>
           <dt>IDL compatibility</dt>
           <dd>
-            {IDL_COMPATIBLE ? "Compatible" : "Mismatch · actions disabled"}
+            {IDL_COMPATIBLE
+              ? "Source ABI matches · deployment checked separately"
+              : "Mismatch · actions disabled"}
           </dd>
         </div>
       </dl>

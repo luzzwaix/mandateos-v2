@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-10-06T08:56:48.803Z",
+  "rpc": "https://api.devnet.solana.com",
+  "genesis": "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG",
+  "networkVerified": true,
+  "program": "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG",
+  "slot": 508039857,
+  "exists": false,
+  "executable": false,
+  "deployment": null,
+  "publishedIdl": null,
+  "publishedIdlMatches": null,
+  "localIdl": {
+    "address": "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG",
+    "instructions": [
+      "create_bounty",
+      "create_organization",
+      "delegate",
+      "deposit",
+      "reclaim",
+      "revoke_branch",
+      "settle_bounty",
+      "spend",
+      "submit_result"
+    ]
+  },
+  "sourceInstructions": [
+    "create_bounty",
+    "create_organization",
+    "delegate",
+    "deposit",
+    "reclaim",
+    "revoke_branch",
+    "settle_bounty",
+    "spend",
+    "submit_result"
+  ],
+  "configuredDevnetProgram": "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG",
+  "compatible": true,
+  "sourceBuild": {
+    "address": "Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG",
+    "sha256": "4a17098cc44a0cfedea7f995bd8f27769e6ac9623c8bc7f8db430254fbcee44a",
+    "byteLength": 462984
+  },
+  "localBinaryMatches": true,
+  "transactionsEnabled": false,
+  "blocker": "No deployed program or upgrade authority exists at the intended address. First deployment requires its exact deploy keypair and a funded dedicated Devnet payer/authority wallet."
+}

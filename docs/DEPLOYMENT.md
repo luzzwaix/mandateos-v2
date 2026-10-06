@@ -1,5 +1,7 @@
 # Frontend deployment and devnet continuation
 
+**Current integration, 6 October 2026:** see [DEVNET-INTEGRATION.md](DEVNET-INTEGRATION.md) and [fresh public audit](devnet-integration-audit.json). The intended program is the existing Rust/IDL address `Fg6PaFpoGXkYsidMpWxTWqkZ5gnk9j8GaZ9epbEYwPqG`. Do not follow the historical replacement-ID/key-generation directions below for this release. No replacement program or identity is authorized. Deployment requires the keypair for that exact address and a funded dedicated Devnet authority/payer. Older localnet/Vercel observations below are historical, not current Devnet verification.
+
 ## Static frontend
 
 Ready preview: https://mandateos-v2-qdi2zz8ve-luzzwaixs-projects.vercel.app

@@ -1,7 +1,11 @@
-// Fail on tracked private material/build output without printing file contents.
+// Check tracked and new non-ignored files without printing private contents.
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
-const paths = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" })
+const paths = execFileSync(
+  "git",
+  ["ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+  { encoding: "utf8" },
+)
   .split("\0")
   .filter(Boolean);
 const forbidden =
@@ -29,10 +33,11 @@ for (const path of paths) {
 }
 if (failures.length) {
   console.error(
-    "Excluded material is tracked in:\n" + [...new Set(failures)].join("\n"),
+    "Excluded material found in release files:\n" +
+      [...new Set(failures)].join("\n"),
   );
   process.exit(1);
 }
 console.log(
-  `Checked ${paths.length} tracked files: no keypairs, recognized credentials, local environments or build outputs.`,
+  `Checked ${paths.length} tracked/new release files: no keypairs, recognized credentials, local environments or build outputs.`,
 );

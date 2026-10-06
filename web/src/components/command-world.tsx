@@ -21,7 +21,7 @@ import {
   type AuthorityNode,
 } from "@/lib/authority";
 import { short, toBaseUnits } from "@/lib/solana/pdas";
-import { explorer } from "@/lib/solana/program";
+import { explorer, PROGRAM_ADDRESS, NETWORK } from "@/lib/solana/program";
 import { AuthorityTrace } from "./authority-tree";
 import AuthorityTree from "./capital-authority-instrument";
 import CapitalNumber from "./capital-number";
@@ -59,6 +59,59 @@ export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
           {expanded ? "Recent events" : `History (${events.length})`}
         </button>
       </div>
+      {!w.demo && (
+        <details>
+          <summary>Network and account evidence</summary>
+          <dl className="details">
+            <div>
+              <dt>Network</dt>
+              <dd>
+                {NETWORK} · {w.live.health}
+              </dd>
+            </div>
+            <div>
+              <dt>Program from source</dt>
+              <dd className="address">{PROGRAM_ADDRESS}</dd>
+            </div>
+            {w.live.snapshot && (
+              <>
+                <div>
+                  <dt>Organization PDA</dt>
+                  <dd className="address">
+                    {w.live.snapshot.address.toBase58()}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Root PDA</dt>
+                  <dd className="address">
+                    {w.live.snapshot.organization.rootMandate.toBase58()}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Shared vault</dt>
+                  <dd className="address">
+                    {w.live.snapshot.organization.vault.toBase58()}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Token mint</dt>
+                  <dd className="address">
+                    {w.live.snapshot.organization.mint.toBase58()}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Account provenance</dt>
+                  <dd>
+                    {w.live.stale
+                      ? "Stale · refresh required"
+                      : "Read from Devnet after confirmed actions"}
+                  </dd>
+                </div>
+              </>
+            )}
+          </dl>
+        </details>
+      )}
       {!w.demo && w.live.transaction.phase !== "idle" && (
         <div
           className={`transaction-state ${w.live.transaction.phase}`}
@@ -67,13 +120,18 @@ export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
           <strong>
             {w.live.transaction.phase === "awaiting-signature"
               ? "Approve in wallet"
-              : w.live.transaction.phase === "pending"
-                ? "Pending confirmation"
-                : w.live.transaction.phase === "unknown"
-                  ? "Confirmation unknown"
-                  : w.live.transaction.phase}
+              : w.live.transaction.phase === "submitting"
+                ? "Submitting with preflight"
+                : w.live.transaction.phase === "pending"
+                  ? "Pending confirmation"
+                  : w.live.transaction.phase === "unknown"
+                    ? "Confirmation unknown"
+                    : w.live.transaction.phase}
           </strong>
           <span>{w.live.transaction.title}</span>
+          {w.live.transaction.slot !== undefined && (
+            <span>RPC slot {w.live.transaction.slot}</span>
+          )}
           {w.live.transaction.message && <p>{w.live.transaction.message}</p>}
           {w.live.transaction.signature && (
             <a

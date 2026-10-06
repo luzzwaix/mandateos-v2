@@ -70,6 +70,8 @@ export interface Snapshot {
   vaultBalance: bigint;
 }
 export interface Activity {
+  slot?: number;
+  fee?: number;
   occurredAt?: number;
   entity?: string;
   signature?: string;
@@ -93,6 +95,7 @@ export interface TransactionState {
     | "idle"
     | "working"
     | "awaiting-signature"
+    | "submitting"
     | "pending"
     | "confirmed"
     | "unknown"
@@ -100,7 +103,8 @@ export interface TransactionState {
   title: string;
   signature?: string;
   message?: string;
+  slot?: number;
 }
 export type TransactionObserver = (
-  progress: Pick<TransactionState, "phase" | "signature">,
+  progress: Pick<TransactionState, "phase" | "signature" | "slot">,
 ) => void;

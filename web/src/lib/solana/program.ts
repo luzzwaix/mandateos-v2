@@ -6,18 +6,21 @@ import type { SigningWallet } from "./types";
 export const RPC_URL =
   process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.devnet.solana.com";
 export const PROGRAM_ADDRESS =
-  process.env.NEXT_PUBLIC_MANDATEOS_PROGRAM_ID ||
-  "CvRjAHwEQbawsH5otEPDjD7dp8S89yWrqano6XSatf63";
+  process.env.NEXT_PUBLIC_MANDATEOS_PROGRAM_ID || idl.address;
 export const DEVNET_GENESIS = "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG";
 export const NETWORK = "DEVNET";
 export const IS_LOCAL = false;
 export const LOCAL_DEMO = false;
 export const REQUIRED_INSTRUCTIONS = [
-  "create_root",
-  "reserve_child",
+  "create_organization",
+  "deposit",
+  "delegate",
   "spend",
   "revoke_branch",
-  "reclaim_budget",
+  "reclaim",
+  "create_bounty",
+  "submit_result",
+  "settle_bounty",
 ] as const;
 export const IDL_COMPATIBLE =
   idl.address === PROGRAM_ADDRESS &&
@@ -27,7 +30,7 @@ export const IDL_COMPATIBLE =
 export function assertCompatibleIdl() {
   if (!IDL_COMPATIBLE)
     throw new Error(
-      "Transaction disabled: the checked-in IDL does not match the requested Devnet program and its five instructions. A matching public IDL and account adapter are required.",
+      "Transaction disabled: the configured program does not match the source-generated IDL and its nine instructions.",
     );
 }
 export function connection() {

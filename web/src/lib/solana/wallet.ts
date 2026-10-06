@@ -3,7 +3,8 @@ import type { SigningWallet } from "./types";
 
 export function keypairWallet(pair: Keypair): SigningWallet {
   const sign = async <T extends Transaction | VersionedTransaction>(tx: T) => {
-    if (tx instanceof Transaction) tx.partialSign(pair);
+    // Root CLI and web dependencies can load separate web3.js module instances.
+    if ("partialSign" in tx) tx.partialSign(pair);
     else tx.sign([pair]);
     return tx;
   };

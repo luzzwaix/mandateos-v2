@@ -1,5 +1,7 @@
 # Two-laptop handoff
 
+**Current integration, 6 October 2026:** [DEVNET-INTEGRATION.md](DEVNET-INTEGRATION.md) supersedes the five-instruction/`CvRj...` gate described below. The client targets the existing nine-instruction Rust/IDL program and uses preflight plus source-binary verification. No Devnet deployment exists at the intended address in the fresh audit; no successful Devnet lifecycle is claimed.
+
 ## Current Devnet-only frontend refinement
 
 The current console targets `https://api.devnet.solana.com`, requested program `CvRjAHwEQbawsH5otEPDjD7dp8S89yWrqano6XSatf63`. The account and matching IDL are absent; its five-instruction ABI differs from this repository's Core. Transactions and local disposable signing are disabled. See [MOTION-DEVNET.md](MOTION-DEVNET.md) and the public [audit report](devnet-audit.json). No private key is needed to inspect or resolve the public program/IDL mismatch.

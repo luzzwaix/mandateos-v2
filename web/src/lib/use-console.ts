@@ -1,7 +1,11 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Keypair, PublicKey } from "@solana/web3.js";
-import { MandateClient, ProtocolRejection } from "./solana/client";
+import {
+  MandateClient,
+  ProtocolRejection,
+  SimulationRejection,
+} from "./solana/client";
 import { initializeDemo, type DemoSession } from "./solana/demo";
 import { keypairWallet, connectWallet } from "./solana/wallet";
 import type {
@@ -33,7 +37,9 @@ export function useConsole(enabled = true) {
     setTransaction((previous) => ({ ...previous, ...progress }));
   }, []);
   const [error, setError] = useState("");
-  const [rejection, setRejection] = useState<ProtocolRejection>();
+  const [rejection, setRejection] = useState<
+    ProtocolRejection | SimulationRejection
+  >();
   const [health, setHealth] = useState("Connecting to RPC");
   const [lastRead, setLastRead] = useState<number>();
   const [stale, setStale] = useState(false);
@@ -229,7 +235,9 @@ export function useConsole(enabled = true) {
   }, [client, organization, refresh, busy, enabled]);
   async function run(
     title: string,
-    task: () => Promise<string | void>,
+    task: () => Promise<
+      string | void | { signature: string; organization: PublicKey }
+    >,
     address?: string,
   ) {
     if (busy) return;
@@ -240,21 +248,33 @@ export function useConsole(enabled = true) {
     setRejection(undefined);
     let confirmedSignature: string | undefined;
     try {
-      const signature = await task();
+      const outcome = await task();
+      const signature =
+        typeof outcome === "object" ? outcome.signature : outcome;
+      const readAddress =
+        typeof outcome === "object" ? outcome.organization.toBase58() : address;
       confirmedSignature = signature || undefined;
       transactionRef.current = signature || undefined;
       if (signature) {
-        setTransaction({ phase: "confirmed", title, signature });
+        setTransaction({
+          phase: "confirmed",
+          title,
+          signature,
+          slot: progressRef.current.slot,
+        });
         addActivity({
           title,
           signature,
           status: "confirmed",
-          detail: "Transaction confirmed",
+          detail: progressRef.current.slot
+            ? `Confirmation observed at RPC slot ${progressRef.current.slot}`
+            : "Transaction confirmed",
+          slot: progressRef.current.slot,
           time: new Date().toLocaleTimeString(),
         });
       } else setTransaction({ phase: "idle", title: "" });
       await refresh(
-        address ?? snapshotRef.current?.address.toBase58() ?? organization,
+        readAddress ?? snapshotRef.current?.address.toBase58() ?? organization,
       );
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
@@ -273,15 +293,26 @@ export function useConsole(enabled = true) {
         setTransaction({
           phase:
             !(e instanceof ProtocolRejection) &&
-            progressRef.current.phase === "pending"
+            !(e instanceof SimulationRejection) &&
+            (progressRef.current.phase === "pending" ||
+              progressRef.current.phase === "submitting")
               ? "unknown"
               : "error",
           title,
           message:
-            !(e instanceof ProtocolRejection) &&
-            progressRef.current.phase === "pending"
-              ? `Confirmation unknown. Check the submitted signature before retrying. ${message}`
-              : message,
+            e instanceof SimulationRejection
+              ? `RPC simulation rejected before submission. No confirmed failed transaction. ${e.code ?? ""}: ${message}`
+              : !(e instanceof ProtocolRejection) &&
+                  (progressRef.current.phase === "pending" ||
+                    progressRef.current.phase === "submitting")
+                ? progressRef.current.signature
+                  ? `Confirmation unknown. Check the submitted signature before retrying. ${message}`
+                  : `Submission outcome unknown; RPC returned no signature. Do not assume success or retry automatically. ${message}`
+                : e instanceof ProtocolRejection
+                  ? `Submitted and failed on-chain; transaction slot ${e.slot ?? "unavailable"}; fee ${e.fee ?? "unavailable"} lamports. ${message}`
+                  : progressRef.current.phase === "awaiting-signature"
+                    ? `Wallet signing did not complete; no transaction sent. ${message}`
+                    : `Rejected before submission. ${message}`,
           signature:
             e instanceof ProtocolRejection
               ? e.signature
@@ -293,6 +324,17 @@ export function useConsole(enabled = true) {
           title: "Payment rejected",
           detail: `${e.code ?? "Program rejection"}: ${message}`,
           signature: e.signature,
+          slot: e.slot,
+          fee: e.fee,
+          logs: e.logs,
+          status: "rejected",
+          time: new Date().toLocaleTimeString(),
+        });
+      } else if (e instanceof SimulationRejection) {
+        setRejection(e);
+        addActivity({
+          title: "RPC simulation rejected before submission",
+          detail: `${e.code ?? "Simulation rejection"}: ${message}. No transaction submitted.`,
           logs: e.logs,
           status: "rejected",
           time: new Date().toLocaleTimeString(),

@@ -488,14 +488,16 @@ export default function Console() {
                         MandateOS prevented this descendant from using treasury
                         capital.
                       </p>
-                      <a
-                        href={explorer(state.rejection.signature)}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Failed transaction {short(state.rejection.signature)}{" "}
-                        <ArrowUpRight size={11} />
-                      </a>
+                      {state.rejection.signature && (
+                        <a
+                          href={explorer(state.rejection.signature)}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Failed transaction {short(state.rejection.signature)}{" "}
+                          <ArrowUpRight size={11} />
+                        </a>
+                      )}
                       <details>
                         <summary>Protocol logs</summary>
                         <pre>{state.rejection.logs.join("\n")}</pre>
@@ -563,14 +565,16 @@ export default function Console() {
                     MandateOS prevented this descendant from using treasury
                     capital.
                   </p>
-                  <a
-                    href={explorer(state.rejection.signature)}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Failed transaction {short(state.rejection.signature)}{" "}
-                    <ArrowUpRight size={12} />
-                  </a>
+                  {state.rejection.signature && (
+                    <a
+                      href={explorer(state.rejection.signature)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Failed transaction {short(state.rejection.signature)}{" "}
+                      <ArrowUpRight size={12} />
+                    </a>
+                  )}
                   <details>
                     <summary>Protocol logs</summary>
                     <pre>{state.rejection.logs.join("\n")}</pre>

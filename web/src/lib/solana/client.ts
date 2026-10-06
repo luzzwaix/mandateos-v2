@@ -3,6 +3,7 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
+  SendTransactionError,
   type TransactionInstruction,
 } from "@solana/web3.js";
 import {
@@ -25,7 +26,9 @@ import {
   DEVNET_GENESIS,
   PROGRAM_ADDRESS,
   programFor,
+  REQUIRED_INSTRUCTIONS,
 } from "./program";
+import { verifyProgramBinary } from "./deployment";
 import type {
   Activity,
   BountyAccount,
@@ -50,9 +53,22 @@ export class ProtocolRejection extends Error {
     public signature: string,
     public logs: string[],
     public code?: string,
+    public slot?: number,
+    public fee?: number,
   ) {
     super(message);
     this.name = "ProtocolRejection";
+  }
+}
+export class SimulationRejection extends Error {
+  readonly signature = undefined;
+  constructor(
+    message: string,
+    public logs: string[],
+    public code?: string,
+  ) {
+    super(message);
+    this.name = "SimulationRejection";
   }
 }
 export class MandateClient {
@@ -75,20 +91,21 @@ export class MandateClient {
     };
   }
   async verifyDeployment() {
-    const [genesis, info, slot] = await Promise.all([
-      this.rpc.getGenesisHash(),
-      this.rpc.getAccountInfo(new PublicKey(PROGRAM_ADDRESS), "confirmed"),
-      this.rpc.getSlot("confirmed"),
-    ]);
+    const genesis = await this.rpc.getGenesisHash();
     if (genesis !== DEVNET_GENESIS)
       throw new Error(
         "Wrong network: this console only permits Solana Devnet. No transaction will be sent.",
       );
+    assertCompatibleIdl();
+    const [info, slot] = await Promise.all([
+      this.rpc.getAccountInfo(new PublicKey(PROGRAM_ADDRESS), "confirmed"),
+      this.rpc.getSlot("confirmed"),
+    ]);
     if (!info?.executable)
       throw new Error(
         "Devnet program account not found. Transactions are disabled until this public program address is deployed and its matching IDL is available.",
       );
-    assertCompatibleIdl();
+    await verifyProgramBinary(this.rpc, new PublicKey(PROGRAM_ADDRESS), info);
     return slot;
   }
   async load(address: PublicKey): Promise<Snapshot> {
@@ -153,13 +170,12 @@ export class MandateClient {
     if (!this.wallet) throw new Error("Connect a signing wallet first");
     const allowed = this.program.idl.instructions
       .filter((instruction) =>
-        [
-          "create_root",
-          "reserve_child",
-          "spend",
-          "revoke_branch",
-          "reclaim_budget",
-        ].includes(instruction.name),
+        (REQUIRED_INSTRUCTIONS as readonly string[]).includes(
+          instruction.name.replace(
+            /[A-Z]/g,
+            (letter) => `_${letter.toLowerCase()}`,
+          ),
+        ),
       )
       .map((instruction) => Buffer.from(instruction.discriminator));
     for (const instruction of tx.instructions) {
@@ -170,7 +186,7 @@ export class MandateClient {
         )
       )
         throw new Error(
-          "Instruction is outside the five authorized Devnet operations",
+          "Instruction is outside the source-generated MandateOS ABI",
         );
     }
     const latest = await this.rpc.getLatestBlockhash("confirmed");
@@ -178,23 +194,42 @@ export class MandateClient {
     tx.recentBlockhash = latest.blockhash;
     this.observe?.({ phase: "awaiting-signature" });
     const signed = await this.wallet.signTransaction(tx);
-    this.observe?.({ phase: "pending" });
-    // Broadcasting with preflight disabled records genuine rejected demo payments
-    // in the ledger, rather than stopping at client simulation.
-    const signature = await this.rpc.sendRawTransaction(signed.serialize(), {
-      skipPreflight: true,
-      maxRetries: 3,
-    });
+    this.observe?.({ phase: "submitting" });
+    let signature: string;
+    try {
+      signature = await this.rpc.sendRawTransaction(signed.serialize(), {
+        skipPreflight: false,
+        preflightCommitment: "confirmed",
+        maxRetries: 3,
+      });
+    } catch (e) {
+      const sendError =
+        e instanceof SendTransactionError ||
+        (e instanceof Error && "transactionError" in e && "logs" in e)
+          ? (e as SendTransactionError)
+          : undefined;
+      if (sendError?.logs) {
+        const parsed = AnchorError.parse(sendError.logs);
+        throw new SimulationRejection(
+          parsed?.error.errorMessage ?? sendError.message,
+          sendError.logs,
+          parsed?.error.errorCode.code,
+        );
+      }
+      throw e;
+    }
     this.observe?.({ phase: "pending", signature });
     const result = await this.rpc.confirmTransaction(
       { ...latest, signature },
       "confirmed",
     );
     if (result.value.err) {
-      const transaction = await this.rpc.getTransaction(signature, {
-        commitment: "confirmed",
-        maxSupportedTransactionVersion: 0,
-      });
+      const transaction = await this.rpc
+        .getTransaction(signature, {
+          commitment: "confirmed",
+          maxSupportedTransactionVersion: 0,
+        })
+        .catch(() => null);
       const logs = transaction?.meta?.logMessages ?? [];
       const parsed = AnchorError.parse(logs);
       throw new ProtocolRejection(
@@ -202,9 +237,15 @@ export class MandateClient {
         signature,
         logs,
         parsed?.error.errorCode.code,
+        transaction?.slot,
+        transaction?.meta?.fee,
       );
     }
-    this.observe?.({ phase: "confirmed", signature });
+    this.observe?.({
+      phase: "confirmed",
+      signature,
+      slot: result.context.slot,
+    });
     return signature;
   }
   private signer() {
@@ -442,15 +483,17 @@ export class MandateClient {
           });
           if (!transaction) return [];
           const logs = transaction.meta?.logMessages ?? [];
-          if (info.err)
+          if (transaction.meta?.err ?? info.err)
             return [
               {
                 signature: info.signature,
+                slot: transaction.slot,
+                fee: transaction.meta?.fee,
                 occurredAt: info.blockTime ? info.blockTime * 1000 : undefined,
                 title: "Transaction rejected",
                 detail:
                   AnchorError.parse(logs)?.error.errorMessage ??
-                  JSON.stringify(info.err),
+                  JSON.stringify(transaction.meta?.err ?? info.err),
                 status: "rejected" as const,
                 logs,
                 time: info.blockTime
@@ -464,6 +507,8 @@ export class MandateClient {
                 ? event.data.bounty.toBase58()
                 : undefined,
             signature: info.signature,
+            slot: transaction.slot,
+            fee: transaction.meta?.fee,
             occurredAt: info.blockTime ? info.blockTime * 1000 : undefined,
             title: event.name
               .replace(/([A-Z])/g, " $1")
