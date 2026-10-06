@@ -16,7 +16,7 @@ import { motionTiming, scopedTimeline } from "./authority-motion";
 
 const stages = ["Root", "Research", "Trace", "Blast Radius", "Cascade"];
 const descriptions = [
-  "One treasury. Give agents bounded authority over it. Keep control at the Root.",
+  "One Solana treasury. Mandates give agent controllers bounded, delegable authority. Keep control at the Root.",
   "Research can delegate within its mandate. Every new permission inherits the limits above it.",
   "Scraper answers to Data. Data answers to Research. Every path must reach the Root.",
   "One Research revoke reaches three descendants. Operations sits outside the boundary.",
@@ -778,7 +778,7 @@ export default function StoryWorld() {
               </strong>
               <p>
                 {stage === 0
-                  ? "Agents receive limits, not separate wallets."
+                  ? "Agents control mandates. Capital stays in the shared vault."
                   : stage === 1
                     ? "Each child remains bounded by its parent."
                     : stage === 2

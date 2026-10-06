@@ -114,8 +114,58 @@ try {
       text.toLowerCase().includes("revoked"),
   );
   record("Live vault displays observed 100 tokens", text.includes("100.00"));
+  record(
+    "The revoked Research authority cut remains visible with real PDA identity",
+    await page
+      .locator('[data-frame="DaGAwUmPFdTyeM3Nsk6i1wokYa3ZSxiM9rKLgz52VBJ7"]')
+      .evaluate((frame) => getComputedStyle(frame).fill === "none"),
+  );
+  record(
+    "Public account evidence does not inherit dark inspector text",
+    await page
+      .locator(".command-history .details .address")
+      .first()
+      .evaluate(
+        (address) => getComputedStyle(address).color !== "rgb(23, 44, 29)",
+      ),
+  );
+  await page
+    .getByRole("button", { name: "Select Scraper", exact: true })
+    .click();
+  await page
+    .getByText("HISTORICAL ON-CHAIN FAILURE", { exact: false })
+    .waitFor({ timeout: 120000 });
+  record(
+    "Scraper inspector links its actual historical finalized 6003 denial, not a new browser action",
+    (await page.locator(".blocked-proof").innerText()).includes(
+      "AncestorRevoked / 6003",
+    ) &&
+      (await page.locator(".blocked-proof").innerText()).includes(
+        "FINALIZED",
+      ) &&
+      (await page.locator(".blocked-proof a").getAttribute("href")) ===
+        "https://explorer.solana.com/tx/2ACUqFQ5zb66UdhCnxp6F8e6JMSiDQyNf7WURfa3DuhnSwkcgyiz2DCk42R19ZvSYKrExWnJ41PC9SW5uiSJmmgv?cluster=devnet",
+  );
   await page.screenshot({
     path: resolve(output, "command-live.png"),
+    fullPage: true,
+  });
+  await page
+    .locator(".command-world")
+    .screenshot({ path: resolve(output, "command-proof.png") });
+  await page
+    .getByRole("button", { name: "Select Operations", exact: true })
+    .click();
+  record(
+    "Operations remains active with its actual finalized 5-token spend receipt",
+    (await page.locator(".provenance-note").innerText()).includes(
+      "amount 5.00 TOKENS",
+    ) &&
+      (await page.locator(".provenance-note a").getAttribute("href")) ===
+        "https://explorer.solana.com/tx/4BwMQJXxy3WagC8nm2p5mPQhtg1HJF3H6xYRESU9gFP9sTr96NLXKoSiK95WToCjqUamC4BPSYSu6m6G65QF18FZ?cluster=devnet",
+  );
+  await page.screenshot({
+    path: resolve(output, "operations-live.png"),
     fullPage: true,
   });
   await page.getByRole("button", { name: "Wallet", exact: true }).click();

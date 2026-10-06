@@ -10,7 +10,11 @@ function retryDelay(value: string | null) {
 
 // All console connections share this limiter. It serializes HTTP requests,
 // honors provider backoff and never repeats an ambiguous send automatically.
-export function createRpcFetch(transport = globalThis.fetch, interval = 1000) {
+export function createRpcFetch(
+  transport = globalThis.fetch,
+  interval = 1000,
+  timeoutMs = 15_000,
+) {
   let queue: Promise<unknown> = Promise.resolve();
   let next = 0;
   let nextReceipt = 0;
@@ -30,7 +34,35 @@ export function createRpcFetch(transport = globalThis.fetch, interval = 1000) {
         if (method === "getTransaction")
           nextReceipt =
             Date.now() + (interval > 0 ? Math.max(interval, 3500) : 0);
-        const response = await transport(url, init);
+        const controller = new AbortController();
+        const timer = setTimeout(
+          () =>
+            controller.abort(
+              new Error(
+                `Devnet RPC request timed out after ${timeoutMs} ms. Result unknown; reconcile any saved signature.`,
+              ),
+            ),
+          timeoutMs,
+        );
+        let response: Response;
+        try {
+          response = await transport(url, {
+            ...init,
+            signal: init?.signal
+              ? AbortSignal.any([init.signal, controller.signal])
+              : controller.signal,
+          });
+          // Fetch resolves at headers; keep the deadline active until the RPC
+          // body is received too, otherwise a stalled payload holds reads forever.
+          const body = response.body ? await response.arrayBuffer() : null;
+          response = new Response(body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers,
+          });
+        } finally {
+          clearTimeout(timer);
+        }
         next = Math.max(
           next,
           Date.now() + retryDelay(response.headers.get("retry-after")),

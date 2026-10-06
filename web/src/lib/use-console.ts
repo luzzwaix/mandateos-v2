@@ -9,6 +9,7 @@ import {
 import { initializeDemo, type DemoSession } from "./solana/demo";
 import { keypairWallet, connectWallet } from "./solana/wallet";
 import { PROGRAM_ADDRESS } from "./solana/program";
+import { FIXTURE_ORGANIZATION, FIXTURE_LABELS } from "./solana/fixture-labels";
 import type {
   Activity,
   CapitalTransition,
@@ -17,6 +18,8 @@ import type {
   TransactionState,
   TransactionObserver,
 } from "./solana/types";
+
+const EMPTY_LABELS: Record<string, string> = {};
 
 export function useConsole(enabled = true) {
   const [wallet, setWallet] = useState<SigningWallet>();
@@ -163,11 +166,14 @@ export function useConsole(enabled = true) {
   const adapterRef = useRef<
     Awaited<ReturnType<typeof connectWallet>>["adapter"] | undefined
   >(undefined);
+  // Reads and immutable finalized receipts survive wallet connect/disconnect.
+  // Signing still uses the currently connected wallet and a fresh deployment check.
+  const reader = useMemo(() => new MandateClient(), []);
   const client = useMemo(
     // MandateClient's constructor retains this observer; only async send invokes it.
     // eslint-disable-next-line react-hooks/refs
-    () => new MandateClient(wallet, reportTransaction),
-    [wallet, reportTransaction],
+    () => new MandateClient(wallet, reportTransaction, reader.rpc),
+    [wallet, reportTransaction, reader],
   );
   const addActivity = useCallback(
     (a: Activity) =>
@@ -182,7 +188,7 @@ export function useConsole(enabled = true) {
   const reconcilePending = useCallback(async () => {
     const pending = pendingRef.current;
     if (!pending) return;
-    const result = await client.reconcileSubmission(
+    const result = await reader.reconcileSubmission(
       pending.signature,
       pending.lastValidBlockHeight,
     );
@@ -210,198 +216,303 @@ export function useConsole(enabled = true) {
             ? `Recovered on-chain failure: ${JSON.stringify(result.err)}; fee ${result.fee} lamports. ${result.logs.join("\n")}`
             : "Confirmation recovered by read-only RPC reconciliation. Read the affected organization before a new action.",
     });
-  }, [client, pendingStorageKey, organization, setOrganization]);
+  }, [reader, pendingStorageKey, organization, setOrganization]);
+  const accountRead = useRef<
+    | {
+        key: string;
+        promise: Promise<Snapshot | undefined>;
+      }
+    | undefined
+  >(undefined);
   const refresh = useCallback(
-    async (address = organization) => {
-      const pendingOrganization = pendingRef.current?.organization;
-      if (pendingOrganization && pendingOrganization !== organization)
-        setOrganization(pendingOrganization);
-      // Reconcile even when a timed-out create left no account at its PDA.
-      // Account fetch failure must never prevent signature/expiry recovery.
-      await reconcilePending();
-      const target = pendingOrganization ?? address;
-      const generation = readGeneration.current;
-      if (!target) return;
-      const next = await client.load(new PublicKey(target));
-      if (generation !== readGeneration.current) return;
-      const previous = snapshotRef.current;
-      if (previous?.address.equals(next.address) && transactionRef.current) {
-        const revoked = next.nodes.find(
-          (n) =>
-            n.account.status.revoked &&
+    (address = organization): Promise<Snapshot | undefined> => {
+      const key = `${readGeneration.current}:${address}`;
+      if (accountRead.current?.key === key) return accountRead.current.promise;
+      const read = async () => {
+        const pendingOrganization = pendingRef.current?.organization;
+        if (pendingOrganization && pendingOrganization !== organization)
+          setOrganization(pendingOrganization);
+        // Reconcile even when a timed-out create left no account at its PDA.
+        // Account fetch failure must never prevent signature/expiry recovery.
+        await reconcilePending();
+        const target = pendingOrganization ?? address;
+        const generation = readGeneration.current;
+        let deploymentRead = false;
+        const verified = (slot: number) => {
+          if (generation !== readGeneration.current) return;
+          deploymentRead = true;
+          setDeploymentVerified(true);
+          setHealth(`LIVE · slot ${slot.toLocaleString()}`);
+        };
+        let next: Snapshot;
+        try {
+          if (!target) {
+            verified(await reader.verifyDeployment());
+            return;
+          }
+          next = await reader.load(new PublicKey(target), verified);
+        } catch (e) {
+          if (!deploymentRead && generation === readGeneration.current) {
+            setDeploymentVerified(false);
+            setHealth(e instanceof Error ? e.message : String(e));
+          }
+          throw e;
+        }
+        if (generation !== readGeneration.current) return;
+        const previous = snapshotRef.current;
+        if (previous?.address.equals(next.address) && transactionRef.current) {
+          const revoked = next.nodes.find(
+            (n) =>
+              n.account.status.revoked &&
+              previous.nodes.some(
+                (old) =>
+                  old.publicKey.equals(n.publicKey) &&
+                  old.account.status.active,
+              ),
+          );
+          const created = next.nodes.find(
+            (n) =>
+              !previous.nodes.some((old) => old.publicKey.equals(n.publicKey)),
+          );
+          const settled = next.bounties.find(
+            (b) =>
+              b.account.status.settled &&
+              previous.bounties.some(
+                (old) =>
+                  old.publicKey.equals(b.publicKey) && old.account.status.open,
+              ),
+          );
+          const spent = next.nodes.find((n) =>
             previous.nodes.some(
               (old) =>
-                old.publicKey.equals(n.publicKey) && old.account.status.active,
+                old.publicKey.equals(n.publicKey) &&
+                n.account.directSpent.gt(old.account.directSpent),
             ),
-        );
-        const created = next.nodes.find(
-          (n) =>
-            !previous.nodes.some((old) => old.publicKey.equals(n.publicKey)),
-        );
-        const settled = next.bounties.find(
-          (b) =>
-            b.account.status.settled &&
-            previous.bounties.some(
-              (old) =>
-                old.publicKey.equals(b.publicKey) && old.account.status.open,
-            ),
-        );
-        const spent = next.nodes.find((n) =>
-          previous.nodes.some(
-            (old) =>
-              old.publicKey.equals(n.publicKey) &&
-              n.account.directSpent.gt(old.account.directSpent),
-          ),
-        );
-        if (revoked) {
-          const descendants = new Set([revoked.publicKey.toBase58()]);
-          for (const n of [...next.nodes].sort(
-            (a, b) => a.account.depth - b.account.depth,
-          )) {
-            if (descendants.has(n.account.parent.toBase58()))
-              descendants.add(n.publicKey.toBase58());
+          );
+          if (revoked) {
+            const descendants = new Set([revoked.publicKey.toBase58()]);
+            for (const n of [...next.nodes].sort(
+              (a, b) => a.account.depth - b.account.depth,
+            )) {
+              if (descendants.has(n.account.parent.toBase58()))
+                descendants.add(n.publicKey.toBase58());
+            }
+            descendants.delete(revoked.publicKey.toBase58());
+            const old = previous.nodes.find((n) =>
+              n.publicKey.equals(revoked.publicKey),
+            )!;
+            const revocation: CapitalTransition = {
+              key: Date.now(),
+              kind: "revoke",
+              target: revoked.publicKey.toBase58(),
+              parent: revoked.account.parent.toBase58(),
+              descendants: [...descendants],
+              amount: old.account.subtreeRemaining.toString(),
+              signature: transactionRef.current,
+            };
+            setTransition(revocation);
+            setRevocations((old) => ({
+              ...old,
+              [revocation.target]: revocation,
+            }));
+          } else if (created) {
+            setTransition({
+              key: Date.now(),
+              kind: "delegate",
+              target: created.publicKey.toBase58(),
+              parent: created.account.parent.toBase58(),
+              descendants: [],
+              amount: created.account.initialBudget.toString(),
+              signature: transactionRef.current,
+            });
+          } else if (settled) {
+            setTransition({
+              key: Date.now(),
+              kind: "settle",
+              target: settled.publicKey.toBase58(),
+              descendants: [],
+              amount: settled.account.reward.toString(),
+              signature: transactionRef.current,
+            });
+          } else if (spent) {
+            const old = previous.nodes.find((n) =>
+              n.publicKey.equals(spent.publicKey),
+            )!;
+            setTransition({
+              key: Date.now(),
+              kind: "spend",
+              target: spent.publicKey.toBase58(),
+              descendants: [],
+              amount: spent.account.directSpent
+                .sub(old.account.directSpent)
+                .toString(),
+              signature: transactionRef.current,
+            });
+          } else if (
+            next.organization.totalReclaimed.gt(
+              previous.organization.totalReclaimed,
+            )
+          ) {
+            setTransition({
+              key: Date.now(),
+              kind: "reclaim",
+              target: next.organization.rootMandate.toBase58(),
+              descendants: [],
+              amount: next.organization.totalReclaimed
+                .sub(previous.organization.totalReclaimed)
+                .toString(),
+              signature: transactionRef.current,
+            });
           }
-          descendants.delete(revoked.publicKey.toBase58());
-          const old = previous.nodes.find((n) =>
-            n.publicKey.equals(revoked.publicKey),
-          )!;
-          const revocation: CapitalTransition = {
-            key: Date.now(),
-            kind: "revoke",
-            target: revoked.publicKey.toBase58(),
-            parent: revoked.account.parent.toBase58(),
-            descendants: [...descendants],
-            amount: old.account.subtreeRemaining.toString(),
-            signature: transactionRef.current,
-          };
-          setTransition(revocation);
-          setRevocations((old) => ({
-            ...old,
-            [revocation.target]: revocation,
-          }));
-        } else if (created) {
-          setTransition({
-            key: Date.now(),
-            kind: "delegate",
-            target: created.publicKey.toBase58(),
-            parent: created.account.parent.toBase58(),
-            descendants: [],
-            amount: created.account.initialBudget.toString(),
-            signature: transactionRef.current,
-          });
-        } else if (settled) {
-          setTransition({
-            key: Date.now(),
-            kind: "settle",
-            target: settled.publicKey.toBase58(),
-            descendants: [],
-            amount: settled.account.reward.toString(),
-            signature: transactionRef.current,
-          });
-        } else if (spent) {
-          const old = previous.nodes.find((n) =>
-            n.publicKey.equals(spent.publicKey),
-          )!;
-          setTransition({
-            key: Date.now(),
-            kind: "spend",
-            target: spent.publicKey.toBase58(),
-            descendants: [],
-            amount: spent.account.directSpent
-              .sub(old.account.directSpent)
-              .toString(),
-            signature: transactionRef.current,
-          });
-        } else if (
-          next.organization.totalReclaimed.gt(
-            previous.organization.totalReclaimed,
-          )
-        ) {
-          setTransition({
-            key: Date.now(),
-            kind: "reclaim",
-            target: next.organization.rootMandate.toBase58(),
-            descendants: [],
-            amount: next.organization.totalReclaimed
-              .sub(previous.organization.totalReclaimed)
-              .toString(),
-            signature: transactionRef.current,
-          });
         }
-      }
-      snapshotRef.current = next;
-      setSnapshot(next);
-      setLastRead(Date.now());
-      setStale(false);
-      setSelected((old) =>
-        old && next.nodes.some((n) => n.publicKey.toBase58() === old)
-          ? old
-          : next.organization.rootMandate.toBase58(),
-      );
-      const observed = await client.activity(
-        next.address,
-        next.bounties.map((b) => b.publicKey),
-      );
-      if (generation !== readGeneration.current) return;
-      if (client.activityReadError)
-        setError(
-          `Account state was read; transaction history is partial: ${client.activityReadError}`,
+        snapshotRef.current = next;
+        setSnapshot(next);
+        setLastRead(Date.now());
+        setStale(false);
+        setError((old) =>
+          old.startsWith(
+            "Account state was read; transaction history is partial:",
+          )
+            ? old
+            : "",
         );
-      setActivity((prev) => {
-        const persisted = new Set(observed.map((a) => a.signature));
-        return [
-          ...prev.filter((a) => !a.signature || !persisted.has(a.signature)),
-          ...observed,
-        ]
-          .sort((a, b) => (b.occurredAt ?? 0) - (a.occurredAt ?? 0))
-          .slice(0, 30);
+        setSelected((old) =>
+          old && next.nodes.some((n) => n.publicKey.toBase58() === old)
+            ? old
+            : next.organization.rootMandate.toBase58(),
+        );
+        return next;
+      };
+      const promise = read().finally(() => {
+        if (accountRead.current?.promise === promise)
+          accountRead.current = undefined;
       });
-      return next;
+      accountRead.current = { key, promise };
+      return promise;
     },
-    [client, organization, reconcilePending, setOrganization],
+    [reader, organization, reconcilePending, setOrganization],
   );
   useEffect(() => {
     if (!enabled) return;
     let cancelled = false;
     let inFlight = false;
+    let timer: ReturnType<typeof setTimeout>;
     const update = async () => {
-      if (inFlight || cancelled) return;
+      if (inFlight || cancelled || document.hidden) return;
+      if (actionLock.current) {
+        timer = setTimeout(() => void update(), 1_000);
+        return;
+      }
       inFlight = true;
       try {
-        const slot = await client.verifyDeployment();
-        if (!cancelled) {
-          setDeploymentVerified(true);
-          setHealth(`LIVE · slot ${slot.toLocaleString()}`);
-        }
-        if (!cancelled) {
-          try {
-            await refresh();
-          } catch (e) {
-            if (!cancelled) {
-              setError(e instanceof Error ? e.message : String(e));
-              setStale(true);
-            }
-          }
-        }
+        await refresh();
       } catch (e) {
         if (!cancelled) {
-          setDeploymentVerified(false);
-          setHealth(e instanceof Error ? e.message : String(e));
+          setError(e instanceof Error ? e.message : String(e));
           setStale(true);
         }
       } finally {
         inFlight = false;
+        if (!cancelled && !document.hidden)
+          timer = setTimeout(() => void update(), 15_000);
       }
     };
-    if (!busy) void update();
-    const timer = setInterval(() => {
-      if (!busy) void update();
-    }, 8_000);
+    const visibility = () => {
+      clearTimeout(timer);
+      setStale(true);
+      if (!document.hidden) void update();
+    };
+    void update();
+    document.addEventListener("visibilitychange", visibility);
     return () => {
       cancelled = true;
-      clearInterval(timer);
+      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", visibility);
     };
-  }, [client, organization, refresh, busy, enabled]);
+  }, [refresh, enabled]);
+  const historyKey = snapshot
+    ? [
+        snapshot.address.toBase58(),
+        ...snapshot.bounties.map((b) => b.publicKey.toBase58()).sort(),
+      ].join(":")
+    : "";
+  const historyRead = useRef(false);
+  useEffect(() => {
+    if (!enabled || !historyKey) return;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const update = async () => {
+      if (cancelled || document.hidden) return;
+      if (historyRead.current || actionLock.current) {
+        timer = setTimeout(() => void update(), 1_000);
+        return;
+      }
+      const current = snapshotRef.current;
+      if (!current || current.address.toBase58() !== organization) return;
+      historyRead.current = true;
+      const merge = (observed: Activity[]) => {
+        if (
+          cancelled ||
+          document.hidden ||
+          snapshotRef.current?.address.toBase58() !== current.address.toBase58()
+        )
+          return;
+        setActivity((prev) => {
+          const persisted = new Set(observed.map((a) => a.signature));
+          return [
+            ...prev.filter((a) => !a.signature || !persisted.has(a.signature)),
+            ...observed,
+          ]
+            .sort((a, b) => (b.occurredAt ?? 0) - (a.occurredAt ?? 0))
+            .slice(0, 30);
+        });
+      };
+      try {
+        merge(
+          await reader.activity(
+            current.address,
+            current.bounties.map((b) => b.publicKey),
+            merge,
+            () => !cancelled && !document.hidden && !actionLock.current,
+          ),
+        );
+        if (!cancelled) {
+          if (reader.activityReadError)
+            setError(
+              `Account state was read; transaction history is partial: ${reader.activityReadError}`,
+            );
+          else
+            setError((old) =>
+              old.startsWith(
+                "Account state was read; transaction history is partial:",
+              )
+                ? ""
+                : old,
+            );
+        }
+      } catch (e) {
+        if (!cancelled)
+          setError(
+            `Account state was read; transaction history is partial: ${e instanceof Error ? e.message : String(e)}`,
+          );
+      } finally {
+        historyRead.current = false;
+        if (!cancelled && !document.hidden)
+          timer = setTimeout(() => void update(), 30_000);
+      }
+    };
+    const visibility = () => {
+      clearTimeout(timer);
+      if (!document.hidden) void update();
+    };
+    void update();
+    document.addEventListener("visibilitychange", visibility);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", visibility);
+    };
+  }, [reader, organization, historyKey, enabled]);
   async function run(
     title: string,
     task: () => Promise<
@@ -437,6 +548,8 @@ export function useConsole(enabled = true) {
       confirmedSignature = signature || undefined;
       transactionRef.current = signature || undefined;
       if (signature) {
+        // A post-confirmation read must never reuse a pre-transaction read.
+        readGeneration.current++;
         setTransaction({
           phase: "confirmed",
           title,
@@ -467,6 +580,8 @@ export function useConsole(enabled = true) {
           });
         return;
       }
+      // These tasks already read accounts. Do not perform the same waterfall twice.
+      if (title === "Refresh accounts" || title === "Read organization") return;
       await refresh(
         readAddress ?? snapshotRef.current?.address.toBase58() ?? organization,
       );
@@ -526,6 +641,17 @@ export function useConsole(enabled = true) {
               ? "unknown"
               : "error",
           title,
+          outcome:
+            e instanceof ProtocolRejection
+              ? "on-chain-failure"
+              : e instanceof SimulationRejection
+                ? "simulation-rejection"
+                : progressRef.current.phase === "awaiting-signature"
+                  ? "wallet-rejection"
+                  : progressRef.current.phase === "pending" ||
+                      progressRef.current.phase === "submitting"
+                    ? undefined
+                    : "client-rejection",
           message:
             e instanceof SimulationRejection
               ? `RPC simulation rejected before submission. No confirmed failed transaction. ${e.code ?? ""}: ${message}`
@@ -679,7 +805,11 @@ export function useConsole(enabled = true) {
     disconnect,
     client,
     node,
-    labels: demo?.labels ?? {},
+    labels:
+      demo?.labels ??
+      (snapshot?.address.toBase58() === FIXTURE_ORGANIZATION
+        ? FIXTURE_LABELS
+        : EMPTY_LABELS),
   };
 }
 export type ConsoleState = ReturnType<typeof useConsole>;

@@ -22,6 +22,7 @@ import {
 } from "@/lib/authority";
 import { short, toBaseUnits } from "@/lib/solana/pdas";
 import { explorer, PROGRAM_ADDRESS, NETWORK } from "@/lib/solana/program";
+import { FIXTURE_ORGANIZATION } from "@/lib/solana/fixture-labels";
 import { AuthorityTrace } from "./authority-tree";
 import AuthorityTree from "./capital-authority-instrument";
 import CapitalNumber from "./capital-number";
@@ -36,6 +37,8 @@ export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
     status: string;
     signature?: string;
     logs?: string[];
+    slot?: number;
+    fee?: number;
   }[] = w.demo
     ? w.events
     : w.live.activity.map((e) => ({
@@ -44,6 +47,8 @@ export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
         status: e.status.toUpperCase(),
         signature: e.signature,
         logs: e.logs,
+        slot: e.slot,
+        fee: e.fee,
       }));
   return (
     <section
@@ -94,11 +99,21 @@ export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
                   </dd>
                 </div>
                 <div>
-                  <dt>Token mint</dt>
+                  <dt>Devnet test mint</dt>
                   <dd className="address">
                     {w.live.snapshot.organization.mint.toBase58()}
                   </dd>
                 </div>
+                {w.live.snapshot.address.toBase58() ===
+                  FIXTURE_ORGANIZATION && (
+                  <div>
+                    <dt>Mandate names</dt>
+                    <dd>
+                      Recorded fixture labels · accounts carry controller and
+                      lineage
+                    </dd>
+                  </div>
+                )}
                 <div>
                   <dt>Account provenance</dt>
                   <dd>
@@ -119,15 +134,23 @@ export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
           role="status"
         >
           <strong>
-            {w.live.transaction.phase === "awaiting-signature"
-              ? "Approve in wallet"
-              : w.live.transaction.phase === "submitting"
-                ? "Submitting with preflight"
-                : w.live.transaction.phase === "pending"
-                  ? "Pending confirmation"
-                  : w.live.transaction.phase === "unknown"
-                    ? "Confirmation unknown"
-                    : w.live.transaction.phase}
+            {w.live.transaction.outcome === "simulation-rejection"
+              ? "RPC simulation rejection · not submitted"
+              : w.live.transaction.outcome === "wallet-rejection"
+                ? "Wallet signing rejected · not sent"
+                : w.live.transaction.outcome === "on-chain-failure"
+                  ? "Submitted on-chain failure"
+                  : w.live.transaction.outcome === "client-rejection"
+                    ? "Client rejection · not submitted"
+                    : w.live.transaction.phase === "awaiting-signature"
+                      ? "Approve in wallet"
+                      : w.live.transaction.phase === "submitting"
+                        ? "Submitting with preflight"
+                        : w.live.transaction.phase === "pending"
+                          ? "Pending confirmation"
+                          : w.live.transaction.phase === "unknown"
+                            ? "Confirmation unknown"
+                            : w.live.transaction.phase}
           </strong>
           <span>{w.live.transaction.title}</span>
           {w.live.transaction.slot !== undefined && (
@@ -157,6 +180,12 @@ export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
             <div>
               <strong>{e.title}</strong>
               <small>{e.detail}</small>
+              {!w.demo && e.slot !== undefined && (
+                <small>
+                  Slot {e.slot}{" "}
+                  {e.fee !== undefined ? `· fee ${e.fee} lamports` : ""}
+                </small>
+              )}
               {"logs" in e && e.logs && (
                 <details>
                   <summary>Program logs</summary>
@@ -165,10 +194,20 @@ export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
               )}
             </div>
             {"signature" in e && e.signature ? (
-              <a href={explorer(e.signature)} target="_blank" rel="noreferrer">
-                {short(e.signature)}
-                <ArrowUpRight size={12} />
-              </a>
+              <div className="receipt-provenance">
+                <span>
+                  {e.status === "REJECTED" ? "ON-CHAIN FAILURE" : "CONFIRMED"}
+                </span>
+                <a
+                  href={explorer(e.signature)}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${e.title}: ${e.status.toLowerCase()} Devnet transaction`}
+                >
+                  {short(e.signature)}
+                  <ArrowUpRight size={12} />
+                </a>
+              </div>
             ) : (
               <span>{e.status}</span>
             )}
@@ -206,8 +245,34 @@ export default function CommandWorld() {
     !w.demo &&
     !!w.live.rejection &&
     w.live.transaction.title.endsWith(node?.id ?? "__no_node__");
+  const historicalDenial = !w.demo
+    ? w.live.activity.find(
+        (receipt) =>
+          receipt.mandate === node?.id &&
+          receipt.status === "rejected" &&
+          receipt.code === "AncestorRevoked",
+      )
+    : undefined;
+  const lastNodeReceipt = !w.demo
+    ? w.live.activity.find(
+        (receipt) => receipt.mandate === node?.id && receipt.signature,
+      )
+    : undefined;
   const affected = model && preview ? descendantsOf(model, preview) : [];
   const target = model?.nodes.find((n) => n.id === preview);
+  const canRevoke =
+    w.demo ||
+    !!(
+      target &&
+      w.live.wallet &&
+      w.live.snapshot &&
+      (w.live.wallet.publicKey.equals(w.live.snapshot.organization.authority) ||
+        w.live.snapshot.nodes.some(
+          (n) =>
+            n.publicKey.toBase58() === target.parent &&
+            n.account.controller.equals(w.live.wallet!.publicKey),
+        ))
+    );
   const fingerprint = target ? impactFingerprint(model!, target.id) : "";
   const unaffected =
     model?.nodes.filter(
@@ -640,7 +705,7 @@ export default function CommandWorld() {
                       disabled={
                         revalidating ||
                         !!w.live.busy ||
-                        (!w.demo && (!w.live.wallet || !w.live.canTransact))
+                        (!w.demo && (!canRevoke || !w.live.canTransact))
                       }
                       onClick={() => void revoke()}
                     >
@@ -651,6 +716,12 @@ export default function CommandWorld() {
                           : "Approve revoke in wallet"}
                       <ArrowRight size={16} />
                     </button>
+                    {!w.demo && !canRevoke && (
+                      <p>
+                        Approval requires the parent controller or treasury
+                        authority wallet.
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <button
@@ -688,6 +759,15 @@ export default function CommandWorld() {
                     EFFECTIVE <b>{status.toUpperCase()}</b>
                   </span>
                 </div>
+                <dl className="details controller-identity">
+                  <div>
+                    <dt>ASSIGNEE / CONTROLLER</dt>
+                    <dd className="address">
+                      {node.controller ??
+                        `${node.name} controller · illustrative demo`}
+                    </dd>
+                  </div>
+                </dl>
                 {!w.demo && (
                   <button
                     className="copy-address"
@@ -764,7 +844,7 @@ export default function CommandWorld() {
                       <X size={28} />
                       <div>
                         <h3>
-                          {proof || nodeRejection
+                          {proof || nodeRejection || historicalDenial
                             ? "EXECUTION REJECTED"
                             : "AUTHORITY BLOCKED"}
                         </h3>
@@ -785,8 +865,32 @@ export default function CommandWorld() {
                               : "DERIVED DEMO STATE · LOCAL RECORD REMAINS ACTIVE"
                             : nodeRejection
                               ? `PROGRAM RESULT · ${w.live.rejection?.code ?? "REJECTED"}`
-                              : "DERIVED FROM OBSERVED ACCOUNTS · NO EXECUTION ATTEMPTED"}
+                              : historicalDenial
+                                ? `HISTORICAL ON-CHAIN FAILURE · ${historicalDenial.code} / ${historicalDenial.errorNumber}`
+                                : "DERIVED FROM OBSERVED ACCOUNTS · NO EXECUTION ATTEMPTED"}
                         </small>
+                        {historicalDenial?.signature && (
+                          <div className="receipt-provenance">
+                            <span>
+                              {historicalDenial.confirmationStatus?.toUpperCase()}{" "}
+                              · slot {historicalDenial.slot} · fee{" "}
+                              {historicalDenial.fee} lamports
+                            </span>
+                            <a
+                              href={explorer(historicalDenial.signature)}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Recorded descendant denial{" "}
+                              {short(historicalDenial.signature)}{" "}
+                              <ArrowUpRight size={12} />
+                            </a>
+                            <small>
+                              Historical receipt · not an action by this
+                              connected wallet
+                            </small>
+                          </div>
+                        )}
                       </div>
                     </div>
                     {w.demo ? (
@@ -873,6 +977,24 @@ export default function CommandWorld() {
                 {w.demo
                   ? "SIMULATED STATE · NO ONCHAIN TRANSACTION"
                   : "Amounts from observed accounts. Refresh before execution."}
+                {lastNodeReceipt?.signature && (
+                  <p>
+                    Historical {lastNodeReceipt.title.toLowerCase()} ·{" "}
+                    {lastNodeReceipt.confirmationStatus ?? "confirmed"} · slot{" "}
+                    {lastNodeReceipt.slot}
+                    {lastNodeReceipt.amountBaseUnits &&
+                      model &&
+                      ` · ${lastNodeReceipt.status === "rejected" ? "requested" : "amount"} ${amount(BigInt(lastNodeReceipt.amountBaseUnits), model.decimals)} ${model.unit}`}
+                    {" · "}
+                    <a
+                      href={explorer(lastNodeReceipt.signature)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Observed receipt <ArrowUpRight size={12} />
+                    </a>
+                  </p>
+                )}
               </div>
             </>
           ) : null}
@@ -897,7 +1019,7 @@ function ActionInstrument({
     >(blockedProof ? "spend" : "delegate"),
     [value, setValue] = useState("25"),
     [address, setAddress] = useState(""),
-    [open, setOpen] = useState(blockedProof),
+    [open, setOpen] = useState(false),
     [error, setError] = useState("");
   const model = w.model!;
   const canSign =
@@ -916,6 +1038,11 @@ function ActionInstrument({
     try {
       const valueBN = toBaseUnits(value, model.decimals),
         n = BigInt(valueBN.toString());
+      if (n <= 0n) throw new Error("Enter a positive amount.");
+      if (action !== "deposit" && n > node.available)
+        throw new Error(
+          "Amount exceeds this mandate's observed available authority.",
+        );
       if (w.demo) {
         if (action === "spend" || action === "reclaim") {
           w.setFixture(spendDemo(model, node.id, n, action === "reclaim"));
@@ -1094,7 +1221,11 @@ function ActionInstrument({
       {disabled && (
         <p className="eligibility-note">
           {!w.live.canTransact
-            ? "Transactions disabled until deployment and IDL are verified."
+            ? w.live.transaction.phase === "unknown"
+              ? "Resolve the saved signature before another transaction."
+              : w.live.stale
+                ? "Account state is stale. Refresh before execution."
+                : "Waiting for verified Devnet deployment and account reads."
             : !canSign
               ? "Connect the controller wallet for this action."
               : "An operation is pending."}

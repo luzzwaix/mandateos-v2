@@ -450,7 +450,7 @@ export default function ArenaWorld() {
                 {w.demo
                   ? "Research brief"
                   : bounty
-                    ? `Funded task ${bounty.account.bountyId.toString()}`
+                    ? "Funded task"
                     : "Awaiting funded work"}
               </h2>
               <span className="mission-status">
@@ -654,7 +654,7 @@ export default function ArenaWorld() {
                   {amount(value, w.model!.decimals)}{" "}
                   <small>{w.model?.unit}</small>
                 </b>
-                <small>Verified + settled in one operation</small>
+                <small>Trusted verifier · atomic payout</small>
               </div>
             )}
           </div>

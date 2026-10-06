@@ -1,4 +1,37 @@
 import { genesis, type AuthorityModel } from "./authority";
+import { FIXTURE_LABELS } from "./solana/fixture-labels";
+
+// Reuse the approved composition for the exact recorded fixture, while retaining
+// real PDA identities for selection, transactions and ancestry validation.
+// Names alone never qualify an arbitrary organization for this layout.
+export function capitalInstrumentRoles(model: AuthorityModel) {
+  const parents: Record<string, string | null> = {
+    treasury: null,
+    research: "treasury",
+    operations: "treasury",
+    data: "research",
+    analysis: "research",
+    scraper: "data",
+  };
+  const roles: Record<string, string> = {};
+  const used = new Set<string>();
+  for (const node of model.nodes) {
+    const role = Object.prototype.hasOwnProperty.call(parents, node.id)
+      ? node.id
+      : FIXTURE_LABELS[node.id]?.toLowerCase();
+    if (!role || used.has(role)) return undefined;
+    roles[node.id] = role;
+    used.add(role);
+  }
+  if (roles[model.root] !== "treasury") return undefined;
+  if (
+    model.nodes.some(
+      (n) => (n.parent ? roles[n.parent] : null) !== parents[roles[n.id]],
+    )
+  )
+    return undefined;
+  return roles;
+}
 
 export const PLATE_HEIGHT = 86;
 export const PLATE_WIDTH = 184;

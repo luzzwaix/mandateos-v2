@@ -70,6 +70,14 @@ export interface Snapshot {
   vaultBalance: bigint;
 }
 export interface Activity {
+  mandate?: string;
+  actor?: string;
+  feePayer?: string;
+  action?: string;
+  amountBaseUnits?: string;
+  code?: string;
+  errorNumber?: number;
+  confirmationStatus?: "processed" | "confirmed" | "finalized";
   slot?: number;
   fee?: number;
   occurredAt?: number;
@@ -104,6 +112,11 @@ export interface TransactionState {
   signature?: string;
   message?: string;
   slot?: number;
+  outcome?:
+    | "simulation-rejection"
+    | "wallet-rejection"
+    | "on-chain-failure"
+    | "client-rejection";
 }
 export type TransactionObserver = (
   progress: Pick<TransactionState, "phase" | "signature" | "slot"> & {

@@ -92,6 +92,47 @@ describe("Deployment parity with actual source-built ELF (RPC stubs)", () => {
     f.rpc.getAccountInfo = async () => null;
     await rejected(f, "missing or invalid");
   });
+  it("enables create only after binary verification even when the requested organization is absent", async () => {
+    const f = fixture();
+    f.program.executable = true;
+    Object.assign(f.rpc, {
+      getGenesisHash: async () => DEVNET_GENESIS,
+      getSlot: async () => 7,
+      getAccountInfo: async (key: PublicKey) =>
+        key.equals(address)
+          ? f.program
+          : {
+              ...f.program,
+              executable: false,
+              data: f.data,
+            },
+    });
+    const c = new MandateClient(undefined, undefined, f.rpc);
+    let verified: number | undefined;
+    c.accounts.organization.fetch = async () => {
+      throw Error("unit organization absent");
+    };
+    try {
+      await c.load(Keypair.generate().publicKey, (slot) => {
+        verified = slot;
+      });
+      throw Error("expected absent organization");
+    } catch (e) {
+      expect(String(e)).contains("organization absent");
+    }
+    expect(verified).eq(7);
+    verified = undefined;
+    f.data[145] ^= 1;
+    try {
+      await c.load(Keypair.generate().publicKey, (slot) => {
+        verified = slot;
+      });
+      throw Error("expected binary rejection");
+    } catch (e) {
+      expect(String(e)).contains("binary differs");
+    }
+    expect(verified).eq(undefined);
+  });
 });
 
 // Transport unit tests; stub responses are never Devnet evidence.

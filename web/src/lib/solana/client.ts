@@ -1,5 +1,6 @@
 import {
   AnchorError,
+  BorshInstructionCoder,
   BN,
   EventParser,
   utils,
@@ -121,8 +122,12 @@ export class MandateClient {
     await verifyProgramBinary(this.rpc, new PublicKey(PROGRAM_ADDRESS), info);
     return slot;
   }
-  async load(address: PublicKey): Promise<Snapshot> {
-    await this.verifyDeployment();
+  async load(
+    address: PublicKey,
+    onVerified?: (slot: number) => void,
+  ): Promise<Snapshot> {
+    const slot = await this.verifyDeployment();
+    onVerified?.(slot);
     const organization = await this.accounts.organization.fetch(address);
     const filter = [{ memcmp: { offset: 8, bytes: address.toBase58() } }];
     const [nodes, bounties, mint, vault] = await Promise.all([
@@ -526,9 +531,76 @@ export class MandateClient {
     );
     return this.send(tx);
   }
+  private receiptIdentity(
+    receipt: NonNullable<Awaited<ReturnType<Connection["getTransaction"]>>>,
+  ): Partial<Activity> {
+    const message = receipt.transaction?.message;
+    if (!message) return {};
+    try {
+      const keys =
+        message.version === "legacy"
+          ? message.getAccountKeys()
+          : message.getAccountKeys({
+              accountKeysFromLookups: receipt.meta?.loadedAddresses,
+            });
+      const ours = message.compiledInstructions
+        .map((instruction, index) => ({ instruction, index }))
+        .filter(({ instruction }) =>
+          keys.get(instruction.programIdIndex)?.equals(this.program.programId),
+        );
+      // Do not attribute an ambiguous batch or a different instruction's failure to a mandate.
+      if (ours.length !== 1) return {};
+      const { instruction, index } = ours[0];
+      const failure = receipt.meta?.err;
+      if (
+        failure &&
+        (typeof failure !== "object" ||
+          !("InstructionError" in failure) ||
+          !Array.isArray(failure.InstructionError) ||
+          failure.InstructionError[0] !== index)
+      )
+        return {};
+      const decoded = (
+        this.program.coder.instruction as BorshInstructionCoder
+      ).decode(Buffer.from(instruction.data));
+      const schema = this.program.idl.instructions.find(
+        (i) => i.name === decoded?.name,
+      );
+      if (!decoded || !schema) return {};
+      const account = (...names: string[]) => {
+        const position = schema.accounts.findIndex((a) =>
+          names.includes(a.name),
+        );
+        return position < 0
+          ? undefined
+          : keys.get(instruction.accountKeyIndexes[position])?.toBase58();
+      };
+      const decodedAmount = (decoded.data as { amount?: unknown }).amount;
+      return {
+        action: decoded.name,
+        amountBaseUnits:
+          decodedAmount instanceof BN
+            ? (decodedAmount as BN).toString()
+            : undefined,
+        mandate: account("node", "target"),
+        actor: account(
+          "controller",
+          "revoker",
+          "authority",
+          "agent",
+          "verifier",
+        ),
+        feePayer: keys.get(0)?.toBase58(),
+      };
+    } catch {
+      return {}; // Unknown message shape has no inferred identity.
+    }
+  }
   async activity(
     address: PublicKey,
     bounties: PublicKey[] = [],
+    onProgress?: (rows: Activity[]) => void,
+    shouldContinue: () => boolean = () => true,
   ): Promise<Activity[]> {
     const observed = (
       await Promise.all(
@@ -548,7 +620,9 @@ export class MandateClient {
     // Stop at the first unreadable receipt instead of leaving a batch of reads
     // queued behind a throttled RPC. Previously fetched finalized evidence stays valid.
     for (const info of signatures) {
+      if (!shouldContinue()) break;
       try {
+        let fetched = false;
         const result = await (async () => {
           const cached = this.finalizedActivity.get(info.signature);
           if (
@@ -561,7 +635,10 @@ export class MandateClient {
             maxSupportedTransactionVersion: 0,
           });
           if (!transaction) return [];
+          fetched = true;
           const logs = transaction.meta?.logMessages ?? [];
+          const identity = this.receiptIdentity(transaction);
+          const programError = AnchorError.parse(logs)?.error;
           const remember = (rows: Activity[]) => {
             if (info.confirmationStatus === "finalized") {
               this.finalizedActivity.set(info.signature, {
@@ -578,6 +655,14 @@ export class MandateClient {
           if (transaction.meta?.err ?? info.err)
             return remember([
               {
+                ...identity,
+                code: identity.action
+                  ? programError?.errorCode.code
+                  : undefined,
+                errorNumber: identity.action
+                  ? programError?.errorCode.number
+                  : undefined,
+                confirmationStatus: info.confirmationStatus,
                 signature: info.signature,
                 slot: transaction.slot,
                 fee: transaction.meta?.fee,
@@ -595,6 +680,8 @@ export class MandateClient {
             ]);
           return remember(
             [...parser.parseLogs(logs)].map((event) => ({
+              ...identity,
+              confirmationStatus: info.confirmationStatus,
               entity:
                 event.data.bounty instanceof PublicKey
                   ? event.data.bounty.toBase58()
@@ -618,6 +705,7 @@ export class MandateClient {
           );
         })();
         rows.push(...result);
+        if (fetched) onProgress?.([...rows]);
       } catch (e) {
         this.activityReadError = e instanceof Error ? e.message : String(e);
         break;

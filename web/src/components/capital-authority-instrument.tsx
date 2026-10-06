@@ -7,7 +7,10 @@ import {
   statusOf,
   type AuthorityModel,
 } from "@/lib/authority";
-import { authorityLedger } from "@/lib/authority-layout";
+import {
+  authorityLedger,
+  capitalInstrumentRoles,
+} from "@/lib/authority-layout";
 import { scopedTimeline } from "./authority-motion";
 import { operatingMotion as motion } from "./operating-motion";
 
@@ -50,16 +53,9 @@ export default function CapitalAuthorityInstrument({
     return () => observer.disconnect();
   }, []);
   const ordered = authorityLedger(model);
-  const canonical = model.nodes.every((n) =>
-    [
-      "treasury",
-      "research",
-      "data",
-      "scraper",
-      "analysis",
-      "operations",
-    ].includes(n.id),
-  );
+  const roles = capitalInstrumentRoles(model);
+  const canonical = !!roles;
+  const roleOf = (id: string) => roles?.[id] ?? id;
   const dataX = 218 + (width - 228) * 0.34;
   const points: Record<
     string,
@@ -72,7 +68,11 @@ export default function CapitalAuthorityInstrument({
     analysis: { x: dataX, y: 245, width: 190, height: 94 },
     operations: { x: 236, y: 265, width: 212, height: 94 },
   };
-  if (!canonical)
+  if (canonical)
+    model.nodes.forEach((n) => {
+      points[n.id] = points[roleOf(n.id)];
+    });
+  else
     ordered.forEach((node, i) => {
       points[node.id] = {
         x: 20 + node.depth * 170,
@@ -197,7 +197,7 @@ export default function CapitalAuthorityInstrument({
     }
     return timeline.cancel;
   }, [model, selected, preview, trace, cascade, grant]);
-  const research = model.nodes.find((n) => n.id === "research");
+  const research = model.nodes.find((n) => roleOf(n.id) === "research");
   const routes: Record<string, string> = {
     research: "M198 158H214V64H236",
     operations: "M198 158H214V310H236",
@@ -226,19 +226,20 @@ export default function CapitalAuthorityInstrument({
             .filter((n) => n.parent)
             .map((n) => {
               const geometry =
-                n.id === "research"
+                roleOf(n.id) === "research"
                   ? `M222 5H${width - 8}V110H244V232H${dataX - 22}V340H${dataX - 38}V248H222V172L208 158L222 144Z`
-                  : n.id === "data"
+                  : roleOf(n.id) === "data"
                     ? sleeve(dataX - 22, 110, width - dataX + 14, 120)
-                    : n.id === "scraper"
+                    : roleOf(n.id) === "scraper"
                       ? sleeve(width - 190, 110, 182, 120)
-                      : n.id === "analysis"
+                      : roleOf(n.id) === "analysis"
                         ? sleeve(dataX - 22, 235, 236, 106)
                         : sleeve(224, 255, 240, 112);
               return (
                 <path
                   key={n.id}
                   data-frame={n.id}
+                  data-frame-role={roleOf(n.id)}
                   className={`authority-frame ${statusOf(model, n.id)} ${affected.has(n.id) ? "preview-affected" : ""}`}
                   d={geometry}
                 />
@@ -249,9 +250,9 @@ export default function CapitalAuthorityInstrument({
               className="flat-impact"
               pathLength="1"
               d={
-                preview === "research"
+                roleOf(preview) === "research"
                   ? `M202 0H${width - 1}V347H${dataX - 29}V238H202Z`
-                  : preview === "data"
+                  : roleOf(preview) === "data"
                     ? sleeve(dataX - 29, 103, width - dataX + 27, 134)
                     : sleeve(
                         (points[preview]?.x ?? 0) - 20,
@@ -270,11 +271,10 @@ export default function CapitalAuthorityInstrument({
                 data-edge={n.id}
                 className={`flat-relation ${statusOf(model, n.id)} ${ancestry.has(n.id) ? "on-path" : ""} ${affected.has(n.id) ? "preview-affected" : ""}`}
                 pathLength="1"
-                d={routes[n.id] ?? ""}
+                d={routes[roleOf(n.id)] ?? ""}
               />
             ))}
-          {model.nodes.find((n) => n.id === "research")?.local ===
-            "revoked" && (
+          {research?.local === "revoked" && (
             <path
               className="authority-break"
               d="M208 58L220 70M208 70L220 58"
@@ -303,6 +303,7 @@ export default function CapitalAuthorityInstrument({
               key={n.id}
               data-testid={`node-${n.id}`}
               data-node-id={n.id}
+              data-visual-role={roleOf(n.id)}
               className={`flat-node ${status} ${n.id === selected ? "selected" : ""} ${ancestry.has(n.id) ? "on-path" : ""} ${affected.has(n.id) ? "preview-affected" : ""}`}
               style={{ left: p.x, top: p.y, width: p.width, height: p.height }}
               aria-label={`Select ${n.name}`}
@@ -322,7 +323,7 @@ export default function CapitalAuthorityInstrument({
                 <small>{model.unit}</small>
               </strong>
               <span className={`status ${status}`}>{status}</span>
-              {n.id === "research" || n.id === model.root ? (
+              {roleOf(n.id) === "research" || n.id === model.root ? (
                 <span className="subtree-notation">
                   Subtree {amount(n.remaining, model.decimals)} {model.unit}
                 </span>

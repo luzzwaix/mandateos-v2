@@ -184,7 +184,9 @@
   stroke: #eee9da;
   stroke-width: 2;
 }
-.command-world .instrument-authority .authority-frame[data-frame="research"] {
+.command-world
+  .instrument-authority
+  .authority-frame:is([data-frame="research"], [data-frame-role="research"]) {
   stroke-width: 14;
 }
 .command-world .instrument-authority .authority-frame[data-frame="data"] {
@@ -205,7 +207,10 @@
 }
 .command-world
   .instrument-authority
-  .authority-frame[data-frame="research"].revoked {
+  .authority-frame:is(
+    [data-frame="research"],
+    [data-frame-role="research"]
+  ).revoked {
   stroke-width: 5;
   stroke-dasharray: 0;
 }
@@ -266,8 +271,12 @@
 .command-world .instrument-authority .flat-node:hover {
   background: #eee9da08;
 }
-.command-world .instrument-authority .flat-node[data-node-id="treasury"],
-.command-world .instrument-authority .flat-node[data-node-id="scraper"] {
+.command-world
+  .instrument-authority
+  .flat-node:is([data-node-id="treasury"], [data-visual-role="treasury"]),
+.command-world
+  .instrument-authority
+  .flat-node:is([data-node-id="scraper"], [data-visual-role="scraper"]) {
   color: #172c1d;
   padding: 18px;
 }
@@ -323,11 +332,11 @@
 }
 .command-world
   .instrument-authority
-  .flat-node[data-node-id="treasury"]
+  .flat-node:is([data-node-id="treasury"], [data-visual-role="treasury"])
   .status,
 .command-world
   .instrument-authority
-  .flat-node[data-node-id="scraper"].active
+  .flat-node:is([data-node-id="scraper"], [data-visual-role="scraper"]).active
   .status {
   color: #36583d;
 }
@@ -337,7 +346,7 @@
 }
 .command-world
   .instrument-authority
-  .flat-node[data-node-id="scraper"].blocked
+  .flat-node:is([data-node-id="scraper"], [data-visual-role="scraper"]).blocked
   .status {
   color: #883d34;
 }
@@ -346,7 +355,10 @@
 }
 .command-world
   .instrument-authority
-  .flat-node[data-node-id="scraper"].preview-affected
+  .flat-node:is(
+    [data-node-id="scraper"],
+    [data-visual-role="scraper"]
+  ).preview-affected
   .flat-name {
   color: #825030;
 }
@@ -384,11 +396,11 @@
 }
 .command-world
   .instrument-authority
-  .flat-node[data-node-id="treasury"]
+  .flat-node:is([data-node-id="treasury"], [data-visual-role="treasury"])
   .mandate-focus,
 .command-world
   .instrument-authority
-  .flat-node[data-node-id="scraper"]
+  .flat-node:is([data-node-id="scraper"], [data-visual-role="scraper"])
   .mandate-focus {
   border-color: #172c1d;
   inset: 5px;
@@ -401,6 +413,111 @@
 }
 .command-world .instrument-authority.extended .flat-mobile {
   display: block;
+}
+/* Real PDAs and added mandates use the same nested ledger at every width. */
+.command-world .instrument-authority.extended .flat-ledger-node {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 74px;
+  padding-right: 16px;
+  gap: 16px;
+  border: 0;
+  border-bottom: 1px solid #354638;
+  background: transparent;
+  color: var(--operating-bone);
+  text-align: left;
+}
+.command-world .instrument-authority.extended .flat-ledger-node > span {
+  position: relative;
+  display: block;
+  padding-left: 16px;
+  min-width: 0;
+  font-size: 17px;
+}
+.command-world .instrument-authority.extended .flat-ledger-node > span small {
+  display: block;
+  margin-top: 8px;
+  font: 10px/1.5 var(--mono);
+  color: var(--operating-muted);
+}
+.command-world .instrument-authority.extended .flat-ledger-node > strong {
+  font: 22px/1.3 var(--mono);
+  white-space: nowrap;
+}
+.command-world .instrument-authority.extended .flat-ledger-node > strong small {
+  font-size: 9px;
+  color: var(--operating-muted);
+}
+.command-world .instrument-authority.extended .authority-dot {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 6px;
+  height: 14px;
+  background: var(--operating-active);
+}
+.command-world .instrument-authority.extended .flat-ledger-node.blocked small,
+.command-world .instrument-authority.extended .flat-ledger-node.revoked small {
+  color: #d48b7a;
+}
+.command-world .instrument-authority.extended .blocked .authority-dot,
+.command-world .instrument-authority.extended .revoked .authority-dot {
+  background: var(--operating-blocked);
+}
+.command-world
+  .instrument-authority.extended
+  .flat-ledger-node[aria-pressed="true"] {
+  outline: 1px solid var(--operating-bone);
+  outline-offset: -2px;
+}
+.command-world
+  .instrument-authority.extended
+  .flat-ledger-node.preview-affected {
+  border-color: var(--operating-copper);
+  background: #d59b740c;
+}
+.command-world .controller-identity {
+  margin-top: 16px;
+  font: 10px/1.6 var(--mono);
+}
+.command-world .controller-identity > div {
+  display: block;
+}
+.command-world .controller-identity dd {
+  margin: 5px 0 0;
+  overflow-wrap: anywhere;
+}
+.receipt-provenance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  font: 9px/1.5 var(--mono);
+}
+.arena-world .evidence-dock.compact {
+  display: block;
+}
+.arena-world .evidence-dock.compact .section-line {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.command-world .event-row .receipt-provenance,
+.arena-world .event-row .receipt-provenance {
+  align-items: flex-start;
+  margin-top: 8px;
+}
+.command-world .command-history .details dt {
+  color: var(--operating-muted);
+}
+.command-world .command-history .details dd {
+  color: var(--operating-bone);
+}
+.command-world .blocked-proof .receipt-provenance {
+  align-items: flex-start;
+  font-size: 10px;
 }
 .command-world .ledger-freshness {
   display: flex;
@@ -1613,7 +1730,7 @@
 }
 .command-world
   .instrument-authority
-  .flat-node[data-node-id="treasury"]
+  .flat-node:is([data-node-id="treasury"], [data-visual-role="treasury"])
   strong {
   font-size: 24px;
 }
@@ -1699,7 +1816,10 @@
 }
 .command-world
   .instrument-authority
-  .authority-frame[data-frame="research"].revoked {
+  .authority-frame:is(
+    [data-frame="research"],
+    [data-frame-role="research"]
+  ).revoked {
   fill: none;
   stroke-width: 2;
 }
@@ -1736,7 +1856,7 @@
 }
 .command-world
   .instrument-authority
-  .flat-node:not([data-node-id="treasury"])
+  .flat-node:not(:is([data-node-id="treasury"], [data-visual-role="treasury"]))
   .subtree-notation {
   display: none;
 }
@@ -1832,7 +1952,9 @@
 .command-world .branch-finance.revoked span {
   color: #eee9da;
 }
-.command-world .instrument-authority .flat-node[data-node-id="treasury"] {
+.command-world
+  .instrument-authority
+  .flat-node:is([data-node-id="treasury"], [data-visual-role="treasury"]) {
   padding: 18px;
 }
 .command-world .instrument-authority .authority-frame.preview-affected {
@@ -1874,7 +1996,11 @@
   outline-offset: 3px;
 }
 
-.command-world .instrument-authority .flat-node:not([data-node-id="treasury"]) {
+.command-world
+  .instrument-authority
+  .flat-node:not(
+    :is([data-node-id="treasury"], [data-visual-role="treasury"])
+  ) {
   padding: 6px 10px;
   gap: 3px;
 }
@@ -1886,7 +2012,7 @@
 }
 .command-world
   .instrument-authority
-  .flat-node[data-node-id="scraper"]
+  .flat-node:is([data-node-id="scraper"], [data-visual-role="scraper"])
   .mandate-focus {
   inset: 0;
 }

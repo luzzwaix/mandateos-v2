@@ -2,7 +2,9 @@ import { expect } from "chai";
 import {
   authorityLayout,
   authorityLedger,
+  capitalInstrumentRoles,
 } from "../web/src/lib/authority-layout";
+import { FIXTURE_LABELS } from "../web/src/lib/solana/fixture-labels";
 import {
   authorityWorldView,
   authorityVolume,
@@ -24,6 +26,45 @@ const u = (n: number) => BigInt(n) * 1_000_000n;
 const node = (m: ReturnType<typeof genesis>, id: string) =>
   m.nodes.find((n) => n.id === id)!;
 describe("Authority Chamber accounting and state selectors", () => {
+  it("retains actual fixture PDA identity while using the approved geometry only for matching topology", () => {
+    const ids = Object.fromEntries(
+      Object.entries(FIXTURE_LABELS).map(([pda, name]) => [
+        name.toLowerCase(),
+        pda,
+      ]),
+    );
+    const demo = genesis();
+    const model = {
+      ...demo,
+      root: ids.treasury,
+      nodes: demo.nodes
+        .filter((n) => n.id !== "analysis")
+        .map((n) => ({
+          ...n,
+          id: ids[n.id],
+          parent: n.parent ? ids[n.parent] : null,
+        })),
+    };
+    const before = structuredClone(model);
+    expect(capitalInstrumentRoles(model)?.[ids.scraper]).eq("scraper");
+    expect(model).deep.eq(before);
+    const malformed = {
+      ...model,
+      nodes: model.nodes.map((n) =>
+        n.id === ids.scraper ? { ...n, parent: ids.operations } : n,
+      ),
+    };
+    expect(capitalInstrumentRoles(malformed)).eq(undefined);
+    const arbitrary = {
+      ...model,
+      nodes: model.nodes.map((n) =>
+        n.id === ids.scraper
+          ? { ...n, id: "another-account", name: "Scraper" }
+          : n,
+      ),
+    };
+    expect(capitalInstrumentRoles(arbitrary)).eq(undefined);
+  });
   it("projects the original accounts and keeps sibling geometry across construction and revoke", () => {
     const m = genesis(),
       before = authorityWorldView(m, "scraper", 864);
