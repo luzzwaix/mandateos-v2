@@ -55,6 +55,7 @@ for (const width of [1440, 390, 768, 1024, 1280]) {
     if (e.type() === "error") errors.push({ width, message: e.text() });
   });
   await page.goto(base + "/app");
+  await page.getByLabel("Product mode").selectOption("demo");
   await page.locator(".command-world").waitFor();
   await page.waitForTimeout(300);
   userAgent = await page.evaluate(() => navigator.userAgent);
@@ -336,6 +337,7 @@ for (const width of [1440, 390, 768, 1024, 1280]) {
   );
   await capture(page, `${width}-arena-verified-c`);
   await page.goto(base + "/arena");
+  await page.getByLabel("Product mode").selectOption("demo");
   await page.locator(".arena-world").waitFor();
   await check(
     page,
@@ -356,6 +358,7 @@ for (const width of [1440, 390]) {
   });
   const page = await context.newPage();
   await page.goto(base + "/app");
+  await page.getByLabel("Product mode").selectOption("demo");
   await page.locator(".command-world").waitFor();
   await click(page, "Preview revoke");
   await check(
@@ -397,6 +400,7 @@ for (const width of [1440, 390]) {
   );
   await capture(page, `${width}-reduced-arena`);
   await page.goto(base + "/app");
+  await page.getByLabel("Product mode").selectOption("demo");
   await page.locator(".command-world").waitFor();
   await click(page, "Wallet");
   await check(page, width, "Demo wallet explicitly needs no signature", () =>

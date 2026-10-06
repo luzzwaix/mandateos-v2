@@ -23,7 +23,7 @@ import {
 
 function useWorldState() {
   const pathname = usePathname();
-  const [mode, setMode] = useState<"demo" | "devnet">("demo");
+  const [mode, setMode] = useState<"demo" | "devnet">("devnet");
   const demo = mode === "demo" || pathname === "/";
   const live = useConsole(!demo);
   const [fixture, setFixture] = useState<AuthorityModel>(() => genesis());
@@ -315,6 +315,8 @@ export default function WorldShell({
 export function ConnectionInstrument() {
   const { live } = useWorld();
   const [mint, setMint] = useState("");
+  const [draftAddress, setAddress] = useState<string>();
+  const address = draftAddress ?? live.organization;
   return (
     <section className="connection-instrument">
       <h2>Open an organization</h2>
@@ -326,14 +328,26 @@ export function ConnectionInstrument() {
         Organization address
         <input
           aria-label="Organization address"
-          value={live.organization}
-          onChange={(e) => live.setOrganization(e.target.value)}
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
         />
       </label>
       <button
         className="button"
-        disabled={!!live.busy || !live.organization}
-        onClick={() => void live.run("Read organization", () => live.refresh())}
+        disabled={!!live.busy || !address}
+        onClick={() =>
+          void live.run(
+            "Read organization",
+            async () => {
+              const { PublicKey } = await import("@solana/web3.js");
+              const selected = new PublicKey(address).toBase58();
+              live.setOrganization(selected);
+              setAddress(undefined);
+              await live.refresh(selected);
+            },
+            address,
+          )
+        }
       >
         Read accounts <ArrowRight size={14} />
       </button>
@@ -349,7 +363,7 @@ export function ConnectionInstrument() {
         </label>
         <button
           className="button"
-          disabled={!live.wallet || !live.canTransact || !!live.busy || !mint}
+          disabled={!live.wallet || !live.canCreate || !!live.busy || !mint}
           onClick={() =>
             void live.run("Create organization", async () => {
               const { PublicKey } = await import("@solana/web3.js");

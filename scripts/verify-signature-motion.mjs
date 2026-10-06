@@ -62,6 +62,7 @@ for (const width of [1440, 390]) {
     });
   };
   await p.goto(base + "/app");
+  await p.getByLabel("Product mode").selectOption("demo");
   await p.locator(".command-world").waitFor();
   await p.waitForTimeout(500);
   await node("scraper").click();
@@ -98,6 +99,7 @@ for (const width of [1440, 390]) {
       document.getAnimations().every((a) => a.playState !== "running"),
   );
   await p.goto(base + "/app");
+  await p.getByLabel("Product mode").selectOption("demo");
   await p.locator(".command-world").waitFor();
   await p.waitForTimeout(500);
   await node("scraper").click();
@@ -130,6 +132,7 @@ for (const width of [1440, 390]) {
       !document.querySelector(".authority-motion-pulse"),
   );
   await p.goto(base + "/app");
+  await p.getByLabel("Product mode").selectOption("demo");
   await p.locator(".command-world").waitFor();
   await node("scraper").click();
   await click("delegate");

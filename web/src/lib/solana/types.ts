@@ -108,5 +108,6 @@ export interface TransactionState {
 export type TransactionObserver = (
   progress: Pick<TransactionState, "phase" | "signature" | "slot"> & {
     lastValidBlockHeight?: number;
+    organization?: string;
   },
 ) => void;

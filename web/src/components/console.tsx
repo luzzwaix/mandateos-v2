@@ -306,15 +306,14 @@ export default function Console() {
           </label>
           <button
             className="button"
-            disabled={!!busy || !wallet || !mint || !state.canTransact}
+            disabled={!!busy || !wallet || !mint || !state.canCreate}
             onClick={() =>
               void run("Create organization", async () => {
                 const result = await state.client.createOrganization(
                   new PublicKey(mint),
                 );
                 state.setOrganization(result.organization.toBase58());
-                await state.refresh(result.organization.toBase58());
-                return result.signature;
+                return result;
               })
             }
           >

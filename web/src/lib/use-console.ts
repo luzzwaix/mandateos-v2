@@ -22,7 +22,7 @@ export function useConsole(enabled = true) {
   const [wallet, setWallet] = useState<SigningWallet>();
   const [demo, setDemo] = useState<DemoSession>();
   const [snapshot, setSnapshot] = useState<Snapshot>();
-  const [organization, setOrganization] = useState(
+  const [organization, setOrganizationState] = useState(
     process.env.NEXT_PUBLIC_MANDATEOS_ORGANIZATION ?? "",
   );
   const [selected, setSelected] = useState("");
@@ -33,45 +33,28 @@ export function useConsole(enabled = true) {
     title: "",
   });
   const progressRef = useRef<
-    Partial<TransactionState> & { lastValidBlockHeight?: number }
+    Partial<TransactionState> & {
+      lastValidBlockHeight?: number;
+      organization?: string;
+    }
   >({});
   const pendingRef = useRef<
-    | { signature: string; lastValidBlockHeight: number; title: string }
+    | {
+        signature: string;
+        lastValidBlockHeight: number;
+        title: string;
+        organization?: string;
+      }
     | undefined
   >(undefined);
   const [unresolved, setUnresolved] = useState(false);
+  const [deploymentVerified, setDeploymentVerified] = useState(false);
+  const actionLock = useRef(false);
   const actionTitleRef = useRef("");
+  const actionOrganizationRef = useRef("");
   const pendingStorageKey = `mandateos:pending:${PROGRAM_ADDRESS}`;
-  useEffect(() => {
-    if (!enabled) return;
-    const restore = setTimeout(() => {
-      try {
-        const saved = JSON.parse(
-          sessionStorage.getItem(pendingStorageKey) ?? "null",
-        );
-        if (
-          saved &&
-          typeof saved.signature === "string" &&
-          /^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(saved.signature) &&
-          Number.isSafeInteger(saved.lastValidBlockHeight) &&
-          typeof saved.title === "string"
-        ) {
-          pendingRef.current = saved;
-          setUnresolved(true);
-          setTransaction({
-            phase: "unknown",
-            title: saved.title,
-            signature: saved.signature,
-            message:
-              "Restored signed transaction intent. Read accounts to reconcile before a new action.",
-          });
-        }
-      } catch {
-        /* Storage is optional; no signer or signed bytes are stored. */
-      }
-    }, 0);
-    return () => clearTimeout(restore);
-  }, [enabled, pendingStorageKey]);
+  const organizationStorageKey = `mandateos:organization:${PROGRAM_ADDRESS}`;
+  const readGeneration = useRef(0);
   const reportTransaction = useCallback<TransactionObserver>(
     (progress) => {
       if (
@@ -83,6 +66,7 @@ export function useConsole(enabled = true) {
           signature: progress.signature,
           lastValidBlockHeight: progress.lastValidBlockHeight,
           title: actionTitleRef.current,
+          organization: progress.organization ?? actionOrganizationRef.current,
         };
         setUnresolved(true);
         try {
@@ -116,6 +100,60 @@ export function useConsole(enabled = true) {
     Record<string, CapitalTransition>
   >({});
   const snapshotRef = useRef<Snapshot | undefined>(undefined);
+  const setOrganization = useCallback(
+    (address: string) => {
+      readGeneration.current++;
+      snapshotRef.current = undefined;
+      setSnapshot(undefined);
+      setActivity([]);
+      setSelected("");
+      setLastRead(undefined);
+      setStale(true);
+      setOrganizationState(address);
+      try {
+        sessionStorage.setItem(organizationStorageKey, address);
+      } catch {}
+    },
+    [organizationStorageKey],
+  );
+  useEffect(() => {
+    if (!enabled) return;
+    const restore = setTimeout(() => {
+      try {
+        const saved = JSON.parse(
+          sessionStorage.getItem(pendingStorageKey) ?? "null",
+        );
+        const previousOrganization = sessionStorage.getItem(
+          organizationStorageKey,
+        );
+        if (previousOrganization)
+          setOrganization(new PublicKey(previousOrganization).toBase58());
+        if (
+          saved &&
+          typeof saved.signature === "string" &&
+          /^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(saved.signature) &&
+          Number.isSafeInteger(saved.lastValidBlockHeight) &&
+          typeof saved.title === "string"
+        ) {
+          pendingRef.current = saved;
+          if (typeof saved.organization === "string") {
+            setOrganization(new PublicKey(saved.organization).toBase58());
+          }
+          setUnresolved(true);
+          setTransaction({
+            phase: "unknown",
+            title: saved.title,
+            signature: saved.signature,
+            message:
+              "Restored signed transaction intent. Read accounts to reconcile before a new action.",
+          });
+        }
+      } catch {
+        /* Storage is optional; no signer or signed bytes are stored. */
+      }
+    }, 0);
+    return () => clearTimeout(restore);
+  }, [enabled, pendingStorageKey, organizationStorageKey, setOrganization]);
   const transactionRef = useRef<string | undefined>(undefined);
   useEffect(() => {
     if (!transition) return;
@@ -149,6 +187,12 @@ export function useConsole(enabled = true) {
       pending.lastValidBlockHeight,
     );
     if (result.phase === "unknown") return;
+    if (
+      result.phase === "confirmed" &&
+      pending.organization &&
+      pending.organization !== organization
+    )
+      setOrganization(pending.organization);
     pendingRef.current = undefined;
     setUnresolved(false);
     try {
@@ -166,14 +210,20 @@ export function useConsole(enabled = true) {
             ? `Recovered on-chain failure: ${JSON.stringify(result.err)}; fee ${result.fee} lamports. ${result.logs.join("\n")}`
             : "Confirmation recovered by read-only RPC reconciliation. Read the affected organization before a new action.",
     });
-  }, [client, pendingStorageKey]);
+  }, [client, pendingStorageKey, organization, setOrganization]);
   const refresh = useCallback(
     async (address = organization) => {
-      if (!address) {
-        await reconcilePending();
-        return;
-      }
-      const next = await client.load(new PublicKey(address));
+      const pendingOrganization = pendingRef.current?.organization;
+      if (pendingOrganization && pendingOrganization !== organization)
+        setOrganization(pendingOrganization);
+      // Reconcile even when a timed-out create left no account at its PDA.
+      // Account fetch failure must never prevent signature/expiry recovery.
+      await reconcilePending();
+      const target = pendingOrganization ?? address;
+      const generation = readGeneration.current;
+      if (!target) return;
+      const next = await client.load(new PublicKey(target));
+      if (generation !== readGeneration.current) return;
       const previous = snapshotRef.current;
       if (previous?.address.equals(next.address) && transactionRef.current) {
         const revoked = next.nodes.find(
@@ -292,6 +342,7 @@ export function useConsole(enabled = true) {
         next.address,
         next.bounties.map((b) => b.publicKey),
       );
+      if (generation !== readGeneration.current) return;
       if (client.activityReadError)
         setError(
           `Account state was read; transaction history is partial: ${client.activityReadError}`,
@@ -305,10 +356,9 @@ export function useConsole(enabled = true) {
           .sort((a, b) => (b.occurredAt ?? 0) - (a.occurredAt ?? 0))
           .slice(0, 30);
       });
-      await reconcilePending();
       return next;
     },
-    [client, organization, reconcilePending],
+    [client, organization, reconcilePending, setOrganization],
   );
   useEffect(() => {
     if (!enabled) return;
@@ -319,10 +369,23 @@ export function useConsole(enabled = true) {
       inFlight = true;
       try {
         const slot = await client.verifyDeployment();
-        if (!cancelled) setHealth(`LIVE · slot ${slot.toLocaleString()}`);
-        if (!cancelled) await refresh();
+        if (!cancelled) {
+          setDeploymentVerified(true);
+          setHealth(`LIVE · slot ${slot.toLocaleString()}`);
+        }
+        if (!cancelled) {
+          try {
+            await refresh();
+          } catch (e) {
+            if (!cancelled) {
+              setError(e instanceof Error ? e.message : String(e));
+              setStale(true);
+            }
+          }
+        }
       } catch (e) {
         if (!cancelled) {
+          setDeploymentVerified(false);
           setHealth(e instanceof Error ? e.message : String(e));
           setStale(true);
         }
@@ -346,7 +409,7 @@ export function useConsole(enabled = true) {
     >,
     address?: string,
   ) {
-    if (busy) return;
+    if (actionLock.current) return;
     if (
       pendingRef.current &&
       !/^(Connecting |Read organization$|Refresh accounts$)/.test(title)
@@ -356,8 +419,10 @@ export function useConsole(enabled = true) {
       );
       return;
     }
+    actionLock.current = true;
     setBusy(title);
     actionTitleRef.current = title;
+    actionOrganizationRef.current = address ?? organization;
     setTransaction({ phase: "working", title });
     progressRef.current = {};
     setError("");
@@ -427,6 +492,10 @@ export function useConsole(enabled = true) {
           signature: progress.signature,
           lastValidBlockHeight: progress.lastValidBlockHeight,
           title,
+          organization:
+            progress.organization ??
+            pendingRef.current?.organization ??
+            snapshotRef.current?.address.toBase58(),
         };
         setUnresolved(true);
         try {
@@ -500,6 +569,7 @@ export function useConsole(enabled = true) {
       }
     } finally {
       transactionRef.current = undefined;
+      actionLock.current = false;
       setBusy("");
     }
   }
@@ -583,7 +653,14 @@ export function useConsole(enabled = true) {
     activity,
     busy,
     transaction,
-    canTransact: enabled && !stale && !unresolved && health.startsWith("LIVE"),
+    canTransact:
+      enabled &&
+      deploymentVerified &&
+      !stale &&
+      !unresolved &&
+      !!snapshot &&
+      snapshot.address.toBase58() === organization,
+    canCreate: enabled && deploymentVerified && !unresolved,
     lastRead,
     stale,
     error,

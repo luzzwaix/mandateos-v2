@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { homedir } from "node:os";
@@ -23,7 +23,7 @@ assert(
 );
 const { chromium } = await import(pathToFileURL(modulePath).href);
 const output = resolve(
-  "artifacts/devnet-release/mvp-continuation/browser-live",
+  process.argv[3] ?? "artifacts/devnet-release/mvp-continuation/browser-live",
 );
 mkdirSync(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
@@ -61,7 +61,21 @@ page.on("request", (r) => {
   }
 });
 try {
-  await page.goto((process.argv[2] ?? "http://127.0.0.1:3101") + "/app");
+  const navigation = await page.goto(
+    (process.argv[2] ?? "http://127.0.0.1:3101") + "/app",
+  );
+  record(
+    "Direct Command route returns HTTP 200 and renders the application",
+    navigation?.status() === 200 &&
+      !(await page.locator("body").innerText()).includes(
+        "This page could not be found",
+      ),
+  );
+  record(
+    "Public product defaults to DEVNET",
+    (await page.getByLabel("Product mode").inputValue()) === "devnet",
+  );
+  await page.getByLabel("Product mode").selectOption("demo");
   record(
     "Initial DEMO explicitly says no onchain transactions",
     (await page.locator("footer").innerText()).includes("SIMULATED STATE"),
@@ -273,6 +287,107 @@ try {
     "MOCK public adapter passes loaded-account comparisons without runtime errors",
     errors.length === 0,
   );
+  await mockPage
+    .getByRole("button", { name: "Connect Phantom", exact: true })
+    .click();
+  await mockPage
+    .getByRole("button", { name: "Close wallet menu", exact: true })
+    .click();
+  await mockPage
+    .getByRole("heading", { name: "Transaction evidence", exact: true })
+    .waitFor({ timeout: 90000 });
+  await mockPage
+    .getByText("Network and account evidence", { exact: true })
+    .click();
+  const invalidOrganization = "11111111111111111111111111111111";
+  await mockPage
+    .getByLabel("Organization address", { exact: true })
+    .fill(invalidOrganization);
+  record(
+    "MOCK typing an address retains the previously read organization until Open",
+    (await mockPage.locator(".flat-node").count()) > 0,
+  );
+  await mockPage
+    .getByRole("button", { name: "Read accounts", exact: true })
+    .click();
+  await mockPage.locator(".unconnected-world").waitFor({ timeout: 60000 });
+  await mockPage.locator(".error-text").first().waitFor({ timeout: 60000 });
+  record(
+    "MOCK missing organization clears the old capital view",
+    (await mockPage.locator(".flat-node").count()) === 0,
+  );
+  await mockPage.locator(".connection-instrument details summary").click();
+  await mockPage
+    .getByLabel("Organization mint", { exact: true })
+    .fill("6V3c3UWqXerQFyfVhFiWVMaXEjNPUmHwWsPa2c4TS1A9");
+  await mockPage.waitForFunction(
+    () => {
+      const b = [...document.querySelectorAll("button")].find(
+        (x) => x.textContent.trim() === "Create organization",
+      );
+      return b && !b.disabled;
+    },
+    {},
+    { timeout: 60000 },
+  );
+  record(
+    "MOCK new organization remains available after a missing-account read; signing was not requested",
+    true,
+  );
+  await mockPage.reload();
+  await mockPage.waitForFunction(
+    (address) =>
+      document.querySelector('[aria-label="Organization address"]')?.value ===
+      address,
+    invalidOrganization,
+    { timeout: 60000 },
+  );
+  record(
+    "Public organization selection survives a same-tab reload without signer storage",
+    true,
+  );
+  const proof = JSON.parse(readFileSync("docs/devnet-mvp-proof.json", "utf8"));
+  const prior = proof.transactions.find((x) => x.step === "operations-spend");
+  await mockPage.evaluate(
+    ({ program, organization, signature }) => {
+      sessionStorage.setItem(
+        `mandateos:pending:${program}`,
+        JSON.stringify({
+          signature,
+          lastValidBlockHeight: 1,
+          title: "READ-ONLY REPLAY of existing CLI receipt",
+          organization,
+        }),
+      );
+    },
+    {
+      program: proof.program,
+      organization: proof.organization,
+      signature: prior.signature,
+    },
+  );
+  await mockPage.reload();
+  await mockPage.waitForFunction(
+    (program) =>
+      sessionStorage.getItem(`mandateos:pending:${program}`) === null,
+    proof.program,
+    { timeout: 120000 },
+  );
+  record(
+    "READ-ONLY recovery replay reconciles an existing real CLI receipt; no new browser transaction",
+    true,
+  );
+  record(
+    "Recovery restores the affected organization instead of the obsolete selected address",
+    (await mockPage
+      .getByLabel("Organization address", { exact: true })
+      .inputValue()) === proof.organization,
+  );
+  record(
+    "Edge-state and recovery checks submitted zero transactions",
+    mockSends === 0,
+  );
+  record("Edge-state checks produced zero runtime errors", errors.length === 0);
   await mockContext.close();
 
   await browser.close();

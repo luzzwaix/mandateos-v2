@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { utils } from "@coral-xyz/anchor";
 import { readFileSync } from "node:fs";
 import {
   Keypair,
@@ -103,6 +104,8 @@ describe("Devnet client transport and provenance (RPC stubs)", () => {
     const c = new MandateClient(keypairWallet(Keypair.generate()), (p) =>
       progress.push(p),
     );
+    c.rpc.sendRawTransaction = async (wire) =>
+      utils.bytes.bs58.encode(Transaction.from(wire).signature!);
     c.verifyDeployment = async () => 1;
     c.rpc.getLatestBlockhash = async () => ({
       blockhash: Keypair.generate().publicKey.toBase58(),
@@ -153,8 +156,7 @@ describe("Devnet client transport and provenance (RPC stubs)", () => {
   });
   it("accepts every real instruction discriminator after Anchor camelCase conversion", async () => {
     const { c } = transport();
-    c.rpc.sendRawTransaction = async () =>
-      "unit-test-only-not-a-chain-signature";
+
     c.rpc.confirmTransaction = async () => ({
       context: { slot: 7 },
       value: { err: null },
@@ -198,7 +200,7 @@ describe("Devnet client transport and provenance (RPC stubs)", () => {
         "awaiting-signature",
         "submitting",
       ]);
-      return "unit-test-only-not-a-chain-signature";
+      return utils.bytes.bs58.encode(Transaction.from(_tx).signature!);
     };
     c.rpc.confirmTransaction = async () => ({
       context: { slot: 7 },
@@ -252,9 +254,8 @@ describe("Devnet client transport and provenance (RPC stubs)", () => {
     expect(progress.map((p) => p.phase)).deep.eq(["awaiting-signature"]);
   });
   it("confirmed failure preserves returned signature, slot, fee and exact program error", async () => {
-    const { c } = transport();
-    c.rpc.sendRawTransaction = async () =>
-      "unit-test-only-not-a-chain-signature";
+    const { c, progress } = transport();
+
     c.rpc.confirmTransaction = async () => ({
       context: { slot: 8 },
       value: { err: { InstructionError: [0, { Custom: 6003 }] } },
@@ -267,7 +268,7 @@ describe("Devnet client transport and provenance (RPC stubs)", () => {
     } catch (e) {
       expect(e).instanceOf(ProtocolRejection);
       expect((e as ProtocolRejection).signature).eq(
-        "unit-test-only-not-a-chain-signature",
+        progress.find((p) => p.phase === "submitting")!.signature,
       );
       expect((e as ProtocolRejection).code).eq("AncestorRevoked");
       expect((e as ProtocolRejection).slot).eq(8);
@@ -276,8 +277,7 @@ describe("Devnet client transport and provenance (RPC stubs)", () => {
   });
   it("confirmation timeout retains pending signature without confirming", async () => {
     const { c, progress } = transport();
-    c.rpc.sendRawTransaction = async () =>
-      "unit-test-only-not-a-chain-signature";
+
     c.rpc.confirmTransaction = async () => {
       throw Error("timeout");
     };
@@ -289,7 +289,7 @@ describe("Devnet client transport and provenance (RPC stubs)", () => {
     }
     expect(progress[progress.length - 1]).deep.eq({
       phase: "pending",
-      signature: "unit-test-only-not-a-chain-signature",
+      signature: progress.find((p) => p.phase === "submitting")!.signature,
     });
   });
   it("retains the actual signed signature and expiry when the send response is lost", async () => {
@@ -312,6 +312,61 @@ describe("Devnet client transport and provenance (RPC stubs)", () => {
     expect(signed.phase).eq("submitting");
     expect(signed.signature).match(/^[1-9A-HJ-NP-Za-km-z]{80,90}$/);
     expect(signed.lastValidBlockHeight).eq(100);
+  });
+  it("keeps the original signed signature unresolved when RPC substitutes a signature", async () => {
+    const { c, progress } = transport();
+    c.rpc.sendRawTransaction = async () => "different-unit-test-signature";
+    c.rpc.confirmTransaction = async () => {
+      throw Error("must not confirm substituted signature");
+    };
+    try {
+      await c.send(new Transaction());
+      throw Error("expected rejection");
+    } catch (e) {
+      expect(String(e)).contains("different signature");
+    }
+    expect(progress[progress.length - 1]?.phase).eq("submitting");
+    expect(progress[progress.length - 1]?.signature).not.eq(
+      "different-unit-test-signature",
+    );
+  });
+  it("rejects a wallet-modified message before RPC submission", async () => {
+    const { c } = transport();
+    const sign = c.wallet!.signTransaction;
+    c.wallet!.signTransaction = async (tx) => {
+      (tx as Transaction).recentBlockhash =
+        Keypair.generate().publicKey.toBase58();
+      return sign(tx);
+    };
+    c.rpc.sendRawTransaction = async () => {
+      throw Error("must not send");
+    };
+    try {
+      await c.send(new Transaction());
+      throw Error("expected rejection");
+    } catch (e) {
+      expect(String(e)).contains("Wallet changed");
+    }
+  });
+  it("journals the new organization PDA before a lost create response", async () => {
+    const { c } = transport();
+    const observed: { phase: string; organization?: string }[] = [];
+    const client = new MandateClient(c.wallet, (p) => observed.push(p), c.rpc);
+    client.verifyDeployment = async () => 1;
+    c.rpc.sendRawTransaction = async () => {
+      throw Error("lost RPC response");
+    };
+    const mint = Keypair.generate().publicKey;
+    try {
+      await client.createOrganization(mint);
+      throw Error("expected rejection");
+    } catch (e) {
+      expect(String(e)).contains("lost RPC response");
+    }
+    expect(observed[observed.length - 1]?.phase).eq("submitting");
+    expect(
+      new PublicKey(observed[observed.length - 1]!.organization!).toBase58(),
+    ).eq(observed[observed.length - 1]!.organization);
   });
   it("reconciles history and a confirmed receipt without signing or resending", async () => {
     const { c } = transport();

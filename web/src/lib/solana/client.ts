@@ -178,7 +178,7 @@ export class MandateClient {
       throw new Error("Path does not terminate at Root");
     return result;
   }
-  async send(tx: Transaction): Promise<string> {
+  async send(tx: Transaction, organization?: PublicKey): Promise<string> {
     await this.verifyDeployment();
     if (!this.wallet) throw new Error("Connect a signing wallet first");
     const allowed = this.program.idl.instructions
@@ -205,8 +205,13 @@ export class MandateClient {
     const latest = await this.rpc.getLatestBlockhash("confirmed");
     tx.feePayer = this.wallet.publicKey;
     tx.recentBlockhash = latest.blockhash;
+    const intendedMessage = Buffer.from(tx.serializeMessage());
     this.observe?.({ phase: "awaiting-signature" });
     const signed = await this.wallet.signTransaction(tx);
+    if (!Buffer.from(signed.serializeMessage()).equals(intendedMessage))
+      throw new Error(
+        "Wallet changed the requested transaction; nothing was submitted",
+      );
     const wire = signed.serialize();
     if (!signed.signature)
       throw new Error("Wallet returned no payer signature");
@@ -215,6 +220,7 @@ export class MandateClient {
       phase: "submitting",
       signature: signedSignature,
       lastValidBlockHeight: latest.lastValidBlockHeight,
+      organization: organization?.toBase58(),
     });
     let signature: string;
     try {
@@ -241,6 +247,10 @@ export class MandateClient {
       }
       throw e;
     }
+    if (signature !== signedSignature)
+      throw new Error(
+        "RPC returned a different signature. Reconcile the original signed transaction before any new action.",
+      );
     this.observe?.({ phase: "pending", signature });
     const result = await this.rpc.confirmTransaction(
       { ...latest, signature },
@@ -331,7 +341,7 @@ export class MandateClient {
         systemProgram: SystemProgram.programId,
       })
       .transaction();
-    const signature = await this.send(tx);
+    const signature = await this.send(tx, organization);
     return { organization, signature };
   }
   async deposit(s: Snapshot, amount: BN, source?: PublicKey) {
