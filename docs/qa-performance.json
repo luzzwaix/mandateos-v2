@@ -1,0 +1,520 @@
+{
+  "provenance": "Observed production-browser read-only runs, variable public Devnet RPC; no real extension signing or statistical INP benchmark",
+  "baseline": {
+    "base": "http://127.0.0.1:3101",
+    "browser": "149.0.7827.55",
+    "wallet": "public-only adapter mock; no extension or signing",
+    "phases": [
+      {
+        "name": "cold-account-read",
+        "ms": 13120,
+        "requests": 13,
+        "methods": {
+          "getAccountInfo": 7,
+          "getSlot": 2,
+          "getGenesisHash": 1,
+          "getProgramAccounts": 3
+        },
+        "longTasks": [
+          {
+            "start": 3826.2999999523163,
+            "duration": 58
+          }
+        ],
+        "commits": 3,
+        "raf": 0,
+        "taskMs": 332.11800000000005,
+        "animations": 0,
+        "canvas": 0,
+        "wallet": {
+          "signs": 0,
+          "listeners": {}
+        }
+      },
+      {
+        "name": "cold-history",
+        "ms": 65008,
+        "requests": 25,
+        "methods": {
+          "getSignaturesForAddress": 2,
+          "getTransaction": 16,
+          "getGenesisHash": 2,
+          "getAccountInfo": 3,
+          "getSlot": 2
+        },
+        "longTasks": [],
+        "commits": 2,
+        "raf": 0,
+        "taskMs": 203.03499999999997,
+        "animations": 0,
+        "canvas": 0,
+        "wallet": {
+          "signs": 0,
+          "listeners": {}
+        }
+      },
+      {
+        "name": "connect-and-stabilize",
+        "ms": 65085,
+        "requests": 36,
+        "methods": {
+          "getGenesisHash": 2,
+          "getAccountInfo": 10,
+          "getSlot": 2,
+          "getProgramAccounts": 6,
+          "getSignaturesForAddress": 4,
+          "getTransaction": 12
+        },
+        "longTasks": [],
+        "commits": 7,
+        "raf": 0,
+        "taskMs": 327.9030000000001,
+        "animations": 0,
+        "canvas": 0,
+        "wallet": {
+          "signs": 0,
+          "listeners": {
+            "disconnect": 1,
+            "accountChanged": 1
+          }
+        }
+      },
+      {
+        "name": "disconnect-reconnect",
+        "ms": 20155,
+        "requests": 19,
+        "methods": {
+          "getTransaction": 4,
+          "getGenesisHash": 3,
+          "getAccountInfo": 7,
+          "getSlot": 3,
+          "getProgramAccounts": 2
+        },
+        "longTasks": [],
+        "commits": 7,
+        "raf": 0,
+        "taskMs": 255.6860000000001,
+        "animations": 0,
+        "canvas": 0,
+        "wallet": {
+          "signs": 0,
+          "listeners": {
+            "disconnect": 1,
+            "accountChanged": 1
+          }
+        }
+      }
+    ],
+    "errors": []
+  },
+  "candidate": {
+    "base": "http://127.0.0.1:3101",
+    "browser": "149.0.7827.55",
+    "wallet": "public-only adapter mock; no extension or signing",
+    "phases": [
+      {
+        "name": "cold-account-read",
+        "ms": 9118,
+        "requests": 9,
+        "methods": {
+          "getAccountInfo": 5,
+          "getSlot": 1,
+          "getProgramAccounts": 3
+        },
+        "longTasks": [
+          {
+            "start": 3940.8000000715256,
+            "duration": 83
+          },
+          {
+            "start": 9595.800000071526,
+            "duration": 65
+          }
+        ],
+        "commits": 3,
+        "raf": 0,
+        "taskMs": 440.324,
+        "animations": 0,
+        "canvas": 0,
+        "wallet": {
+          "signs": 0,
+          "listeners": {}
+        }
+      },
+      {
+        "name": "cold-history",
+        "ms": 65025,
+        "requests": 37,
+        "methods": {
+          "getSignaturesForAddress": 2,
+          "getTransaction": 16,
+          "getGenesisHash": 2,
+          "getAccountInfo": 10,
+          "getSlot": 2,
+          "getProgramAccounts": 5
+        },
+        "longTasks": [],
+        "commits": 19,
+        "raf": 0,
+        "taskMs": 436.25499999999994,
+        "animations": 0,
+        "canvas": 0,
+        "wallet": {
+          "signs": 0,
+          "listeners": {}
+        }
+      },
+      {
+        "name": "connect-and-stabilize",
+        "ms": 65115,
+        "requests": 24,
+        "methods": {
+          "getGenesisHash": 2,
+          "getAccountInfo": 10,
+          "getSlot": 2,
+          "getProgramAccounts": 6,
+          "getSignaturesForAddress": 4
+        },
+        "longTasks": [],
+        "commits": 10,
+        "raf": 0,
+        "taskMs": 288.0069999999999,
+        "animations": 0,
+        "canvas": 0,
+        "wallet": {
+          "signs": 0,
+          "listeners": {
+            "disconnect": 1,
+            "accountChanged": 1
+          }
+        }
+      },
+      {
+        "name": "disconnect-reconnect",
+        "ms": 20132,
+        "requests": 9,
+        "methods": {
+          "getAccountInfo": 5,
+          "getSlot": 1,
+          "getProgramAccounts": 3
+        },
+        "longTasks": [],
+        "commits": 7,
+        "raf": 0,
+        "taskMs": 140.668,
+        "animations": 0,
+        "canvas": 0,
+        "wallet": {
+          "signs": 0,
+          "listeners": {
+            "disconnect": 1,
+            "accountChanged": 1
+          }
+        }
+      },
+      {
+        "name": "connected-arena-navigation",
+        "ms": 10099,
+        "requests": 9,
+        "methods": {
+          "getSignaturesForAddress": 2,
+          "getGenesisHash": 1,
+          "getAccountInfo": 3,
+          "getSlot": 1,
+          "getProgramAccounts": 2
+        },
+        "longTasks": [],
+        "commits": 5,
+        "raf": 0,
+        "taskMs": 157.5820000000001,
+        "animations": 0,
+        "canvas": 0,
+        "wallet": {
+          "signs": 0,
+          "listeners": {
+            "disconnect": 1,
+            "accountChanged": 1
+          }
+        }
+      },
+      {
+        "name": "story-idle",
+        "ms": 10252,
+        "requests": 0,
+        "methods": {},
+        "longTasks": [],
+        "commits": 0,
+        "raf": 0,
+        "taskMs": 321.76199999999966,
+        "animations": 0,
+        "canvas": 0,
+        "wallet": {
+          "signs": 0,
+          "listeners": {}
+        }
+      },
+      {
+        "name": "reduced-motion-story-idle",
+        "ms": 10016,
+        "requests": 0,
+        "methods": {},
+        "longTasks": [],
+        "commits": 0,
+        "raf": 0,
+        "taskMs": 17.808000000000046,
+        "animations": 0,
+        "canvas": 0,
+        "wallet": {
+          "signs": 0,
+          "listeners": {}
+        }
+      }
+    ],
+    "errors": []
+  },
+  "pairedFirstReceipt": [
+    {
+      "base": "https://mandateos-v2.vercel.app",
+      "status": 200,
+      "accountMs": 15057,
+      "accountRequests": 14,
+      "receiptMs": 70573,
+      "rpcAtFirstReceipt": 32,
+      "errors": [],
+      "noSigning": true,
+      "noSubmission": true
+    },
+    {
+      "base": "http://127.0.0.1:3101",
+      "status": 200,
+      "accountMs": 9931,
+      "accountRequests": 10,
+      "receiptMs": 12798,
+      "rpcAtFirstReceipt": 13,
+      "errors": [],
+      "noSigning": true,
+      "noSubmission": true
+    }
+  ],
+  "injectedFaults": [
+    {
+      "name": "before-stalled-rpc",
+      "ms": 21483,
+      "scenario": "injected transport fault; not live RPC evidence",
+      "timeoutVisible": false,
+      "wrongNetworkVisible": false,
+      "accountEvidence": false,
+      "interactionMs": 66,
+      "sends": 0,
+      "errors": []
+    },
+    {
+      "name": "after-stalled-rpc",
+      "ms": 20385,
+      "scenario": "injected transport fault; not live RPC evidence",
+      "timeoutVisible": true,
+      "wrongNetworkVisible": false,
+      "accountEvidence": false,
+      "interactionMs": 55,
+      "sends": 0,
+      "errors": []
+    },
+    {
+      "name": "wrong-genesis",
+      "ms": 3405,
+      "scenario": "injected transport fault; not live RPC evidence",
+      "timeoutVisible": false,
+      "wrongNetworkVisible": true,
+      "accountEvidence": false,
+      "interactionMs": 59,
+      "sends": 0,
+      "errors": []
+    }
+  ],
+  "anonymousRoutes": [
+    {
+      "base": "http://127.0.0.1:3101",
+      "route": "/",
+      "http": 200,
+      "mode": "demo",
+      "noSSO": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "base": "http://127.0.0.1:3101",
+      "route": "/app",
+      "http": 200,
+      "mode": "devnet",
+      "noSSO": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "base": "http://127.0.0.1:3101",
+      "route": "/arena",
+      "http": 200,
+      "mode": "devnet",
+      "noSSO": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "base": "https://mandateos-v2.vercel.app",
+      "route": "/",
+      "http": 200,
+      "mode": "demo",
+      "noSSO": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "base": "https://mandateos-v2.vercel.app",
+      "route": "/app",
+      "http": 200,
+      "mode": "devnet",
+      "noSSO": true,
+      "overflow": false,
+      "errors": []
+    },
+    {
+      "base": "https://mandateos-v2.vercel.app",
+      "route": "/arena",
+      "http": 200,
+      "mode": "devnet",
+      "noSSO": true,
+      "overflow": false,
+      "errors": []
+    }
+  ],
+  "notPublished": true,
+  "noDevnetSigning": true,
+  "noDevnetSubmission": true,
+  "finalBrowserCheck": {
+    "time": "2026-10-06T18:46:25.107Z",
+    "passed": 33,
+    "failed": 0,
+    "noSigning": true,
+    "noSubmission": true,
+    "realExtensionSigningVerified": false,
+    "runtimeErrors": [],
+    "rpcErrorCount": 0
+  },
+  "responsiveChecks": [
+    {
+      "name": "1440-scraper-connected-readonly-mock",
+      "width": 1440,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "1440-operations",
+      "width": 1440,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "1440-spend-review-disabled-wrong-controller",
+      "width": 1440,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "1366-scraper",
+      "width": 1366,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "1024-scraper",
+      "width": 1024,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "390-scraper",
+      "width": 390,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "390-arena",
+      "width": 390,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "1024-arena",
+      "width": 1024,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "1440-arena",
+      "width": 1440,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "arena-200-percent-reflow-720",
+      "width": 720,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "arena-200-percent-reflow-683",
+      "width": 683,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "arena-200-percent-reflow-512",
+      "width": 512,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "command-back-200-percent-reflow-512",
+      "width": 512,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "arena-hard-refresh",
+      "width": 512,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    },
+    {
+      "name": "1024-story",
+      "width": 1024,
+      "overflow": false,
+      "errors": [],
+      "sends": 0
+    }
+  ],
+  "native200PercentZoomVerified": false,
+  "runtimeDependencyAudit": {
+    "command": "npm audit --omit=dev --json",
+    "exitCode": 1,
+    "high": 5,
+    "moderate": 7,
+    "critical": 0,
+    "total": 12,
+    "forcedDependencyChanges": false
+  }
+}

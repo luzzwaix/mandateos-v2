@@ -2,8 +2,8 @@
   "network": "devnet",
   "endpoint": "https://api.devnet.solana.com",
   "genesis": "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG",
-  "lastRead": "2026-10-06T16:39:16.361Z",
-  "lastReadSlot": 508155921,
+  "lastRead": "2026-10-06T18:21:38.981Z",
+  "lastReadSlot": 508181631,
   "program": "125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd",
   "programData": "5n3oHHm4RxzchLBpcM3MXZG4WeQdAkGf6mEQourVw9J2",
   "upgradeAuthority": "3ws8XCWXKg5oCn9Bv3x6HaVAPgaxBfHTpmQ27Z9oqKAm",
@@ -3322,5 +3322,21 @@
     "reason": "No fresh organization has completed a real owner-browser wallet-signing lifecycle",
     "dedicatedLocalSignerVerified": true,
     "encryptedRecoveryBackupVerified": false
+  },
+  "finalAdversarialQa": {
+    "startingCommit": "bd64b1f247d15e89b1973b3238edbddef8a46bb2",
+    "report": "FINAL-ADVERSARIAL-QA.md",
+    "candidatePublished": false,
+    "newDevnetDeployment": false,
+    "newDevnetTransactions": 0,
+    "browserInitiatedTransactions": 0,
+    "readOnlyReconciledReceipts": 19,
+    "readOnlySlot": 508181631,
+    "scope": "Local performance/clarity QA; read-only Devnet; public-only adapter mocks are not genuine browser approvals",
+    "browserChecks": {
+      "passed": 33,
+      "failed": 0,
+      "genuineExtensionSigning": false
+    }
   }
 }

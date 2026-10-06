@@ -2,6 +2,8 @@
 
 Core and the contract's supported Arena sequence completed on the existing deployment. This supersedes [the partial Core stopping point](DEVNET-CORE-PARTIAL.md), which is preserved as history. Anonymous production access and real Devnet reads are now verified. A fresh owner-browser wallet-signing lifecycle remains the release gate; CLI receipts and mocks do not satisfy it.
 
+The subsequent [7 October adversarial QA](FINAL-ADVERSARIAL-QA.md) preserves these receipts and contract semantics. Read-only reconciliation at 2026-10-06T18:21:38.981Z, finalized slot 508181631, verified all 19 receipts again. The local performance/clarity candidate has not been published and creates no new browser-signed Devnet evidence.
+
 ## Identity
 
 RPC `https://api.devnet.solana.com`; genesis `EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG`. Read-only reconciliation at **2026-10-06 16:39:16 UTC**, finalized account slot **508155921**, verified all **19** lifecycle receipts and unchanged authority without reading a signer or sending transactions.

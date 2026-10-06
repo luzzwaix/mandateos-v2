@@ -134,11 +134,13 @@ npm --prefix web run typecheck
 npm --prefix web run build
 ```
 
-The local runner builds an isolated ignored source copy with disposable LOCALNET keys; it preserves the deployed ID and source semantics. Native Windows uses eight independent validator banks to avoid snapshot symlink limitations. Latest runs: **16 Rust unit cases**, **64 real validator cases**, **51 client/RPC/evidence/budget/UI unit cases** passed. Full counts, browser QA limitations and raw-chain evidence are in [the verification report](docs/DEVNET-MVP-VERIFICATION.md).
+The local runner builds an isolated ignored source copy with disposable LOCALNET keys; it preserves the deployed ID and source semantics. Native Windows uses eight independent validator banks to avoid snapshot symlink limitations. Latest QA: **16 Rust unit cases**, **64 real validator cases**, **61 client/RPC/evidence/budget/UI unit cases** passed. Fresh SBF compilation passed; disk exhaustion blocked fresh IDL compilation, so the validator rerun reused the verified generated schema with its already-built isolated Localnet artifact. Exact provenance and measured performance are in [the final QA report](docs/FINAL-ADVERSARIAL-QA.md); historical Devnet receipts remain in [the verification report](docs/DEVNET-MVP-VERIFICATION.md).
 
 Browser verification: node scripts/verify-devnet-browser.mjs http://127.0.0.1:3101. It requires an installed Playwright module (PLAYWRIGHT_MODULE can select it), performs actual read-only RPC checks, and separately labels adapter mocks. It never signs transactions. The existing capital-surface suite covers five viewport widths and reduced motion.
 
 [Fresh browser fixture handoff](docs/DEVNET-BROWSER-HANDOFF.md) contains the owner approval, funded test-token account and exact expected UI sequence. The prepared 200 test TOKENS are not USDC. Public browser QA: 29 checks passed with read-only/mocked provenance recorded; mobile/reduced-motion production views: 13 checks passed. **No real browser-signed transaction is claimed.**
+
+The final local QA candidate adds 33 read-only/adapter/recovery browser checks, 111 surface assertions and 10 motion checks. It fixes receipt-cache churn, blocking history reads and real-PDA evidence/layout defects. These changes are **not yet published to the public URL**; owner review and genuine browser-wallet approvals remain release gates. The fresh dependency audit reports 12 runtime advisories (5 high, 7 moderate); no forced SDK migration was made. See the QA report for screenshots, exact provenance and remaining checks.
 
 ![Actual production Arena on a mobile viewport](docs/images/devnet-public-arena-mobile.png)
 
