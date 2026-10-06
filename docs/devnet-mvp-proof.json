@@ -2,8 +2,8 @@
   "network": "devnet",
   "endpoint": "https://api.devnet.solana.com",
   "genesis": "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG",
-  "lastRead": "2026-10-06T15:36:51.076Z",
-  "lastReadSlot": 508140233,
+  "lastRead": "2026-10-06T16:39:16.361Z",
+  "lastReadSlot": 508155921,
   "program": "125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd",
   "programData": "5n3oHHm4RxzchLBpcM3MXZG4WeQdAkGf6mEQourVw9J2",
   "upgradeAuthority": "3ws8XCWXKg5oCn9Bv3x6HaVAPgaxBfHTpmQ27Z9oqKAm",
@@ -2845,15 +2845,15 @@
     "supportedSemantics": "No separate on-chain verifier-result instruction. Trusted verifier chooses submitted winner and signs atomic settle_bounty. Test result is not an on-chain quality/oracle proof."
   },
   "finalState": {
-    "time": "2026-10-06T15:36:51.076Z",
+    "time": "2026-10-06T16:39:16.361Z",
     "noSignerRead": true,
     "noSigning": true,
     "noSubmission": true,
     "program": "125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd",
     "programData": "5n3oHHm4RxzchLBpcM3MXZG4WeQdAkGf6mEQourVw9J2",
     "upgradeAuthority": "3ws8XCWXKg5oCn9Bv3x6HaVAPgaxBfHTpmQ27Z9oqKAm",
-    "slot": 508140233,
-    "payerLamports": 21582960,
+    "slot": 508155921,
+    "payerLamports": 20089520,
     "organization": "EJsA5n6BBusygH8Ze9pktPFbpP2FXGEEBBgcE6A2Dz3A",
     "mint": "6V3c3UWqXerQFyfVhFiWVMaXEjNPUmHwWsPa2c4TS1A9",
     "isUSDC": false,
@@ -2989,5 +2989,338 @@
   "browserConnection": {
     "source": "User reported Chrome connection to C7jMtkonHhz14rBojP7FWSE8xbGjKybA5FLmzTmTGLpo in DEVNET; extension browser not exposed to automation",
     "independentlyObserved": false
+  },
+  "publicFrontend": {
+    "url": "https://mandateos-v2.vercel.app",
+    "frontendCheckpoint": "7ce740a585774eb195ef8626876ae4a3db9f9000",
+    "deployment": {
+      "id": "dpl_6zwRZT42yGPaNsCVnPNJsAs6T3UN",
+      "url": "mandateos-v2-2sapm55z0-luzzwaixs-projects.vercel.app",
+      "state": "READY"
+    },
+    "anonymousAccess": {
+      "time": "2026-10-06T16:31:14.779Z",
+      "deployment": "mandateos-v2-2sapm55z0-luzzwaixs-projects.vercel.app",
+      "frontendCheckpoint": "7ce740a585774eb195ef8626876ae4a3db9f9000",
+      "anonymous": true,
+      "noCookies": true,
+      "noAuthorization": true,
+      "rows": [
+        {
+          "url": "https://mandateos-v2.vercel.app/",
+          "status": 200,
+          "location": null,
+          "title": "MandateOS — Recursive capital authority",
+          "bytes": 14127
+        },
+        {
+          "url": "https://mandateos-v2.vercel.app/app",
+          "status": 200,
+          "location": null,
+          "title": "MandateOS — Recursive capital authority",
+          "bytes": 10930
+        },
+        {
+          "url": "https://mandateos-v2.vercel.app/arena",
+          "status": 200,
+          "location": null,
+          "title": "MandateOS — Recursive capital authority",
+          "bytes": 10906
+        }
+      ]
+    },
+    "publicEnvironment": [
+      {
+        "key": "NEXT_PUBLIC_SOLANA_RPC_URL",
+        "target": ["production", "preview"],
+        "type": "plain",
+        "value": "https://api.devnet.solana.com"
+      },
+      {
+        "key": "NEXT_PUBLIC_MANDATEOS_PROGRAM_ID",
+        "target": ["production", "preview"],
+        "type": "plain",
+        "value": "125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd"
+      },
+      {
+        "key": "NEXT_PUBLIC_MANDATEOS_ORGANIZATION",
+        "target": ["production", "preview"],
+        "type": "plain",
+        "value": "EJsA5n6BBusygH8Ze9pktPFbpP2FXGEEBBgcE6A2Dz3A"
+      },
+      {
+        "key": "NEXT_PUBLIC_ENABLE_LOCAL_DEMO",
+        "target": ["production", "preview"],
+        "type": "plain",
+        "value": "false"
+      }
+    ],
+    "ssoProtection": {
+      "deploymentType": "preview"
+    },
+    "browserQA": {
+      "time": "2026-10-06T16:37:11.209Z",
+      "checks": [
+        {
+          "name": "Direct Command route returns HTTP 200 and renders the application",
+          "pass": true
+        },
+        {
+          "name": "Public product defaults to DEVNET",
+          "pass": true
+        },
+        {
+          "name": "Initial DEMO explicitly says no onchain transactions",
+          "pass": true
+        },
+        {
+          "name": "Actual deployed Program ID is visible",
+          "pass": true
+        },
+        {
+          "name": "Actual organization and test mint are visible",
+          "pass": true
+        },
+        {
+          "name": "Live unit is test TOKENS and never USDC",
+          "pass": true
+        },
+        {
+          "name": "Live lineage retains blocked descendants and revoked Research",
+          "pass": true
+        },
+        {
+          "name": "Live vault displays observed 100 tokens",
+          "pass": true
+        },
+        {
+          "name": "Missing real extension is handled without sending",
+          "pass": true
+        },
+        {
+          "name": "Arena shows actual settled 25-token reward",
+          "pass": true
+        },
+        {
+          "name": "Arena remains explicitly Devnet with test-token units",
+          "pass": true
+        },
+        {
+          "name": "Real settlement Explorer link is present",
+          "pass": true
+        },
+        {
+          "name": "Read-only browser pass sent no transactions",
+          "pass": true
+        },
+        {
+          "name": "No browser runtime errors",
+          "pass": true
+        },
+        {
+          "name": "MOCK wallet connection refusal is displayed; not on-chain evidence",
+          "pass": true
+        },
+        {
+          "name": "MOCK public-only C7 adapter reconnects after refusal",
+          "pass": true
+        },
+        {
+          "name": "MOCK disconnect clears signer state",
+          "pass": true
+        },
+        {
+          "name": "MOCK reconnect restores public address without signer secrets",
+          "pass": true
+        },
+        {
+          "name": "MOCK accountChanged clears obsolete authority signer",
+          "pass": true
+        },
+        {
+          "name": "MOCK wallet checks generated no signature or transaction",
+          "pass": true
+        },
+        {
+          "name": "MOCK public adapter passes loaded-account comparisons without runtime errors",
+          "pass": true
+        },
+        {
+          "name": "MOCK typing an address retains the previously read organization until Open",
+          "pass": true
+        },
+        {
+          "name": "MOCK missing organization clears the old capital view",
+          "pass": true
+        },
+        {
+          "name": "MOCK new organization remains available after a missing-account read; signing was not requested",
+          "pass": true
+        },
+        {
+          "name": "Public organization selection survives a same-tab reload without signer storage",
+          "pass": true
+        },
+        {
+          "name": "READ-ONLY recovery replay reconciles an existing real CLI receipt; no new browser transaction",
+          "pass": true
+        },
+        {
+          "name": "Recovery restores the affected organization instead of the obsolete selected address",
+          "pass": true
+        },
+        {
+          "name": "Edge-state and recovery checks submitted zero transactions",
+          "pass": true
+        },
+        {
+          "name": "Edge-state checks produced zero runtime errors",
+          "pass": true
+        }
+      ],
+      "errors": [],
+      "rpcErrors": [],
+      "noSigning": true,
+      "noSubmission": true,
+      "realExtensionSigningVerified": false
+    },
+    "mobileQA": {
+      "time": "2026-10-06T16:34:13.727Z",
+      "checks": [
+        {
+          "name": "390 anonymous Command HTTP 200",
+          "pass": true
+        },
+        {
+          "name": "390 actual Devnet token/lineage state",
+          "pass": true
+        },
+        {
+          "name": "390 Command has no horizontal overflow",
+          "pass": true
+        },
+        {
+          "name": "390 reduced-motion preference active",
+          "pass": true
+        },
+        {
+          "name": "390 actual settled Arena account is visible",
+          "pass": true
+        },
+        {
+          "name": "390 Arena has no horizontal overflow",
+          "pass": true
+        },
+        {
+          "name": "768 anonymous Command HTTP 200",
+          "pass": true
+        },
+        {
+          "name": "768 actual Devnet token/lineage state",
+          "pass": true
+        },
+        {
+          "name": "768 Command has no horizontal overflow",
+          "pass": true
+        },
+        {
+          "name": "768 reduced-motion preference active",
+          "pass": true
+        },
+        {
+          "name": "768 actual settled Arena account is visible",
+          "pass": true
+        },
+        {
+          "name": "768 Arena has no horizontal overflow",
+          "pass": true
+        },
+        {
+          "name": "Zero runtime errors",
+          "pass": true
+        }
+      ],
+      "errors": [],
+      "noSigning": true,
+      "noSubmission": true,
+      "physicalDeviceTested": false
+    }
+  },
+  "browserTransactions": [],
+  "browserFixture": {
+    "status": "waiting-for-owner-approval",
+    "owner": "C7jMtkonHhz14rBojP7FWSE8xbGjKybA5FLmzTmTGLpo",
+    "mint": "6V3c3UWqXerQFyfVhFiWVMaXEjNPUmHwWsPa2c4TS1A9",
+    "sourceATA": "E4r1AVcekpNfUwPT9f2z8s25dgMiVgFzDkMotxXzguGP",
+    "provisioning": {
+      "network": "devnet",
+      "payer": "3ws8XCWXKg5oCn9Bv3x6HaVAPgaxBfHTpmQ27Z9oqKAm",
+      "mintAuthority": "3ws8XCWXKg5oCn9Bv3x6HaVAPgaxBfHTpmQ27Z9oqKAm",
+      "owner": "C7jMtkonHhz14rBojP7FWSE8xbGjKybA5FLmzTmTGLpo",
+      "mint": "6V3c3UWqXerQFyfVhFiWVMaXEjNPUmHwWsPa2c4TS1A9",
+      "ata": "E4r1AVcekpNfUwPT9f2z8s25dgMiVgFzDkMotxXzguGP",
+      "amountBaseUnits": "200000000",
+      "isUSDC": false,
+      "purpose": "Test-token provisioning only; no MandateOS vault movement",
+      "signature": "38kmERsdZm7rJW8sGYoDMkj2cbTMLz429ZyDYo5eaMzUzX6BXW7ryHieKRmvFPovs9mhLLJ2w7jGDNTinY46LBKW",
+      "slot": 508153696,
+      "metaErr": null,
+      "feeLamports": 5000,
+      "tokenBalance": "200000000",
+      "mintSupply": "1200000000",
+      "confirmationStatus": "finalized",
+      "explorer": "https://explorer.solana.com/tx/38kmERsdZm7rJW8sGYoDMkj2cbTMLz429ZyDYo5eaMzUzX6BXW7ryHieKRmvFPovs9mhLLJ2w7jGDNTinY46LBKW?cluster=devnet",
+      "logMessages": [
+        "Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL invoke [1]",
+        "Program log: CreateIdempotent",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 179 of 393073 compute units",
+        "Program return: TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA pQAAAAAAAAA=",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success",
+        "Program 11111111111111111111111111111111 invoke [2]",
+        "Program 11111111111111111111111111111111 success",
+        "Program log: Initialize the associated token account",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 37 of 387984 compute units",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 233 of 385522 compute units",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success",
+        "Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL consumed 15015 of 400000 compute units",
+        "Program ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL success",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [1]",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 120 of 384985 compute units",
+        "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success"
+      ],
+      "preBalances": [
+        21582960, 1066800, 0, 1, 5938070540, 7589915066, 20369267856
+      ],
+      "postBalances": [
+        20089520, 1066800, 1488440, 1, 5938070540, 7589915066, 20369267856
+      ],
+      "preTokenBalances": [],
+      "postTokenBalances": [
+        {
+          "accountIndex": 2,
+          "mint": "6V3c3UWqXerQFyfVhFiWVMaXEjNPUmHwWsPa2c4TS1A9",
+          "owner": "C7jMtkonHhz14rBojP7FWSE8xbGjKybA5FLmzTmTGLpo",
+          "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "uiTokenAmount": {
+            "amount": "200000000",
+            "decimals": 6,
+            "uiAmount": 200,
+            "uiAmountString": "200"
+          }
+        }
+      ],
+      "browserSigned": false,
+      "mandateControlledSpend": false
+    }
+  },
+  "releaseVerdict": {
+    "devnetSubmissionReady": false,
+    "reason": "No fresh organization has completed a real owner-browser wallet-signing lifecycle",
+    "dedicatedLocalSignerVerified": true,
+    "encryptedRecoveryBackupVerified": false
   }
 }

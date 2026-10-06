@@ -6,9 +6,9 @@ MandateOS is recursive capital authority for autonomous organizations on Solana.
 
 **Verified on Solana Devnet:** one treasury → nested delegation → valid spend → ancestor revoke → included failed descendant spend (`AncestorRevoked / 6003`) → successful Operations spend → Root-only reclaim. Existing Arena funding, two result commitments and atomic winner payout also finalized. All **19 lifecycle receipts** were independently reconciled; [actual signatures, fees, logs and balances](docs/devnet-mvp-proof.json) and [verification report](docs/DEVNET-MVP-VERIFICATION.md) are available.
 
-[Devnet preview](https://mandateos-v2-f984ud67a-luzzwaixs-projects.vercel.app) · currently protected by **Vercel SSO**, not an anonymous judge link. Public production access and real browser-wallet signing remain release gates. Run the current frontend locally using the quick start below. DEMO mode is explicitly simulated; Devnet never falls back to demo data after an RPC error.
+[Public Devnet product](https://mandateos-v2.vercel.app/app) · [Arena](https://mandateos-v2.vercel.app/arena). Anonymous HTTP access is verified for all three routes; production no longer requires Vercel SSO. Real owner-wallet signing across a fresh organization remains an open release gate: existing lifecycle receipts were CLI-signed, not browser-signed. DEMO mode is explicitly simulated; Devnet never falls back to demo data after an RPC error.
 
-![Actual Devnet account state after revoke, Operations spend and reclaim](docs/images/devnet-command.png)
+![Anonymous production Devnet account state after revoke, Operations spend and reclaim](docs/images/devnet-public-command.png)
 
 ## The problem
 
@@ -57,7 +57,7 @@ $env:PORT="3101"
 node scripts/web-preview.mjs
 ```
 
-Open http://127.0.0.1:3101/app and select DEVNET. Public reads load the canonical organization without a wallet. Its owner is 3ws8…; connecting another wallet grants no authority over it. The existing Create organization control accepts a verified classic SPL mint for your own treasury. Funding requires that mint in your source token account. Use injected Phantom/Solflare with a Devnet wallet. Never import the CLI deploy/upgrade key into the frontend.
+Open http://127.0.0.1:3101/app; Command and Arena default to DEVNET. Public reads load the canonical organization without a wallet. Its owner is 3ws8…; connecting another wallet grants no authority over it. The existing Create organization control accepts a verified classic SPL mint for your own treasury. Funding requires that mint in your source token account. Use injected Phantom/Solflare with a Devnet wallet. Never import the CLI deploy/upgrade key into the frontend.
 
 The example environment contains only public RPC, Program ID and organization settings and disables disposable browser signing. HTTP pacing honors Retry-After; an unknown submission blocks further signing until reconciled. Do not put a paid RPC secret in NEXT_PUBLIC settings.
 
@@ -68,19 +68,33 @@ npm run verify:devnet:read
 
 Program **125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd**. Organization **EJsA5n6BBusygH8Ze9pktPFbpP2FXGEEBBgcE6A2Dz3A**. Classic SPL mint **6V3c3UWqXerQFyfVhFiWVMaXEjNPUmHwWsPa2c4TS1A9**, decimals 6: **test tokens, not USDC**. DEMO is separate and simulated. No validator or application backend is needed for the Devnet frontend.
 
-| Flow                                            | Evidence status                                                                       |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Treasury funding and recursive delegation       | Finalized on Devnet                                                                   |
-| Valid Scraper spend and Research revoke         | Finalized on Devnet                                                                   |
-| Blocked descendant action                       | Included finalized failure, Custom 6003, actual 10000-lamport fee                     |
-| Operations spend / Root reclaim                 | Finalized on Devnet                                                                   |
-| Arena commitments / trusted-verifier settlement | Finalized on Devnet, actual 25-token payout                                           |
-| Separate verifier-result / quality proof        | No such on-chain instruction                                                          |
-| Browser reads / Explorer evidence               | Actual RPC state and real Explorer links verified; 12 read-only browser checks passed |
-| Real extension approval / pending → confirmed   | In progress; CLI signatures and adapter mocks do not substitute                       |
-| Anonymous production frontend                   | Unverified; preview redirects to SSO                                                  |
+| Flow                                            | Evidence status                                                                                |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Treasury funding and recursive delegation       | Finalized on Devnet                                                                            |
+| Valid Scraper spend and Research revoke         | Finalized on Devnet                                                                            |
+| Blocked descendant action                       | Included finalized failure, Custom 6003, actual 10000-lamport fee                              |
+| Operations spend / Root reclaim                 | Finalized on Devnet                                                                            |
+| Arena commitments / trusted-verifier settlement | Finalized on Devnet, actual 25-token payout                                                    |
+| Separate verifier-result / quality proof        | No such on-chain instruction                                                                   |
+| Browser reads / Explorer evidence               | Public production reads and real Explorer links verified; adapter mocks are labeled separately |
+| Real extension approval / pending → confirmed   | In progress; CLI signatures and adapter mocks do not substitute                                |
+| Anonymous production frontend                   | Verified HTTP 200 on Story, Command and Arena; no cookies or authorization supplied            |
 
 [Historical LOCALNET instructions](docs/README-LOCALNET-HISTORY.md) and their screenshots are preserved separately. Their ephemeral signatures are not Devnet evidence.
+
+## One delegated controller action
+
+This is a disposable CLI action, not an autonomous agent runtime. It uses the actual spend instruction and complete writable ancestor path; it cannot move vault tokens through an ordinary wallet transfer. Give a dedicated controller a mandate, retain the treasury key, and fund the controller with Devnet SOL for its fees. The utility refuses Root and a controller equal to the treasury authority.
+
+The following command is read-only and was run against the existing active Operations mandate. It reads no key and sends no transaction:
+
+```powershell
+node scripts/mandate-spend.cjs --intent my-one-action --organization EJsA5n6BBusygH8Ze9pktPFbpP2FXGEEBBgcE6A2Dz3A --mandate HzDvZ6Bg4VS8PcizrmTFXG9kbmPqZdH5yK79wshmnn21 --destination 6z9Y84r9rDTtGQw8yzypX3vi8WTZ743hxw2ML2xWM79H --amount 1
+```
+
+To execute against your own mandate, replace the public addresses and append `--execute --keypair <protected-dedicated-controller-file-outside-the-repository>`. Do not export your connected browser wallet or supply its treasury key. Execution uses enabled preflight, saves simulation/signature/receipt before assertions and re-reads chain state. Reuse the **same intent name and parameters** to reconcile an unknown result; do not invent another intent to retry. The new wrapper's read-only path is verified; its execute path reuses the tested evidence transport but has not submitted a new spend in this release pass.
+
+No backend is required for these supported instructions. Test-token provisioning and trusted-verifier selection remain operator responsibilities; neither is an autonomous service or an on-chain quality proof.
 
 ## Architecture
 
@@ -124,8 +138,12 @@ The local runner builds an isolated ignored source copy with disposable LOCALNET
 
 Browser verification: node scripts/verify-devnet-browser.mjs http://127.0.0.1:3101. It requires an installed Playwright module (PLAYWRIGHT_MODULE can select it), performs actual read-only RPC checks, and separately labels adapter mocks. It never signs transactions. The existing capital-surface suite covers five viewport widths and reduced motion.
 
+[Fresh browser fixture handoff](docs/DEVNET-BROWSER-HANDOFF.md) contains the owner approval, funded test-token account and exact expected UI sequence. The prepared 200 test TOKENS are not USDC. Public browser QA: 29 checks passed with read-only/mocked provenance recorded; mobile/reduced-motion production views: 13 checks passed. **No real browser-signed transaction is claimed.**
+
+![Actual production Arena on a mobile viewport](docs/images/devnet-public-arena-mobile.png)
+
 ## Release boundaries
 
-Program/source/IDL identity and executable bytes are verified. Core and supported Arena flows have finalized receipts. Real Chrome wallet approval/signing, anonymous production access and authority recovery-backup verification are still separate gates. Public dependency audit reports 12 runtime advisories (5 high, 7 moderate); no forced SDK migration or security-audit claim is made.
+Program/source/IDL identity and executable bytes are verified. Core and supported Arena flows have finalized receipts. Anonymous production access and account/evidence reads are verified. Real Chrome wallet approval/signing across a fresh organization and authority recovery-backup verification remain open gates. Public dependency audit reports 12 runtime advisories (5 high, 7 moderate); no forced SDK migration or security-audit claim is made.
 
 The frontend visual checkpoint remains frozen. No backend, database, x402, mainnet usage, new feature surface or another Solana deployment was added. Current work is on devnet-integration; GitHub publication and submission video follow product verification. No push or merge has been performed.

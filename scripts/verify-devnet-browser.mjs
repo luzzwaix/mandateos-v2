@@ -131,10 +131,12 @@ try {
     .getByRole("button", { name: "Close wallet menu", exact: true })
     .click();
   await page.getByRole("link", { name: "Arena", exact: true }).click();
+  await page.locator(".arena-world.account-backed").waitFor({ timeout: 90000 });
   await page
     .getByText("CONFIRMED ACCOUNT READS", { exact: false })
     .waitFor({ timeout: 90000 });
   await page
+    .locator(".arena-world.account-backed")
     .getByText("SETTLED", { exact: false })
     .first()
     .waitFor({ timeout: 90000 });

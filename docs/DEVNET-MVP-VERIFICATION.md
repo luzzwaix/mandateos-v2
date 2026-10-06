@@ -1,10 +1,10 @@
 # Devnet MVP verification — 6 October 2026
 
-Core and the contract's supported Arena sequence completed on the existing deployment. This supersedes [the partial Core stopping point](DEVNET-CORE-PARTIAL.md), which is preserved as history. Browser extension signing and anonymous public access remain separate release gates.
+Core and the contract's supported Arena sequence completed on the existing deployment. This supersedes [the partial Core stopping point](DEVNET-CORE-PARTIAL.md), which is preserved as history. Anonymous production access and real Devnet reads are now verified. A fresh owner-browser wallet-signing lifecycle remains the release gate; CLI receipts and mocks do not satisfy it.
 
 ## Identity
 
-RPC `https://api.devnet.solana.com`; genesis `EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG`. Read-only reconciliation at **2026-10-06 15:36:51 UTC**, finalized account slot **508140233**, verified all **19** lifecycle receipts and unchanged authority without reading a signer or sending transactions.
+RPC `https://api.devnet.solana.com`; genesis `EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG`. Read-only reconciliation at **2026-10-06 16:39:16 UTC**, finalized account slot **508155921**, verified all **19** lifecycle receipts and unchanged authority without reading a signer or sending transactions.
 
 | Identity                      | Verified value                                                                           |
 | ----------------------------- | ---------------------------------------------------------------------------------------- |
@@ -15,7 +15,7 @@ RPC `https://api.devnet.solana.com`; genesis `EtWTRABZaYq6iMfeYKouRu166VU2xqa1wc
 | Shared vault                  | `6nDTB65MgSm2H3cikxLUoeYY8GdkC89vMbcjY5j84eUq`                                           |
 | Classic SPL mint, decimals 6  | `6V3c3UWqXerQFyfVhFiWVMaXEjNPUmHwWsPa2c4TS1A9` — test TOKENS, **not USDC**               |
 | ELF                           | 462,984 bytes; SHA256 `ecf178ec3a259f3d1ddd48441b86ce9470ae3db74aa60ab7e8fadcae089edd35` |
-| Payer balance at read         | 21,582,960 lamports                                                                      |
+| Payer balance at read         | 20,089,520 lamports                                                                      |
 
 No new Solana deployment, Rust edit, IDL replacement, key generation or authority transfer occurred. App ABI is the bundled source-generated IDL; no on-chain IDL publication is needed. [Original deployment/hash evidence](DEVNET-SEQUENTIAL-RESUME.md) remains applicable.
 
@@ -51,35 +51,54 @@ The three Arena instructions are create bounty, submit result and settle bounty.
 
 Amounts are six-decimal test tokens. Descendant stored balances are unusable and must not be summed as active capital. **1030 cumulative funded − 40 spent − 890 reclaimed = 100 vault**. The 30-token redeposit reused reclaimed tokens. Root 5 + Operations 95 accounts for all active capital. Owner source has **860**, Core destination **15**, Arena payout **25**. Lifecycle fees: original **55000** + continuation **65000** = **120000 lamports**, separate from account rent deposits.
 
-## Product and release
+## Current product and release
 
-Existing static frontend talks directly to RPC and injected wallets. No database/backend is required for these account reads and signatures. Layouts, routes, Story styling and contract semantics stay frozen. Integration changes pace HTTP, honor Retry-After, cache only finalized receipts, stop overlapping polls, preserve partial verified history, and retain signed transaction identity before RPC. Unknown outcomes block further signing until history/receipt/finalized-expiry reconciliation. Public pending metadata survives same-tab reload; no key or signed wire is stored in browser storage. Existing organization/create controls are now reachable after loading the canonical organization.
+Public [Command](https://mandateos-v2.vercel.app/app) and [Arena](https://mandateos-v2.vercel.app/arena) are anonymously reachable. The production deployment is READY: **mandateos-v2-2sapm55z0-luzzwaixs-projects.vercel.app**, frontend source checkpoint **7ce740a585774eb195ef8626876ae4a3db9f9000**. HTTP checks supplied no cookies or authorization: Story / Command / Arena all 200, no SSO redirect. Preview deployments retain SSO. Four Vercel variables are public Devnet configuration only; no signer or RPC secret is uploaded.
 
-The canonical organization authority is 3ws8…. Connecting C7j… does not authorize spending its treasury. User reported C7j… connected in DEVNET in their Chrome; this is **manual testimony**, not automated extension-signing verification. Decline/approve creation of a C7j-owned organization and its actual receipt are still pending. Program upgrade authority remains 3ws8….
+The initial production attempt returned direct-route 404s; static `cleanUrls` corrected the .html routing. A later QA race matched Command's historical "Bounty settled" before Arena navigation; the failed capture is preserved and the test now waits for the actual Arena route. Neither failure is counted as a pass.
 
-Updated preview [mandateos-v2-f984ud67a-luzzwaixs-projects.vercel.app](https://mandateos-v2-f984ud67a-luzzwaixs-projects.vercel.app) built successfully with the final RPC/reconnect fixes. Anonymous `/app` read at **15:41:33 UTC** returned **302 → vercel.com/sso-api**. This is not an anonymously accessible judge URL. The optional authenticated CLI curl check exited 1 and is not claimed as a successful hosted browser check. Production publication/protection change awaits the answer to the existing approval request. A configured production domain alone does not establish which build it serves.
+UI now defaults Command/Arena to Devnet while retaining labeled Demo. Address typing does not initiate reads; changing organization clears previous capital values and obsolete reads cannot replace new state. Selected PDA and unresolved public signature/horizon survive same-tab reload. A lost create response preserves its PDA; reconciliation runs even when that account is absent. Repeated action clicks are locked synchronously, and a mismatched wallet message or RPC signature cannot manufacture confirmation. Every normal send retains preflight.
 
-Upgrade authority's independently computed local public key matches 3ws8…. Its external private directory has a protected Windows ACL granting only the current user FullControl. Local custody is verified; **offline/encrypted recovery backup is not verified**. No key was exported or authority transferred.
+| Function                                   | Devnet UI                                  | Real receipts                                           | Demo / unsupported / external gate                                                               |
+| ------------------------------------------ | ------------------------------------------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Program, mint, capital and lineage reads   | Verified anonymously on production         | Actual chain state and Explorer links                   | No wallet required                                                                               |
+| Treasury initialization / deposit          | Actual client instructions wired           | Canonical CLI finalized                                 | Fresh owner UI approval pending                                                                  |
+| Delegation / nested delegation / spend     | Actual signer/ancestor path wired          | Canonical CLI finalized                                 | Fresh browser signing unverified                                                                 |
+| Revoke / descendant authority loss         | Actual state reads verified                | Canonical revoke + included failed spend 6003 finalized | New browser rejection remains unverified; ordinary preflight must not fabricate a failed receipt |
+| Operations / reclaim                       | Actual client wired                        | Canonical CLI finalized                                 | Fresh browser signing unverified                                                                 |
+| Arena reserve / commitment / atomic payout | Actual settled state visible on production | Canonical CLI finalized                                 | Fresh browser signing unverified                                                                 |
+| Separate verifier-result / quality proof   | Not supported                              | No such instruction                                     | Trusted local selection precedes settlement                                                      |
+| Demo                                       | Visibly separate                           | None                                                    | Simulated accounting only                                                                        |
 
-Runtime `npm audit --omit=dev`: **12 flags (5 high, 7 moderate, 0 critical)** in pinned transitive Anchor/Solana packages. Browser bigint-buffer uses pure JS and web3's browser path uses UUID v4; these observations do not resolve advisories or establish production security. Forced dependency downgrades/SDK replacement were not applied.
+**Real confirmed browser transactions: 0.** Tool inventory exposes only Codex's browser without the user's Phantom/Solflare. C7j… has not yet provided a create receipt; the latest scan found zero owned organizations. Owner approval is requested in Chrome; no key export is required.
 
-## Verification
+Test-token provisioning has finalized: [38kmERsdZm7rJW8sGYoDMkj2cbTMLz429ZyDYo5eaMzUzX6BXW7ryHieKRmvFPovs9mhLLJ2w7jGDNTinY46LBKW](https://explorer.solana.com/tx/38kmERsdZm7rJW8sGYoDMkj2cbTMLz429ZyDYo5eaMzUzX6BXW7ryHieKRmvFPovs9mhLLJ2w7jGDNTinY46LBKW?cluster=devnet), slot 508153696, err null, fee 5000. Existing mint authority 3ws8… created C7j…'s ATA and minted 200 test TOKENS; this is CLI fixture preparation, not a browser transaction or mandate-controlled spend. Canonical vault/state stayed unchanged. Mint supply is now 1200 test tokens. No further SOL transfer is needed.
 
-| Check                                         | Observed result                                                                                                   |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Rust fmt / locked check                       | Passed                                                                                                            |
-| Rust unit tests                               | **16 passed, 0 failed**                                                                                           |
-| Source SBF/Anchor build + isolated validators | Build passed; **64 passed, 0 failed** (48 Core + 16 Arena)                                                        |
-| Client/RPC/evidence/budget/UI unit cases      | **51 passed, 0 failed**; clearly labeled stubs                                                                    |
-| Root/frontend typecheck                       | Passed                                                                                                            |
-| Frontend lint / static production build       | Passed; zero lint warnings                                                                                        |
-| Responsive/reduced-motion suite               | **111 assertions passed**, 0 failures after the integration fixes                                                 |
-| Real read-only browser + adapter mocks        | Final **12 real-read + 7 mock checks passed**, 0 failures; earlier 429/reconnect failures retained as diagnostics |
-| Real extension signature/approval lifecycle   | User connection reported; signed receipt pending                                                                  |
-| Anonymous frontend                            | SSO redirect observed; public production not yet authorized                                                       |
-| Secret scan / diff check                      | Passed: 171 release files scanned, no findings; diff check passed                                                 |
+Dedicated local signer control was checked by its matching public key and the real provisioning signature. Its Windows ACL allows the local owner; no key contents were printed or copied. An encrypted/offline recovery backup is not independently verified.
 
-Earlier browser failures are preserved with raw 429 bodies and page state, not counted as passing. They concerned current receipt reads and a wallet Connecting state that waited for history, not the prior program deployment. Both paths were fixed; the final browser run at **15:38:17 UTC** passed 19 checks with zero runtime errors and zero observed raw RPC errors. C7j's confirmed balance was **7,589,915,066 lamports**, slot **508139247**, and no C7j-owned organization existed at **15:32:55 UTC**. These observations do not establish a browser-signed transaction. Mainnet, x402, another Solana deployment, visual redesign, backend, Git push/merge and submission-video recording were not performed.
+## Current verification results
+
+| Check                                      | Exact final result                                                                                              |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| Rust fmt / locked check                    | Pass; supported Rust 1.89.0 Windows GNU                                                                         |
+| Rust unit tests                            | 16 passed, 0 failed                                                                                             |
+| SBF build / real local validator           | Build passed; 64 tests passed, 0 failed in eight batches (48 Core, 16 Arena)                                    |
+| TypeScript unit suites                     | 54 passed, 0 failed: 15 UI, 25 client, 5 RPC, 7 evidence, 2 budget                                              |
+| Root / frontend typecheck                  | Pass                                                                                                            |
+| Frontend lint                              | Pass, zero warnings                                                                                             |
+| Local and Vercel production builds         | Pass; static Story/Command/Arena exported                                                                       |
+| Final public desktop browser               | 29 passed, 0 failed; actual reads + explicitly labeled adapter mocks and recovery replay, no signing/submission |
+| Public mobile/reduced-motion account views | 13 passed, 0 failed; widths 390 and 768; no overflow/runtime errors; viewport emulation, not physical devices   |
+| Frozen responsive demo / motion regression | 111 + 10 passed, 0 failed                                                                                       |
+| Devnet receipt reconciliation              | All 19 canonical lifecycle receipts finalized; current program binary/authority match                           |
+| Fixture preparation                        | One actual finalized CLI mint/ATA setup receipt, err null                                                       |
+| Real extension-signing lifecycle           | Unverified, blocked on owner approval/access                                                                    |
+| Secret scan / generated static-output scan | 175 tracked/new files and 49 static text files: no recognized secret findings                                   |
+| git diff --check                           | Pass                                                                                                            |
+
+Runtime dependency audit still reports 12 advisories (5 high, 7 moderate, 0 critical); forced incompatible SDK migrations were not applied. No Mainnet safety or independent security-review claim is made. No backend, x402, visual redesign or new Solana deployment was added.
+
+**Verdict: not Devnet submission-ready under the requested definition**, because the complete fresh browser wallet-signing flow has not been observed. Public reads and CLI lifecycle completion are verified. The exact next sequence and expected—not claimed—accounting is in [browser handoff](DEVNET-BROWSER-HANDOFF.md).
 
 ## Commands and handoff
 
@@ -98,7 +117,7 @@ Open `http://127.0.0.1:3101/app` → DEVNET. Public reads need no wallet; action
 
 `npm run verify:devnet:read` checks public proof signatures/current state without signer access. `node scripts/verify-devnet-browser.mjs http://127.0.0.1:3101` checks real reads and labeled adapter mocks, without signing. Set `PLAYWRIGHT_MODULE` to an installed module when needed. Do not rerun `verify:devnet` to create a fresh canonical flow or redeploy. Existing resume commands reconcile their durable journal first.
 
-Branch/start HEAD: **devnet-integration**, **f5b7965dbac9f4b634bfb5eccc6b146046218f68**. All previous dirty work remains preserved. Any final checkpoint is reported by its actual hash.
+Current continuation branch/start HEAD: **devnet-integration**, **3596fc3a5ee810f210d6a5224e1b4f06baf4324d**, initially clean. Prior work is preserved. Functional checkpoint: **7ce740a585774eb195ef8626876ae4a3db9f9000**. The final documentation checkpoint is reported by its actual hash. Push is authorized only to this branch; no merge/reset/rebase/force push.
 
 ## All reconciled lifecycle receipts
 
@@ -124,7 +143,7 @@ Branch/start HEAD: **devnet-integration**, **f5b7965dbac9f4b634bfb5eccc6b1460462
 | initial-valid Scraper spend 10                              | [4p7r8sJPJj1uFZK4SNhqacUku6fi2VryWYPPAjUtr3i6WRaKrEnsatVYJrBGvutDWLKKXmVeSxBNKMjmpC94fKmo](https://explorer.solana.com/tx/4p7r8sJPJj1uFZK4SNhqacUku6fi2VryWYPPAjUtr3i6WRaKrEnsatVYJrBGvutDWLKKXmVeSxBNKMjmpC94fKmo?cluster=devnet) | 508108263 | 5000         | null                                     |
 | initial-revoke Research                                     | [5R6mNLVuNhivLsiJRpqRYhYQSJkodhQwzTFrTJqayg6Ywik1oCyhaQwaHWtVchurRqY6qaxrpgdSjZHjWS4Lg7nS](https://explorer.solana.com/tx/5R6mNLVuNhivLsiJRpqRYhYQSJkodhQwzTFrTJqayg6Ywik1oCyhaQwaHWtVchurRqY6qaxrpgdSjZHjWS4Lg7nS?cluster=devnet) | 508108297 | 5000         | null                                     |
 
-## Checkpoint file inventory
+## Earlier integration checkpoint file inventory
 
 This includes preserved prior deployment/buffer work and the current continuation. Ignored artifacts, .env.local, build output and private material are excluded.
 
