@@ -4,11 +4,11 @@
 
 MandateOS is recursive capital authority for autonomous organizations on Solana. An organization keeps tokens in one program-controlled vault, delegates bounded authority down an agent tree, and cuts an entire branch with one revocation transaction. Arena Lite reserves treasury capital for external work and pays one verified winner.
 
-**Current integration:** frontend design is frozen. The authorized Devnet-only source/IDL identity is `125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd`; deployment is blocked by the unfunded dedicated Devnet payer. The real client uses all nine actual instructions and checks Devnet genesis plus deployed binary before transactions. DEMO remains visibly simulated. See [current release evidence](docs/DEVNET-RELEASE.md). The localnet screenshots, commands and Vercel preview below describe the historical `submission-v1.0.3` checkpoint; no current hosted Devnet lifecycle is claimed.
+**Verified on Solana Devnet:** one treasury → nested delegation → valid spend → ancestor revoke → included failed descendant spend (`AncestorRevoked / 6003`) → successful Operations spend → Root-only reclaim. Existing Arena funding, two result commitments and atomic winner payout also finalized. All **19 lifecycle receipts** were independently reconciled; [actual signatures, fees, logs and balances](docs/devnet-mvp-proof.json) and [verification report](docs/DEVNET-MVP-VERIFICATION.md) are available.
 
-[Open the Vercel preview](https://mandateos-v2-qdi2zz8ve-luzzwaixs-projects.vercel.app) · **LOCALNET frontend**. A live validator is required for transactions; the hosted empty state is explicitly illustrative.
+[Devnet preview](https://mandateos-v2-f984ud67a-luzzwaixs-projects.vercel.app) · currently protected by **Vercel SSO**, not an anonymous judge link. Public production access and real browser-wallet signing remain release gates. Run the current frontend locally using the quick start below. DEMO mode is explicitly simulated; Devnet never falls back to demo data after an RPC error.
 
-![Real localnet capital authority tree](docs/images/capital-tree.png)
+![Actual Devnet account state after revoke, Operations spend and reclaim](docs/images/devnet-command.png)
 
 ## The problem
 
@@ -18,9 +18,9 @@ AI agents increasingly need authority to spend capital. Giving an agent a treasu
 
 ```text
 Human / one treasury
-└── Research agent  $400
-    └── Data agent  $150
-        └── Scraper $50
+└── Research agent  400 test tokens
+    └── Data agent  150 test tokens
+        └── Scraper 50 test tokens
 
 Revoke Research
 → Research revoked; Data and Scraper blocked
@@ -42,22 +42,45 @@ Fast, low-cost transactions make delegation and revocation usable during agent e
 
 Arena's verifier is a trusted signer. A result commitment proves which hash an agent submitted; it does not prove useful work. Participant keys can also control mandates, but Arena eligibility is independent of branch authority. Open bounties have no cancellation path in this MVP; unavailable verifiers can leave rewards reserved.
 
-![Actual Arena settlement](docs/images/arena-settlement.png)
+![Existing Arena displaying the finalized 25-test-token Devnet payout](docs/images/devnet-arena.png)
 
-## Demo
+## Quick start
 
-Start the validator and web console using the commands below. Click **Initialize local demo** and select the disposable wallet file printed by the runner. The file is read locally into tab memory; it is never uploaded, embedded in the bundle or persisted by the app. Import only that generated test wallet.
+From this integration checkout, use Node 20.18+ and preserve existing local settings:
 
-Setup sends real transactions: create a six-decimal demo SPL mint, fund Root with 1,000, delegate Research 400, Data 150, Search 100 and Scraper 50, then spend 10 from Scraper.
+```powershell
+npm ci
+npm --prefix web ci
+if (!(Test-Path web/.env.local)) { Copy-Item web/.env.example web/.env.local }
+npm --prefix web run build
+$env:PORT="3101"
+node scripts/web-preview.mjs
+```
 
-1. Root initially has 600 available; Research has 390 remaining.
-2. Click **Revoke Research**. Wait for confirmation: Research becomes revoked, Data/Search/Scraper become blocked, and Root available rises to 990.
-3. Click **Attempt blocked payment**. A real Scraper payment is broadcast and recorded as failed with `AncestorRevoked`; inspect its signature and logs.
-4. Open **Arena Lite**. Create a 25-token bounty, submit Research and Search commitments, then select Research as winner.
-5. Observe the confirmed payout and settlement event. Root has 965 available; total spending is 35.
-6. Select Root → Reclaim → 965. The vault becomes zero; the owner receives 965.
+Open http://127.0.0.1:3101/app and select DEVNET. Public reads load the canonical organization without a wallet. Its owner is 3ws8…; connecting another wallet grants no authority over it. The existing Create organization control accepts a verified classic SPL mint for your own treasury. Funding requires that mint in your source token account. Use injected Phantom/Solflare with a Devnet wallet. Never import the CLI deploy/upgrade key into the frontend.
 
-[Recorded public RPC proof](docs/demo-proof.json) and [verification details](docs/VERIFICATION.md) document the completed browser flow. These addresses/signatures belong to an ephemeral **LOCALNET**, not devnet. Explorer custom-RPC links require that original validator to remain running.
+The example environment contains only public RPC, Program ID and organization settings and disables disposable browser signing. HTTP pacing honors Retry-After; an unknown submission blocks further signing until reconciled. Do not put a paid RPC secret in NEXT_PUBLIC settings.
+
+```powershell
+# Read-only receipt/account verification; no keypair required:
+npm run verify:devnet:read
+```
+
+Program **125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd**. Organization **EJsA5n6BBusygH8Ze9pktPFbpP2FXGEEBBgcE6A2Dz3A**. Classic SPL mint **6V3c3UWqXerQFyfVhFiWVMaXEjNPUmHwWsPa2c4TS1A9**, decimals 6: **test tokens, not USDC**. DEMO is separate and simulated. No validator or application backend is needed for the Devnet frontend.
+
+| Flow                                            | Evidence status                                                                       |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Treasury funding and recursive delegation       | Finalized on Devnet                                                                   |
+| Valid Scraper spend and Research revoke         | Finalized on Devnet                                                                   |
+| Blocked descendant action                       | Included finalized failure, Custom 6003, actual 10000-lamport fee                     |
+| Operations spend / Root reclaim                 | Finalized on Devnet                                                                   |
+| Arena commitments / trusted-verifier settlement | Finalized on Devnet, actual 25-token payout                                           |
+| Separate verifier-result / quality proof        | No such on-chain instruction                                                          |
+| Browser reads / Explorer evidence               | Actual RPC state and real Explorer links verified; 12 read-only browser checks passed |
+| Real extension approval / pending → confirmed   | In progress; CLI signatures and adapter mocks do not substitute                       |
+| Anonymous production frontend                   | Unverified; preview redirects to SSO                                                  |
+
+[Historical LOCALNET instructions](docs/README-LOCALNET-HISTORY.md) and their screenshots are preserved separately. Their ephemeral signatures are not Devnet evidence.
 
 ## Architecture
 
@@ -81,63 +104,28 @@ Root remaining equals funded minus spent minus reclaimed. Bounty creation reduce
 
 This is an **unaudited hackathon MVP**. Controllers may choose arbitrary correct-mint recipients. Mint/freeze and upgrade authorities retain their configured powers. Pinned legacy client dependencies have audit advisories; no production-security claim is made.
 
-## Build
+## Development and verification
 
-Use Node 20.18+, Rust 1.89.0, Anchor 0.32.1, Agave 2.3.0 and SBF tools v1.52. Native Windows additionally needs Git Bash and Visual Studio 2022 x64 C++ build tools. The Windows setup installs user-local official tools and SDK import libraries without changing global PATH.
-
-```powershell
-git clone --branch submission-v1 https://github.com/luzzwaix/mandateos-v2.git
-Set-Location mandateos-v2
-.\scripts\setup-windows.ps1
-npm ci
-npm --prefix web ci
-npm run build:program
-npm run test:local
-```
-
-On Linux/WSL, install those pinned tools first and omit the PowerShell setup command. The supported test runner creates isolated ignored wallets/deployments and leaves tracked source IDs unchanged. Native Windows runs eight independent real validator banks to avoid its snapshot symlink limitation.
-
-In terminal A, from the repository root:
-
-```powershell
-npm run demo:local
-```
-
-It prints the funded disposable wallet path and actual program address. It creates `web/.env.local` with public localnet settings if absent; existing settings are preserved. Ensure the RPC and program match before starting the browser.
-
-In terminal B:
-
-```powershell
-npm --prefix web run dev
-```
-
-Open [the local console](http://127.0.0.1:3000). Setup takes roughly two minutes on this native Windows configuration. Each confirmed action takes about eight seconds because slots are slowed to extend the recording window.
-
-Native Agave 2.3 Windows can stop during snapshot archiving without symlink privileges (observed error 1314). Failure can occur after slot 100; it is not a fixed timer. The runner reports the failure and preserves the ledger. Start a fresh run and initialize a new organization for another recording; use WSL2 or a symlink-capable shell for uninterrupted sessions. The passing test runner avoids this limitation through isolated batches.
-
-Final checks:
+Pinned tools: Node 20.18+, Rust 1.89.0, Anchor 0.32.1, Agave 2.3.0, SBF platform-tools v1.52. Windows also requires Git Bash and Visual Studio x64 C++ tools; the existing scripts/setup-windows.ps1 configures user-local tools. Install these before running Rust/validator checks. The Devnet program is already deployed; do not redeploy to try the frontend.
 
 ```powershell
 cargo fmt --all -- --check
 cargo check --locked
 cargo test --locked --lib
-cargo clippy --locked --all-targets -- -D warnings
 npm run typecheck
-npm run format:check
+npm run test:local
 npm run check:secrets
-npm --prefix web run typecheck
 npm --prefix web run lint
+npm --prefix web run typecheck
 npm --prefix web run build
-npm --prefix web start
 ```
 
-The last command previews the production **static export** at port 3000; stop the development server first. Build output is `web/out`. Public environment settings are compiled into the frontend, so rebuild after changing them.
+The local runner builds an isolated ignored source copy with disposable LOCALNET keys; it preserves the deployed ID and source semantics. Native Windows uses eight independent validator banks to avoid snapshot symlink limitations. Latest runs: **16 Rust unit cases**, **64 real validator cases**, **51 client/RPC/evidence/budget/UI unit cases** passed. Full counts, browser QA limitations and raw-chain evidence are in [the verification report](docs/DEVNET-MVP-VERIFICATION.md).
 
-## Status
+Browser verification: node scripts/verify-devnet-browser.mjs http://127.0.0.1:3101. It requires an installed Playwright module (PLAYWRIGHT_MODULE can select it), performs actual read-only RPC checks, and separately labels adapter mocks. It never signs transactions. The existing capital-surface suite covers five viewport widths and reduced motion.
 
-- **LOCALNET:** compiled program, all tests, browser Capital Cascade, real failed descendant payment, Arena payout and reclaim verified.
-- **DEVNET:** not deployed. CLI selects mainnet-beta and its configured wallet file is absent; no funded local devnet wallet was available.
-- **Frontend:** production export verified and deployed to the Vercel preview above. The hosted build disables disposable signing and points to LOCALNET. A standalone live public demo still requires a reachable deployed program.
-- **Repository:** private GitHub repository, submission work on `submission-v1`, original `main` and `core-v0.1.0` preserved.
+## Release boundaries
 
-See [two-laptop handoff](docs/HANDOFF.md) for exact clone/update routines and [deployment](docs/DEPLOYMENT.md) for frontend hosting and devnet continuation.
+Program/source/IDL identity and executable bytes are verified. Core and supported Arena flows have finalized receipts. Real Chrome wallet approval/signing, anonymous production access and authority recovery-backup verification are still separate gates. Public dependency audit reports 12 runtime advisories (5 high, 7 moderate); no forced SDK migration or security-audit claim is made.
+
+The frontend visual checkpoint remains frozen. No backend, database, x402, mainnet usage, new feature surface or another Solana deployment was added. Current work is on devnet-integration; GitHub publication and submission video follow product verification. No push or merge has been performed.

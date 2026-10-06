@@ -30,6 +30,7 @@ import type {
   SigningWallet,
   TransactionObserver,
 } from "../web/src/lib/solana/types";
+import { estimateCanonicalFlow } from "./devnet-budget";
 
 let captureFailure: ((error: unknown) => void) | undefined;
 
@@ -159,6 +160,21 @@ async function main() {
       maxSupportedTransactionVersion: 0,
     });
     const status = await c.rpc.getSignatureStatus(signature);
+    evidence.push({
+      step,
+      result:
+        tx?.meta?.err || status.value?.err
+          ? "transaction submitted and failed on-chain"
+          : "receipt observation; confirmation checked after persistence",
+      signature,
+      explorer: explorer(signature),
+      slot: tx?.slot ?? status.value?.slot,
+      feeLamports: tx?.meta?.fee,
+      logs: tx?.meta?.logMessages,
+      metaErr: tx?.meta?.err ?? null,
+      status,
+    });
+    save();
     assert(!status.value?.err && !tx?.meta?.err, `${step} failed`);
     assert(
       tx ||
@@ -167,15 +183,7 @@ async function main() {
         ),
       `${step}: confirmation receipt unavailable`,
     );
-    evidence.push({
-      step,
-      result: "transaction confirmed on Devnet",
-      signature,
-      explorer: explorer(signature),
-      slot: tx?.slot ?? status.value?.slot,
-      feeLamports: tx?.meta?.fee,
-      logs: tx?.meta?.logMessages,
-    });
+    evidence[evidence.length - 1].result = "transaction confirmed on Devnet";
     save();
   }
   evidence.push({
@@ -189,21 +197,31 @@ async function main() {
   const balance = await c.rpc.getBalance(owner.publicKey);
   evidence.push({ step: "dedicated wallet balance", balanceLamports: balance });
   save();
-  if (balance < 200_000_000) {
-    const funding = await c.rpc.requestAirdrop(owner.publicKey, 1_000_000_000);
-    const airdrop = await c.rpc.confirmTransaction(funding, "confirmed");
-    assert(!airdrop.value.err);
-    await receipt("fund test wallet through Devnet faucet", funding);
-  }
+  const budget = await estimateCanonicalFlow(c.rpc, owner.publicKey);
+  const payerRentFloor = budget.rents.find((r) => r.bytes === 0)!.lamports;
+  assert(
+    balance >=
+      budget.rentLamports +
+        budget.feeLamports +
+        budget.simulationFeeHeadroomLamports +
+        payerRentFloor,
+    "Dedicated Devnet payer is underfunded for the complete flow; fund it explicitly before retrying",
+  );
+  evidence.push({
+    step: "canonical flow budget checked before submission",
+    budget,
+  });
+  save();
   await receipt(
     "fund controller rent/fees",
     await c.send(
       new Transaction().add(
-        ...Object.values(controllers).map((pair) =>
+        ...Object.entries(controllers).map(([role, pair]) =>
           SystemProgram.transfer({
             fromPubkey: owner.publicKey,
             toPubkey: pair.publicKey,
-            lamports: 25_000_000,
+            lamports:
+              budget.controllerFunding[role as keyof typeof controllers],
           }),
         ),
       ),
@@ -363,6 +381,15 @@ async function main() {
     throw new Error("BUG: revoked descendant spend succeeded");
   } catch (e) {
     if (e instanceof SimulationRejection) {
+      // Preserve the actual preflight error even when the expected-code assertion fails.
+      evidence.push({
+        step: "descendant rejection observed before assertion",
+        result: "RPC/program simulation rejected before submission",
+        code: e.code ?? null,
+        message: e.message,
+        logs: e.logs,
+      });
+      save();
       assert.equal(e.code, "AncestorRevoked");
       evidence.push({
         step: "attempt descendant spend",
@@ -372,6 +399,17 @@ async function main() {
         logs: e.logs,
       });
     } else if (e instanceof ProtocolRejection) {
+      evidence.push({
+        step: "descendant rejection observed before assertion",
+        result: "transaction submitted and failed on-chain",
+        signature: e.signature,
+        slot: e.slot,
+        feeLamports: e.fee,
+        code: e.code ?? null,
+        message: e.message,
+        logs: e.logs,
+      });
+      save();
       assert.equal(e.code, "AncestorRevoked");
       evidence.push({
         step: "attempt descendant spend",

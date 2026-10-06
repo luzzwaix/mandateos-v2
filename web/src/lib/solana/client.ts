@@ -1,10 +1,17 @@
-import { AnchorError, BN, EventParser, type Program } from "@coral-xyz/anchor";
+import {
+  AnchorError,
+  BN,
+  EventParser,
+  utils,
+  type Program,
+} from "@coral-xyz/anchor";
 import {
   PublicKey,
   SystemProgram,
   Transaction,
   SendTransactionError,
   type TransactionInstruction,
+  type Connection,
 } from "@solana/web3.js";
 import {
   createAssociatedTokenAccountIdempotentInstruction,
@@ -73,11 +80,17 @@ export class SimulationRejection extends Error {
 }
 export class MandateClient {
   readonly program: Program;
+  private readonly finalizedActivity = new Map<
+    string,
+    { slot: number; rows: Activity[] }
+  >();
+  activityReadError?: string;
   constructor(
     readonly wallet?: SigningWallet,
     private readonly observe?: TransactionObserver,
+    rpc?: Connection,
   ) {
-    this.program = programFor(wallet);
+    this.program = programFor(wallet, rpc);
   }
   get rpc() {
     return this.program.provider.connection;
@@ -194,10 +207,18 @@ export class MandateClient {
     tx.recentBlockhash = latest.blockhash;
     this.observe?.({ phase: "awaiting-signature" });
     const signed = await this.wallet.signTransaction(tx);
-    this.observe?.({ phase: "submitting" });
+    const wire = signed.serialize();
+    if (!signed.signature)
+      throw new Error("Wallet returned no payer signature");
+    const signedSignature = utils.bytes.bs58.encode(signed.signature);
+    this.observe?.({
+      phase: "submitting",
+      signature: signedSignature,
+      lastValidBlockHeight: latest.lastValidBlockHeight,
+    });
     let signature: string;
     try {
-      signature = await this.rpc.sendRawTransaction(signed.serialize(), {
+      signature = await this.rpc.sendRawTransaction(wire, {
         skipPreflight: false,
         preflightCommitment: "confirmed",
         maxRetries: 3,
@@ -210,6 +231,8 @@ export class MandateClient {
           : undefined;
       if (sendError?.logs) {
         const parsed = AnchorError.parse(sendError.logs);
+        // The signed packet was rejected by preflight, so it is not Explorer evidence.
+        this.observe?.({ phase: "error", signature: undefined });
         throw new SimulationRejection(
           parsed?.error.errorMessage ?? sendError.message,
           sendError.logs,
@@ -247,6 +270,42 @@ export class MandateClient {
       slot: result.context.slot,
     });
     return signature;
+  }
+  async reconcileSubmission(signature: string, lastValidBlockHeight: number) {
+    const statuses = await this.rpc.getSignatureStatuses([signature], {
+      searchTransactionHistory: true,
+    });
+    const status = statuses.value[0];
+    if (
+      status?.confirmationStatus === "confirmed" ||
+      status?.confirmationStatus === "finalized"
+    ) {
+      const receipt = await this.rpc.getTransaction(signature, {
+        commitment: "confirmed",
+        maxSupportedTransactionVersion: 0,
+      });
+      if (!receipt?.meta) return { phase: "unknown" as const };
+      return {
+        phase: receipt.meta.err ? ("failed" as const) : ("confirmed" as const),
+        slot: receipt.slot,
+        fee: receipt.meta.fee,
+        err: receipt.meta.err,
+        logs: receipt.meta.logMessages ?? [],
+      };
+    }
+    // Finalized expiry plus absent history and receipt permits review of a new action.
+    // This method never signs, forwards or recreates the old action.
+    if (
+      !status &&
+      (await this.rpc.getBlockHeight("finalized")) > lastValidBlockHeight
+    ) {
+      const receipt = await this.rpc.getTransaction(signature, {
+        commitment: "finalized",
+        maxSupportedTransactionVersion: 0,
+      });
+      if (!receipt) return { phase: "expired" as const };
+    }
+    return { phase: "unknown" as const };
   }
   private signer() {
     assertCompatibleIdl();
@@ -474,17 +533,40 @@ export class MandateClient {
       .sort((a, b) => b.slot - a.slot)
       .slice(0, 20);
     const parser = new EventParser(this.program.programId, this.program.coder);
-    return (
-      await Promise.all(
-        signatures.map(async (info) => {
+    this.activityReadError = undefined;
+    const rows: Activity[] = [];
+    // Stop at the first unreadable receipt instead of leaving a batch of reads
+    // queued behind a throttled RPC. Previously fetched finalized evidence stays valid.
+    for (const info of signatures) {
+      try {
+        const result = await (async () => {
+          const cached = this.finalizedActivity.get(info.signature);
+          if (
+            info.confirmationStatus === "finalized" &&
+            cached?.slot === info.slot
+          )
+            return cached.rows;
           const transaction = await this.rpc.getTransaction(info.signature, {
             commitment: "confirmed",
             maxSupportedTransactionVersion: 0,
           });
           if (!transaction) return [];
           const logs = transaction.meta?.logMessages ?? [];
+          const remember = (rows: Activity[]) => {
+            if (info.confirmationStatus === "finalized") {
+              this.finalizedActivity.set(info.signature, {
+                slot: transaction.slot,
+                rows,
+              });
+              if (this.finalizedActivity.size > 200)
+                this.finalizedActivity.delete(
+                  this.finalizedActivity.keys().next().value!,
+                );
+            }
+            return rows;
+          };
           if (transaction.meta?.err ?? info.err)
-            return [
+            return remember([
               {
                 signature: info.signature,
                 slot: transaction.slot,
@@ -500,31 +582,38 @@ export class MandateClient {
                   ? new Date(info.blockTime * 1000).toLocaleTimeString()
                   : "confirmed slot",
               },
-            ];
-          return [...parser.parseLogs(logs)].map((event) => ({
-            entity:
-              event.data.bounty instanceof PublicKey
-                ? event.data.bounty.toBase58()
-                : undefined,
-            signature: info.signature,
-            slot: transaction.slot,
-            fee: transaction.meta?.fee,
-            occurredAt: info.blockTime ? info.blockTime * 1000 : undefined,
-            title: event.name
-              .replace(/([A-Z])/g, " $1")
-              .replace(/_/g, " ")
-              .trim()
-              .toLowerCase()
-              .replace(/^./, (c) => c.toUpperCase()),
-            detail: `Confirmed in slot ${info.slot}`,
-            status: "confirmed" as const,
-            time: info.blockTime
-              ? new Date(info.blockTime * 1000).toLocaleTimeString()
-              : "confirmed slot",
-          }));
-        }),
-      )
-    ).flat();
+            ]);
+          return remember(
+            [...parser.parseLogs(logs)].map((event) => ({
+              entity:
+                event.data.bounty instanceof PublicKey
+                  ? event.data.bounty.toBase58()
+                  : undefined,
+              signature: info.signature,
+              slot: transaction.slot,
+              fee: transaction.meta?.fee,
+              occurredAt: info.blockTime ? info.blockTime * 1000 : undefined,
+              title: event.name
+                .replace(/([A-Z])/g, " $1")
+                .replace(/_/g, " ")
+                .trim()
+                .toLowerCase()
+                .replace(/^./, (c) => c.toUpperCase()),
+              detail: `Confirmed in slot ${info.slot}`,
+              status: "confirmed" as const,
+              time: info.blockTime
+                ? new Date(info.blockTime * 1000).toLocaleTimeString()
+                : "confirmed slot",
+            })),
+          );
+        })();
+        rows.push(...result);
+      } catch (e) {
+        this.activityReadError = e instanceof Error ? e.message : String(e);
+        break;
+      }
+    }
+    return rows;
   }
 }
 

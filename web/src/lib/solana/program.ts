@@ -2,6 +2,7 @@ import { AnchorProvider, Program, type Idl } from "@coral-xyz/anchor";
 import { Connection } from "@solana/web3.js";
 import idl from "./mandateos.json";
 import type { SigningWallet } from "./types";
+import { pacedRpcFetch } from "./rpc";
 
 export const RPC_URL =
   process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.devnet.solana.com";
@@ -37,10 +38,11 @@ export function connection() {
   return new Connection(RPC_URL, {
     commitment: "confirmed",
     confirmTransactionInitialTimeout: 45_000,
+    fetch: pacedRpcFetch,
+    disableRetryOnRateLimit: true,
   });
 }
-export function programFor(wallet?: SigningWallet) {
-  const rpc = connection();
+export function programFor(wallet?: SigningWallet, rpc = connection()) {
   if (!wallet) return new Program(idl as Idl, { connection: rpc });
   return new Program(
     idl as Idl,

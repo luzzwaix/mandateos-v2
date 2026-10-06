@@ -608,8 +608,8 @@ export default function ArenaWorld() {
                     )}
                     {!w.live.canTransact && (
                       <p className="eligibility-note">
-                        Transactions disabled. The current Devnet deployment and
-                        IDL have not passed verification.
+                        Transactions disabled while deployment, account state,
+                        or a previous transaction result remains unverified.
                       </p>
                     )}
                   </>

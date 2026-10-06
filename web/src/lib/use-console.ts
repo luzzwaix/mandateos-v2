@@ -8,6 +8,7 @@ import {
 } from "./solana/client";
 import { initializeDemo, type DemoSession } from "./solana/demo";
 import { keypairWallet, connectWallet } from "./solana/wallet";
+import { PROGRAM_ADDRESS } from "./solana/program";
 import type {
   Activity,
   CapitalTransition,
@@ -31,11 +32,77 @@ export function useConsole(enabled = true) {
     phase: "idle",
     title: "",
   });
-  const progressRef = useRef<Partial<TransactionState>>({});
-  const reportTransaction = useCallback<TransactionObserver>((progress) => {
-    progressRef.current = { ...progressRef.current, ...progress };
-    setTransaction((previous) => ({ ...previous, ...progress }));
-  }, []);
+  const progressRef = useRef<
+    Partial<TransactionState> & { lastValidBlockHeight?: number }
+  >({});
+  const pendingRef = useRef<
+    | { signature: string; lastValidBlockHeight: number; title: string }
+    | undefined
+  >(undefined);
+  const [unresolved, setUnresolved] = useState(false);
+  const actionTitleRef = useRef("");
+  const pendingStorageKey = `mandateos:pending:${PROGRAM_ADDRESS}`;
+  useEffect(() => {
+    if (!enabled) return;
+    const restore = setTimeout(() => {
+      try {
+        const saved = JSON.parse(
+          sessionStorage.getItem(pendingStorageKey) ?? "null",
+        );
+        if (
+          saved &&
+          typeof saved.signature === "string" &&
+          /^[1-9A-HJ-NP-Za-km-z]{80,90}$/.test(saved.signature) &&
+          Number.isSafeInteger(saved.lastValidBlockHeight) &&
+          typeof saved.title === "string"
+        ) {
+          pendingRef.current = saved;
+          setUnresolved(true);
+          setTransaction({
+            phase: "unknown",
+            title: saved.title,
+            signature: saved.signature,
+            message:
+              "Restored signed transaction intent. Read accounts to reconcile before a new action.",
+          });
+        }
+      } catch {
+        /* Storage is optional; no signer or signed bytes are stored. */
+      }
+    }, 0);
+    return () => clearTimeout(restore);
+  }, [enabled, pendingStorageKey]);
+  const reportTransaction = useCallback<TransactionObserver>(
+    (progress) => {
+      if (
+        progress.phase === "submitting" &&
+        progress.signature &&
+        progress.lastValidBlockHeight !== undefined
+      ) {
+        pendingRef.current = {
+          signature: progress.signature,
+          lastValidBlockHeight: progress.lastValidBlockHeight,
+          title: actionTitleRef.current,
+        };
+        setUnresolved(true);
+        try {
+          sessionStorage.setItem(
+            pendingStorageKey,
+            JSON.stringify(pendingRef.current),
+          );
+        } catch {}
+      } else if (progress.phase === "confirmed" || progress.phase === "error") {
+        pendingRef.current = undefined;
+        setUnresolved(false);
+        try {
+          sessionStorage.removeItem(pendingStorageKey);
+        } catch {}
+      }
+      progressRef.current = { ...progressRef.current, ...progress };
+      setTransaction((previous) => ({ ...previous, ...progress }));
+    },
+    [pendingStorageKey],
+  );
   const [error, setError] = useState("");
   const [rejection, setRejection] = useState<
     ProtocolRejection | SimulationRejection
@@ -74,9 +141,38 @@ export function useConsole(enabled = true) {
       ),
     [],
   );
+  const reconcilePending = useCallback(async () => {
+    const pending = pendingRef.current;
+    if (!pending) return;
+    const result = await client.reconcileSubmission(
+      pending.signature,
+      pending.lastValidBlockHeight,
+    );
+    if (result.phase === "unknown") return;
+    pendingRef.current = undefined;
+    setUnresolved(false);
+    try {
+      sessionStorage.removeItem(pendingStorageKey);
+    } catch {}
+    setTransaction({
+      phase: result.phase === "confirmed" ? "confirmed" : "error",
+      title: pending.title,
+      signature: result.phase === "expired" ? undefined : pending.signature,
+      slot: "slot" in result ? result.slot : undefined,
+      message:
+        result.phase === "expired"
+          ? "Blockhash expired; history and finalized receipt are absent. Review fresh accounts before a new action."
+          : result.phase === "failed"
+            ? `Recovered on-chain failure: ${JSON.stringify(result.err)}; fee ${result.fee} lamports. ${result.logs.join("\n")}`
+            : "Confirmation recovered by read-only RPC reconciliation. Read the affected organization before a new action.",
+    });
+  }, [client, pendingStorageKey]);
   const refresh = useCallback(
     async (address = organization) => {
-      if (!address) return;
+      if (!address) {
+        await reconcilePending();
+        return;
+      }
       const next = await client.load(new PublicKey(address));
       const previous = snapshotRef.current;
       if (previous?.address.equals(next.address) && transactionRef.current) {
@@ -196,6 +292,10 @@ export function useConsole(enabled = true) {
         next.address,
         next.bounties.map((b) => b.publicKey),
       );
+      if (client.activityReadError)
+        setError(
+          `Account state was read; transaction history is partial: ${client.activityReadError}`,
+        );
       setActivity((prev) => {
         const persisted = new Set(observed.map((a) => a.signature));
         return [
@@ -205,23 +305,29 @@ export function useConsole(enabled = true) {
           .sort((a, b) => (b.occurredAt ?? 0) - (a.occurredAt ?? 0))
           .slice(0, 30);
       });
+      await reconcilePending();
       return next;
     },
-    [client, organization],
+    [client, organization, reconcilePending],
   );
   useEffect(() => {
     if (!enabled) return;
     let cancelled = false;
+    let inFlight = false;
     const update = async () => {
+      if (inFlight || cancelled) return;
+      inFlight = true;
       try {
         const slot = await client.verifyDeployment();
         if (!cancelled) setHealth(`LIVE · slot ${slot.toLocaleString()}`);
-        if (organization && !cancelled) await refresh();
+        if (!cancelled) await refresh();
       } catch (e) {
         if (!cancelled) {
           setHealth(e instanceof Error ? e.message : String(e));
           setStale(true);
         }
+      } finally {
+        inFlight = false;
       }
     };
     if (!busy) void update();
@@ -241,7 +347,17 @@ export function useConsole(enabled = true) {
     address?: string,
   ) {
     if (busy) return;
+    if (
+      pendingRef.current &&
+      !/^(Connecting |Read organization$|Refresh accounts$)/.test(title)
+    ) {
+      setError(
+        "Resolve the previous signature by reading accounts before requesting another transaction.",
+      );
+      return;
+    }
     setBusy(title);
+    actionTitleRef.current = title;
     setTransaction({ phase: "working", title });
     progressRef.current = {};
     setError("");
@@ -273,11 +389,53 @@ export function useConsole(enabled = true) {
           time: new Date().toLocaleTimeString(),
         });
       } else setTransaction({ phase: "idle", title: "" });
+      // Connecting is an adapter operation, not a transaction. Background reads
+      // must not keep the wallet menu busy or delay disconnect/reconnect.
+      if (title.startsWith("Connecting ")) {
+        if (pendingRef.current)
+          setTransaction({
+            phase: "unknown",
+            title: pendingRef.current.title,
+            signature: pendingRef.current.signature,
+            message:
+              "Previous signed transaction remains unresolved; account reads will reconcile it.",
+          });
+        return;
+      }
       await refresh(
         readAddress ?? snapshotRef.current?.address.toBase58() ?? organization,
       );
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
+      if (e instanceof ProtocolRejection || e instanceof SimulationRejection) {
+        pendingRef.current = undefined;
+        setUnresolved(false);
+        try {
+          sessionStorage.removeItem(pendingStorageKey);
+        } catch {}
+      }
+      const progress = progressRef.current;
+      if (
+        !confirmedSignature &&
+        !(e instanceof ProtocolRejection) &&
+        !(e instanceof SimulationRejection) &&
+        (progress.phase === "submitting" || progress.phase === "pending") &&
+        progress.signature &&
+        progress.lastValidBlockHeight !== undefined
+      ) {
+        pendingRef.current = {
+          signature: progress.signature,
+          lastValidBlockHeight: progress.lastValidBlockHeight,
+          title,
+        };
+        setUnresolved(true);
+        try {
+          sessionStorage.setItem(
+            pendingStorageKey,
+            JSON.stringify(pendingRef.current),
+          );
+        } catch {}
+      }
       setError(
         confirmedSignature
           ? `Transaction confirmed; account refresh failed: ${message}`
@@ -306,7 +464,7 @@ export function useConsole(enabled = true) {
                   (progressRef.current.phase === "pending" ||
                     progressRef.current.phase === "submitting")
                 ? progressRef.current.signature
-                  ? `Confirmation unknown. Check the submitted signature before retrying. ${message}`
+                  ? `Confirmation unknown. Check the signed transaction status before retrying. ${message}`
                   : `Submission outcome unknown; RPC returned no signature. Do not assume success or retry automatically. ${message}`
                 : e instanceof ProtocolRejection
                   ? `Submitted and failed on-chain; transaction slot ${e.slot ?? "unavailable"}; fee ${e.fee ?? "unavailable"} lamports. ${message}`
@@ -425,7 +583,7 @@ export function useConsole(enabled = true) {
     activity,
     busy,
     transaction,
-    canTransact: enabled && !stale && health.startsWith("LIVE"),
+    canTransact: enabled && !stale && !unresolved && health.startsWith("LIVE"),
     lastRead,
     stale,
     error,

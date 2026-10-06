@@ -110,6 +110,7 @@ export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
               </>
             )}
           </dl>
+          {w.live.snapshot && <ConnectionInstrument />}
         </details>
       )}
       {!w.demo && w.live.transaction.phase !== "idle" && (
@@ -139,7 +140,7 @@ export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
               target="_blank"
               rel="noreferrer"
             >
-              View submitted transaction <ArrowUpRight size={12} />
+              View transaction status <ArrowUpRight size={12} />
             </a>
           )}
         </div>

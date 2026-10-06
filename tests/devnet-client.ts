@@ -292,4 +292,112 @@ describe("Devnet client transport and provenance (RPC stubs)", () => {
       signature: "unit-test-only-not-a-chain-signature",
     });
   });
+  it("retains the actual signed signature and expiry when the send response is lost", async () => {
+    const { c, progress } = transport();
+    let sends = 0;
+    c.rpc.sendRawTransaction = async () => {
+      sends++;
+      throw Error("lost RPC response");
+    };
+    try {
+      await c.send(new Transaction());
+      throw Error("expected rejection");
+    } catch (e) {
+      expect(String(e)).contains("lost RPC response");
+    }
+    expect(sends).eq(1);
+    const signed = progress[
+      progress.length - 1
+    ] as (typeof progress)[number] & { lastValidBlockHeight: number };
+    expect(signed.phase).eq("submitting");
+    expect(signed.signature).match(/^[1-9A-HJ-NP-Za-km-z]{80,90}$/);
+    expect(signed.lastValidBlockHeight).eq(100);
+  });
+  it("reconciles history and a confirmed receipt without signing or resending", async () => {
+    const { c } = transport();
+    c.wallet!.signTransaction = async () => {
+      throw Error("must not sign");
+    };
+    c.rpc.sendRawTransaction = async () => {
+      throw Error("must not send");
+    };
+    c.rpc.getSignatureStatuses = async (_s, options) => {
+      expect(options?.searchTransactionHistory).eq(true);
+      return {
+        context: { slot: 8 },
+        value: [
+          {
+            slot: 8,
+            confirmations: null,
+            err: null,
+            confirmationStatus: "finalized",
+          },
+        ],
+      };
+    };
+    c.rpc.getTransaction = async () =>
+      ({ slot: 8, meta: { err: null, fee: 5000, logMessages: [] } }) as never;
+    const r = await c.reconcileSubmission("unit-test-only", 100);
+    expect(r.phase).eq("confirmed");
+    expect("slot" in r && r.slot).eq(8);
+  });
+  it("reconciles the exact failed receipt and charged fee", async () => {
+    const { c } = transport();
+    c.rpc.getSignatureStatuses = async () => ({
+      context: { slot: 8 },
+      value: [
+        {
+          slot: 8,
+          confirmations: null,
+          err: { InstructionError: [0, { Custom: 6003 }] },
+          confirmationStatus: "finalized",
+        },
+      ],
+    });
+    c.rpc.getTransaction = async () =>
+      ({
+        slot: 8,
+        meta: {
+          err: { InstructionError: [0, { Custom: 6003 }] },
+          fee: 10000,
+          logMessages: logs,
+        },
+      }) as never;
+    const r = await c.reconcileSubmission("unit-test-only", 100);
+    expect(r.phase).eq("failed");
+    expect("fee" in r && r.fee).eq(10000);
+    expect("logs" in r && r.logs).deep.eq(logs);
+  });
+  it("keeps a still-valid absent signature unresolved", async () => {
+    const { c } = transport();
+    c.rpc.getSignatureStatuses = async () => ({
+      context: { slot: 8 },
+      value: [null],
+    });
+    c.rpc.getBlockHeight = async (commitment) => {
+      expect(commitment).eq("finalized");
+      return 100;
+    };
+    c.rpc.getTransaction = async () => {
+      throw Error("not expired");
+    };
+    expect((await c.reconcileSubmission("unit-test-only", 100)).phase).eq(
+      "unknown",
+    );
+  });
+  it("requires finalized expiry and absent receipt before resolving an expired intent", async () => {
+    const { c } = transport();
+    c.rpc.getSignatureStatuses = async () => ({
+      context: { slot: 8 },
+      value: [null],
+    });
+    c.rpc.getBlockHeight = async () => 101;
+    c.rpc.getTransaction = async (_s, options) => {
+      expect(options?.commitment).eq("finalized");
+      return null;
+    };
+    expect((await c.reconcileSubmission("unit-test-only", 100)).phase).eq(
+      "expired",
+    );
+  });
 });
