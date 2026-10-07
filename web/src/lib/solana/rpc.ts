@@ -8,32 +8,39 @@ function retryDelay(value: string | null) {
   return Number.isFinite(date) ? Math.max(0, date - Date.now()) : 0;
 }
 
-// All console connections share this limiter. It serializes HTTP requests,
-// honors provider backoff and never repeats an ambiguous send automatically.
+// Two bounded lanes: receipt bodies cannot hold current account reads hostage.
+// Both lanes share launch pacing/backoff; sends are never replayed here.
 export function createRpcFetch(
   transport = globalThis.fetch,
   interval = 1000,
   timeoutMs = 15_000,
 ) {
-  let queue: Promise<unknown> = Promise.resolve();
+  const queues = {
+    current: Promise.resolve() as Promise<unknown>,
+    receipt: Promise.resolve() as Promise<unknown>,
+  };
+  let launches: Promise<unknown> = Promise.resolve();
   let next = 0;
   let nextReceipt = 0;
   const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const paced: NonNullable<ConnectionConfig["fetch"]> = (url, init) => {
-    const task = queue.then(async () => {
-      const method = JSON.parse(String(init?.body)).method;
+    const method = JSON.parse(String(init?.body)).method;
+    const lane = method === "getTransaction" ? "receipt" : "current";
+    const task = queues[lane].then(async () => {
       for (let attempt = 0; attempt < 4; attempt++) {
-        await pause(
-          Math.max(
-            0,
-            next - Date.now(),
-            method === "getTransaction" ? nextReceipt - Date.now() : 0,
-          ),
-        );
-        next = Date.now() + interval;
-        if (method === "getTransaction")
-          nextReceipt =
-            Date.now() + (interval > 0 ? Math.max(interval, 3500) : 0);
+        // Receipt-specific pacing must wait outside the shared launch queue.
+        if (lane === "receipt")
+          await pause(Math.max(0, nextReceipt - Date.now()));
+        const launch = launches.then(async () => {
+          while (next > Date.now()) await pause(next - Date.now());
+          init?.signal?.throwIfAborted();
+          next = Date.now() + interval;
+          if (lane === "receipt")
+            nextReceipt =
+              Date.now() + (interval > 0 ? Math.max(interval, 3500) : 0);
+        });
+        launches = launch.catch(() => {});
+        await launch;
         const controller = new AbortController();
         const timer = setTimeout(
           () =>
@@ -84,7 +91,7 @@ export function createRpcFetch(
       }
       throw Error("RPC read retries exhausted");
     });
-    queue = task.catch(() => {});
+    queues[lane] = task.catch(() => {});
     return task;
   };
   return paced;

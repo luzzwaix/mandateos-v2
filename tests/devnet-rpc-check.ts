@@ -11,6 +11,58 @@ import { createRpcFetch } from "../web/src/lib/solana/rpc";
 import { MandateClient } from "../web/src/lib/solana/client";
 
 describe("Public Devnet RPC transport and finalized receipt reuse", () => {
+  it("keeps current reads responsive while a receipt body is stalled, with shared pacing", async () => {
+    let release!: () => void;
+    let started!: () => void;
+    const ready = new Promise<void>((r) => {
+      started = r;
+    });
+    const hold = new Promise<void>((r) => {
+      release = r;
+    });
+    const starts: number[] = [];
+    const rpc = createRpcFetch(async (_url, init) => {
+      starts.push(Date.now());
+      if (JSON.parse(String(init?.body)).method === "getTransaction") {
+        started();
+        await hold;
+      }
+      return new Response("{}");
+    }, 25);
+    const receipt = rpc("http://unit.test", {
+      body: '{"method":"getTransaction"}',
+    });
+    await ready;
+    try {
+      await Promise.race([
+        rpc("http://unit.test", { body: '{"method":"getAccountInfo"}' }),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(Error("Receipt blocked current reads")), 200),
+        ),
+      ]);
+      assert(starts[1] - starts[0] >= 24);
+    } finally {
+      release();
+      await receipt;
+    }
+  });
+  it("does not launch a cancelled request queued behind a read", async () => {
+    let calls = 0;
+    const rpc = createRpcFetch(async () => {
+      calls++;
+      return new Response("{}");
+    }, 25);
+    const controller = new AbortController();
+    const first = rpc("http://unit.test", { body: '{"method":"getSlot"}' });
+    const cancelled = rpc("http://unit.test", {
+      body: '{"method":"getBalance"}',
+      signal: controller.signal,
+    });
+    controller.abort();
+    await first;
+    await assert.rejects(cancelled);
+    assert.equal(calls, 1);
+  });
   it("bounds a stalled response body as well as headers without resending", async () => {
     let calls = 0;
     const rpc = createRpcFetch(
