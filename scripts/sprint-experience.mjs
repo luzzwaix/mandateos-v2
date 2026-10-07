@@ -230,7 +230,8 @@ assert(walkthroughMs >= 19500 && walkthroughMs < 25000);
 await recorded.waitForTimeout(1800);
 await recorded.screenshot({
   path: resolve(output, "walkthrough-complete.png"),
-  fullPage: true,
+  // Full-page capture can resize the screencast; keep this recorded viewport stable.
+  fullPage: false,
 });
 const video = recorded.video();
 await recordingContext.close();
