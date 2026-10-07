@@ -34,6 +34,8 @@ console.log(authority.local, authority.effective, authority.path);
 
 `load` verifies Devnet genesis, executable loader and exact source-built ELF before fetching the organization, owner/discriminator-checked organization, filtered mandates, mint, shared vault, bounties and submissions. RPC errors propagate; missing ancestry yields `unknown`, never fabricated active authority. Snapshots are observations, not guarantees that authority remains valid when a transaction lands.
 
+`load(address, onVerified?, onProgress?)` preserves the original API and optionally reports `deployment`, `organization`, `accounts`, and `submissions` phases. Mint and vault share one batched RPC read, with classic SPL owner/layout checks and matching organization mint/vault authority checks. The address of a connected wallet can be shown independently of these reads.
+
 ## Authority model
 
 Treasury → Research → Data → Scraper; Operations can remain a Treasury sibling. Allocations are accounting authority in one shared vault. Delegate uses only the parent's `selfAvailable`. Spend updates the complete path. Revoke zeros the target, releases its subtree reservation to its parent and leaves descendants stored Active but effectively blocked. Reclaim uses Root's own available amount. Revocation does not itself move tokens. Account amounts are BN/base units; use `toBaseUnits` for exact decimal conversion.
@@ -76,4 +78,4 @@ For `unknown`, persist the signature and `lastValidBlockHeight`, then use `recon
 
 ## Verification
 
-24 focused SDK tests cover configuration, malformed ancestry, revoked ancestry/sibling survival, exact amounts, real IDL builders, complete writable paths and all outcome distinctions. Existing 38 deployment/client/transport tests also exercise the extracted implementation. Tests use RPC stubs and the actual locally built ELF; they are not browser-wallet evidence. Package build and installation into an independent consumer without React are verified. Dependency/security/operations and real Phantom signing remain outside this MVP's verified scope.
+28 focused SDK tests cover configuration, malformed ancestry, revoked ancestry/sibling survival, exact amounts, real IDL builders, complete writable paths, batched token decoding and all outcome distinctions. `isWalletRejection` recognizes provider code 4001; a signing transport exception is not reported as a user decline. Tests use RPC stubs and the actual locally built ELF; they are not browser-wallet evidence. A source-only pinned install, SDK/worker build, package tarball and runnable read-only quickstart are checked in the [completion report](../../docs/COMPLETION-SPRINT.md). Dependency/security/operations and real Phantom signing remain outside this MVP's verified scope.

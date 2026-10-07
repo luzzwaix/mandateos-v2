@@ -2,50 +2,57 @@
 
 **Don't give agents wallets. Give them mandates.**
 
-An agent should be able to delegate a task without handing over the treasury. MandateOS gives agents bounded, recursive economic authority on Solana: one shared vault, a tree of mandates, and one revocation that cuts a branch's effective authority.
+MandateOS gives agents bounded, recursive economic authority on Solana: one shared treasury, a tree of mandates, and one revocation that cuts a branch's effective authority.
 
-![Story: the Authority Chamber in the running application](docs/images/showcase/story.webp)
+![Story: the runnable Authority Chamber](docs/images/completion/story.png)
 
-[Watch the short browser recording: grant → trace → revoke → surviving Operations](docs/images/showcase/authority-story.mp4). Story is an explicitly labeled simulation; its illustrative USDC amounts are not Devnet balances. These are captured application pixels, not mockups. [Capture provenance](docs/SHOWCASE-VERIFICATION.md).
+[Watch the 20-second authority walkthrough](docs/images/completion/authority-walkthrough.webm). This is an explicitly labeled **Interactive demo — no transactions**, captured from the running app. Illustrative Story USDC amounts are simulated; Devnet uses a classic SPL test mint, **not USDC**. [Capture and verification scope](docs/COMPLETION-SPRINT.md).
 
-## The primitive
+## What you see in 20 seconds
 
-```text
-Treasury ── Research ── Data ── Scraper
-        └── Operations
+Click **Run the 20-second authority walkthrough**. One authority structure evolves through bounded Research delegation, deeper Data/Scraper delegation, the Scraper ancestry trace, a Research impact preview, simulated Research revocation, blocked descendants, surviving Operations and honest evidence provenance. Pause, Next step and Replay work with pointer or keyboard. Preview leaves every node active; revocation does not move tokens. Open Command or Arena directly from Story or the main navigation.
 
-Revoke Research → Data and Scraper lose effective authority.
-                  Operations remains active.
-```
-
-Agents sign as mandate controllers. They never receive the shared vault's key. Delegation reserves the parent's own available capital. Spending validates the complete ancestor path and reduces remaining capital along that path. Revocation releases the revoked subtree's reservation to its parent without traversing descendants or moving tokens. A descendant can remain locally Active while effectively blocked. Reclaim uses only Root's own available capital.
-
-## What works today
-
-This is a **Devnet MVP** with six Core instructions and three Arena instructions. The browser and framework-independent SDK share the source-generated protocol client.
-
-| Route            | Experience                                                                                                                |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `/` · Story      | Interactive authority choreography: grant, recursion, trace, blast radius, cascade. Explicit simulation; no transactions. |
-| `/app` · Command | Real account reads, ancestry, available versus reserved capital, mandate actions and transaction evidence.                |
-| `/arena` · Arena | Treasury-funded mission → committed submissions → trusted verifier → atomic winner payout.                                |
+| Route            | Experience                                                                                                            |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `/` · Story      | Authored simulation; no wallet or transactions.                                                                       |
+| `/app` · Command | Real account reads, local/effective authority, available/reserved capital, eligible actions and transaction evidence. |
+| `/arena` · Arena | Funded mission → submissions → trusted verifier → atomic winner payout.                                               |
 
 <table>
   <tr>
-    <td><a href="docs/images/showcase/command-devnet.webp"><img src="docs/images/showcase/command-devnet.webp" alt="Real Devnet reads: revoked Research, blocked Scraper and active Operations" width="360"></a></td>
-    <td><a href="docs/images/showcase/arena-devnet.webp"><img src="docs/images/showcase/arena-devnet.webp" alt="Real Devnet reads: existing settled Arena bounty and 25 test token payout" width="360"></a></td>
-  </tr>
-  <tr>
-    <td>Command: stored-active Scraper, blocked by revoked Research.</td>
-    <td>Arena: existing settled bounty, 25 test TOKENS.</td>
+    <td><a href="docs/images/completion/command-devnet.png"><img src="docs/images/completion/command-devnet.png" alt="Command: current Devnet Scraper blocked by revoked Research" width="360"></a></td>
+    <td><a href="docs/images/completion/arena-devnet.png"><img src="docs/images/completion/arena-devnet.png" alt="Arena: observed existing Devnet settlement" width="360"></a></td>
   </tr>
 </table>
 
-Both captures use actual disconnected Devnet account reads. Account observations do not imply a transaction was submitted through that browser. The fixture uses a six-decimal classic SPL test mint, **not USDC**. Arena trusts its verifier; a submission hash commits a result but does not prove quality. Open bounties have no cancellation path.
+These disconnected browser reads show the existing public fixture. They do not imply a browser transaction or a new settlement. Arena has a trusted verifier: a result hash commits bytes, not quality. Open bounties have no cancellation path.
 
-## Run the app
+## Live app and program
 
-Node ≥20.18. From the repository root, install the pinned dependencies and copy only the public example configuration if no local configuration exists:
+[Story](https://mandateos-v2.vercel.app/) · [Command](https://mandateos-v2.vercel.app/app) · [Arena](https://mandateos-v2.vercel.app/arena) · [Devnet program](https://explorer.solana.com/address/125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd?cluster=devnet).
+
+The existing production deployment was checked READY on 7 October 2026. **The completion candidate shown above is local and has not been deployed.** Current Vercel metadata did not return a source SHA; the earlier recorded production SHA is historical evidence only. [Candidate, deployment and release boundaries](docs/COMPLETION-SPRINT.md).
+
+## Architecture and why Solana
+
+```text
+Next.js static app / reference worker / external integrator
+                      │ shared TypeScript SDK + generated IDL
+                      ▼ direct RPC
+Solana program ── Organization + Mandate PDAs ── one classic SPL vault
+               └─ Bounty + Submission PDAs ── verifier → winner token account
+
+Treasury ── Research ── Data ── Scraper
+        └── Operations
+```
+
+Agents sign as mandate controllers; they never receive the shared vault's key. The program validates the complete ancestry at execution, including revocation races. Delegation reserves only the parent's own available capital. Spending reduces remaining capital along the path. Revocation returns the branch reservation to the parent without traversing or mutating descendants and without moving tokens. A descendant can remain locally ACTIVE while effectively BLOCKED. Root reclaim is a separate instruction using only Root's own available capital.
+
+Solana enforces those rules and transfers atomically against shared public state. Frontend animation, a backend or an agent's private memory cannot grant authority. There is no application API, indexer or database. [Protocol and accounting invariants](docs/PROTOCOL.md).
+
+## Five-minute quickstart
+
+Node ≥20.18. Install the pinned dependencies and copy only public example configuration if no local configuration exists:
 
 ```sh
 npm ci
@@ -55,11 +62,11 @@ npm run build --prefix web
 npm run start --prefix web
 ```
 
-Open [Story](http://127.0.0.1:3000/), [Command](http://127.0.0.1:3000/app) or [Arena](http://127.0.0.1:3000/arena). Command and Arena load the public organization without a wallet. Your wallet needs its own authorized organization/controller, Devnet SOL for fees, and the correct mint's tokens to write. Connecting alone grants no authority over the public fixture. No validator or backend is required. Never put an RPC secret in `NEXT_PUBLIC_*` settings.
+Open [local Story](http://127.0.0.1:3000/), [Command](http://127.0.0.1:3000/app) or [Arena](http://127.0.0.1:3000/arena). Command/Arena read the public organization without a wallet. Writing requires the actual authorized controller, Devnet SOL for fees and the organization's mint. Connecting grants no authority over the public fixture. Never put an RPC secret in `NEXT_PUBLIC_*` settings.
 
-## Integrate an agent
+## SDK and reference agent
 
-After `npm ci`, run `npm run build:sdk`. Save this as `inspect.mjs` and run `node inspect.mjs`:
+After `npm ci`, run `npm run build:sdk`. Save this as `inspect.mjs`, then run `node inspect.mjs`:
 
 ```js
 import { PublicKey } from "@solana/web3.js";
@@ -84,51 +91,28 @@ const authority = inspectAuthority(
 console.log(authority.local, authority.effective); // current fixture: active blocked
 ```
 
-The SDK loads organizations/mandates, validates deployment identity and canonical ancestry, and exposes `delegate`, `spend`, `revoke`, `reclaim`, `transact` and read-only `reconcileSubmission`. Evidence distinguishes preflight rejection, wallet rejection, submission, confirmed success, on-chain failure and unknown delivery. Never blindly retry an unknown signature. [Authority model, SDK usage and errors](packages/sdk/README.md). For another project: `npm pack ./packages/sdk`, then install the resulting tarball.
+The framework-independent SDK shares the app's generated protocol client. It supports Core/Arena builders, deployment verification, exact integer amounts, progress, typed transaction outcomes and read-only reconciliation. Mint/vault reads are batched with SPL and organization checks. Never blindly retry an unknown signature. [Authority model, SDK usage and errors](packages/sdk/README.md). For another project: `npm pack ./packages/sdk`, then install the resulting tarball.
 
-The [reference worker](examples/agent-worker/README.md) has one runnable, read-only command:
+The [reference worker](examples/agent-worker/README.md) has a runnable safe path:
 
 ```sh
 npm run agent:inspect
 ```
 
-It builds the SDK/worker, reads the full Scraper path and reports revoked ancestry. Its caller-signed `runAuthorizedSpend` integration checks controller, amount and destination, attempts one spend, retains outcome evidence and refetches confirmed changes. No embedded secret or spending CLI. Live worker spending remains unverified.
+It builds the SDK/worker, reads the real Scraper path and reports revoked ancestry. The caller-signed `runAuthorizedSpend` integration checks controller, amount and destination, attempts one supported spend and retains outcome evidence. There is no embedded secret or spending CLI. Live worker spending remains unverified.
 
-## Architecture
+## Evidence and limits
 
-```text
-Next.js static app / reference worker / external integrator
-                      │ shared TypeScript SDK + generated IDL
-                      ▼ direct RPC
-Solana program ── Organization + Mandate PDAs ── one classic SPL vault
-               └─ Bounty + Submission PDAs ── verifier → winner token account
-```
+The existing **CLI-signed** canonical lifecycle covers funding, recursive delegation, spend, Research revocation, included failed descendant spend, surviving Operations spend, Root reclaim and Arena settlement. All 19 signatures were rechecked as finalized on 7 October 2026; current accounts matched the recorded lifecycle. **No new Devnet write was needed or submitted in this sprint.** [Full signatures, logs and balances](docs/devnet-mvp-proof.json) · [Lifecycle report](docs/DEVNET-MVP-VERIFICATION.md).
 
-There is no database, indexer or application API. [Protocol and accounting invariants](docs/PROTOCOL.md).
+| Receipt                                                                                                                                                      | Provenance and outcome                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| [Blocked descendant](https://explorer.solana.com/tx/2ACUqFQ5zb66UdhCnxp6F8e6JMSiDQyNf7WURfa3DuhnSwkcgyiz2DCk42R19ZvSYKrExWnJ41PC9SW5uiSJmmgv?cluster=devnet) | Historical CLI; finalized included failure, `AncestorRevoked / 6003`. |
+| [Operations spend](https://explorer.solana.com/tx/4BwMQJXxy3WagC8nm2p5mPQhtg1HJF3H6xYRESU9gFP9sTr96NLXKoSiK95WToCjqUamC4BPSYSu6m6G65QF18FZ?cluster=devnet)   | Historical CLI; finalized success after sibling revocation.           |
+| [Arena settlement](https://explorer.solana.com/tx/2F1Ukc4haw5PhmWZi6wLQtMqLYgH5cW4axH941gXKSiYpnrR72KoNrf3x66V5a9BbQM6GXtRAkiCMv8Dyw1QpET1?cluster=devnet)   | Historical CLI; finalized success, 25 test-token payout.              |
 
-## Evidence and boundaries
+Current mint: `6V3c3UWqXerQFyfVhFiWVMaXEjNPUmHwWsPa2c4TS1A9` (six decimals, classic SPL test TOKENS). Observed vault: 100 TOKENS; Root available: 5; Operations available: 95. Nested budgets are not additive vault capital.
 
-The existing CLI-signed Devnet lifecycle covers funding, recursive delegation, valid spend, Research revocation, an included failed descendant spend, surviving Operations spend, Root reclaim and Arena settlement. All 19 signatures were rechecked as finalized on 7 October 2026; the three receipts below were also fetched again and matched their recorded slots, fees and outcomes. [Full signatures, logs and balances](docs/devnet-mvp-proof.json) · [Lifecycle verification](docs/DEVNET-MVP-VERIFICATION.md).
+The [completion report](docs/COMPLETION-SPRINT.md) records test scope, before/after measurements, screenshots and open gates. Real Phantom connection/signing and browser-signed lifecycle remain unverified because the accessible browser has no Phantom session. Native 200% browser zoom remains unverified; equivalent reflow is checked. Dependency remediation, security audit and production operations remain open. This is a Devnet release candidate, not a production-readiness claim.
 
-| Receipt                                                                                                                                                      | Observed outcome                                                       |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
-| [Blocked descendant](https://explorer.solana.com/tx/2ACUqFQ5zb66UdhCnxp6F8e6JMSiDQyNf7WURfa3DuhnSwkcgyiz2DCk42R19ZvSYKrExWnJ41PC9SW5uiSJmmgv?cluster=devnet) | Included finalized failure, `AncestorRevoked / 6003`; 10,000 lamports. |
-| [Operations spend](https://explorer.solana.com/tx/4BwMQJXxy3WagC8nm2p5mPQhtg1HJF3H6xYRESU9gFP9sTr96NLXKoSiK95WToCjqUamC4BPSYSu6m6G65QF18FZ?cluster=devnet)   | Finalized success after sibling revocation; 10,000 lamports.           |
-| [Arena settlement](https://explorer.solana.com/tx/2F1Ukc4haw5PhmWZi6wLQtMqLYgH5cW4axH941gXKSiYpnrR72KoNrf3x66V5a9BbQM6GXtRAkiCMv8Dyw1QpET1?cluster=devnet)   | Finalized success, recorded 25-token payout; 5,000 lamports.           |
-
-Program: `125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd`.
-
-The implementation checkpoint passed 97 TypeScript cases (including 24 SDK and 10 worker cases), 64 real local-validator cases and 16 Rust cases. [Exact verification scope](docs/STARTUP-V1-DEVELOPER.md). A fresh source-only install, app/SDK/worker builds and real read-only SDK/agent paths were rerun for this showcase. [Current showcase checks](docs/SHOWCASE-VERIFICATION.md).
-
-Remaining gates: real Phantom address/network/signing and connected-wallet performance; a fresh browser-signed lifecycle; live agent spending; security audit, dependency remediation and production operations. The accessible automation browser has no Phantom session. Historical CLI receipts and stubbed tests do not close those gates. [Measured performance fix and its limits](docs/STARTUP-V1-PERFORMANCE.md): receipt contention was removed; a general connected-wallet speedup has not been established.
-
-## Where this runs
-
-Verified on 7 October 2026. The showcase captures implementation `7350f67cafe3c29bedb2bc7c243b5288fc3d3a6c` on `startup-v1-lab`; this branch has **not** been deployed.
-
-| Deployment                                                                                                                                             | Verified provenance                                                                                                                                                                        |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [Production alias](https://mandateos-v2.vercel.app/) · [Command](https://mandateos-v2.vercel.app/app) · [Arena](https://mandateos-v2.vercel.app/arena) | Anonymous HTTP 200. Vercel source metadata: `7ce740a585774eb195ef8626876ae4a3db9f9000`; older product build.                                                                               |
-| [Latest existing Vercel preview](https://mandateos-v2-f984ud67a-luzzwaixs-projects.vercel.app/)                                                        | Older `devnet-integration` preview, Vercel authentication required. Metadata: `f5b7965dbac9f4b634bfb5eccc6b146046218f68`, **dirty build**; SHA alone does not identify all deployed bytes. |
-
-No automatic push, merge or production promotion is part of this checkpoint.
+[60–90 second recording script](docs/COMPLETION-RECORDING.md). No push, merge, preview deployment, program upgrade or production promotion is included in this checkpoint.

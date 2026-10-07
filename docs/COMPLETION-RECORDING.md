@@ -1,0 +1,14 @@
+# 85-second recording script
+
+Record the local completion candidate. Keep DEMO/DEVNET and evidence labels visible. Do not imply the existing production alias contains this candidate. No transaction is required by this script.
+
+| Time   | Screen / narration                                                                                                                                                                                                                                                                            |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0–7s   | Story: “Don't give agents wallets. Give them mandates. One shared Solana treasury; bounded authority inherited through a tree.”                                                                                                                                                               |
+| 7–27s  | Run the 20-second walkthrough. Say “This section is a simulation; no transactions.” Show grant → recursion → trace → copper preview → revoke → blocked descendants → active Operations → simulated proof.                                                                                     |
+| 27–42s | Open Command in DEVNET. Inspect Scraper: local ACTIVE, effective BLOCKED, earliest invalid ancestor Research. These are current account observations. If the historical 6003 receipt is shown, explicitly call it an existing CLI-signed finalized failure; otherwise omit the receipt claim. |
+| 42–56s | Inspect Operations: independent Root path, effective ACTIVE, 95 test TOKENS available. Root has 5 available; shared vault has 100. Do not add nested budgets together.                                                                                                                        |
+| 56–70s | Arena: observed existing settled 25-token bounty, two submissions and recorded winner. “The verifier is a trusted signer; selection and payout are atomic. This is an existing settlement, not a new browser action.”                                                                         |
+| 70–85s | Show `npm run agent:inspect` output: real Devnet Scraper ancestry, blocked by Research, no action attempted. Link SDK quickstart. Close with the open real-Phantom and security/operations gates.                                                                                             |
+
+The committed short WebM covers only the explicitly simulated Story. It is not a recording of the entire script and contains no signing or wallet proof. If a later browser transaction is recorded, the user must manually approve Phantom; retain the actual signature, finality and refreshed state before extending any claim.

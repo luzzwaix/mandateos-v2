@@ -1,0 +1,3955 @@
+{
+  "baselineHead": "ba6016bc24f0600508ad4234523bdb3820611796",
+  "before": {
+    "base": "http://127.0.0.1:3101",
+    "browser": "149.0.7827.55",
+    "viewport": "1440x900",
+    "cluster": "devnet",
+    "cache": "fresh context per route",
+    "build": "production static export",
+    "wallet": "disconnected; no injected provider",
+    "idleNote": "20s after accounts ready; includes progressive history and paced polling",
+    "results": [
+      {
+        "run": 1,
+        "route": "app",
+        "timestamp": "2026-10-07T10:21:47.705Z",
+        "shellMs": 716.8696,
+        "readyMs": 10300.613399999998,
+        "readinessRpc": 10,
+        "firstOrganizationResponseMs": 4817.6394,
+        "switchMs": 188.27649999999994,
+        "idle20s": {
+          "rpc": 12,
+          "commits": 6,
+          "raf": 0,
+          "animations": 0,
+          "longTasks": [
+            {
+              "start": 29155.600000023842,
+              "duration": 65
+            }
+          ]
+        },
+        "longTasks": [
+          {
+            "start": 73.80000007152557,
+            "duration": 127
+          },
+          {
+            "start": 210.40000009536743,
+            "duration": 102
+          },
+          {
+            "start": 317,
+            "duration": 210
+          },
+          {
+            "start": 4567.800000071526,
+            "duration": 73
+          },
+          {
+            "start": 9877.200000047684,
+            "duration": 57
+          },
+          {
+            "start": 29155.600000023842,
+            "duration": 65
+          }
+        ],
+        "commits": 13,
+        "svg": 16,
+        "phantom": false,
+        "metrics": [
+          {
+            "name": "Timestamp",
+            "value": 865504.227298
+          },
+          {
+            "name": "AudioHandlers",
+            "value": 0
+          },
+          {
+            "name": "AudioWorkletProcessors",
+            "value": 0
+          },
+          {
+            "name": "Documents",
+            "value": 1
+          },
+          {
+            "name": "Frames",
+            "value": 1
+          },
+          {
+            "name": "JSEventListeners",
+            "value": 345
+          },
+          {
+            "name": "LayoutObjects",
+            "value": 454
+          },
+          {
+            "name": "MediaKeySessions",
+            "value": 0
+          },
+          {
+            "name": "MediaKeys",
+            "value": 0
+          },
+          {
+            "name": "Nodes",
+            "value": 685
+          },
+          {
+            "name": "Resources",
+            "value": 12
+          },
+          {
+            "name": "ContextLifecycleStateObservers",
+            "value": 7
+          },
+          {
+            "name": "V8PerContextDatas",
+            "value": 2
+          },
+          {
+            "name": "WorkerGlobalScopes",
+            "value": 0
+          },
+          {
+            "name": "UACSSResources",
+            "value": 0
+          },
+          {
+            "name": "RTCPeerConnections",
+            "value": 0
+          },
+          {
+            "name": "ResourceFetchers",
+            "value": 1
+          },
+          {
+            "name": "AdSubframes",
+            "value": 0
+          },
+          {
+            "name": "DetachedScriptStates",
+            "value": 0
+          },
+          {
+            "name": "ArrayBufferContents",
+            "value": 44
+          },
+          {
+            "name": "LayoutCount",
+            "value": 15
+          },
+          {
+            "name": "RecalcStyleCount",
+            "value": 47
+          },
+          {
+            "name": "LayoutDuration",
+            "value": 0.163358
+          },
+          {
+            "name": "RecalcStyleDuration",
+            "value": 0.070181
+          },
+          {
+            "name": "DevToolsCommandDuration",
+            "value": 0.095897
+          },
+          {
+            "name": "ScriptDuration",
+            "value": 0.28171
+          },
+          {
+            "name": "V8CompileDuration",
+            "value": 0.001555
+          },
+          {
+            "name": "TaskDuration",
+            "value": 1.340598
+          },
+          {
+            "name": "TaskOtherDuration",
+            "value": 0.727897
+          },
+          {
+            "name": "ThreadTime",
+            "value": 1.375327
+          },
+          {
+            "name": "ProcessTime",
+            "value": 2.171579
+          },
+          {
+            "name": "JSHeapUsedSize",
+            "value": 7844228
+          },
+          {
+            "name": "JSHeapTotalSize",
+            "value": 14471168
+          },
+          {
+            "name": "FirstMeaningfulPaint",
+            "value": 865474.471927
+          },
+          {
+            "name": "DomContentLoaded",
+            "value": 865473.981125
+          },
+          {
+            "name": "NavigationStart",
+            "value": 865473.907368
+          }
+        ],
+        "rpc": [
+          {
+            "method": "getGenesisHash",
+            "startMs": 709.6316999999999,
+            "endMs": 1043.8537000000001,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 1783.5365000000002,
+            "endMs": 1928.3732,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 2719.733,
+            "endMs": 2822.5251,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 3721.7412999999997,
+            "endMs": 4584.4372,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 4722.9899000000005,
+            "endMs": 4817.6394,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 5731.1509,
+            "endMs": 5846.2671,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 6738.3105000000005,
+            "endMs": 6848.685399999999,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 7744.3550000000005,
+            "endMs": 7845.361099999999,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 8759.8455,
+            "endMs": 8858.393,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 9758.7153,
+            "endMs": 9867.465499999998,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 10763.8288,
+            "endMs": 10941.1316,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 11764.023799999999,
+            "endMs": 12731.518499999998,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 12764.2873,
+            "endMs": 12880.7712,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 16282.0887,
+            "endMs": 16396.7679,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 19790.4441,
+            "endMs": 19977.0966,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 23358.9169,
+            "endMs": 23655.093399999998,
+            "status": 200
+          },
+          {
+            "method": "getGenesisHash",
+            "startMs": 24895.9355,
+            "endMs": 25000.0062,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 25903.0733,
+            "endMs": 25998.6262,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 26909.4876,
+            "endMs": 27009.8801,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 27911.0294,
+            "endMs": 28008.8381,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 28924.977899999998,
+            "endMs": 29172.0255,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 29932.021,
+            "endMs": 30039.7644,
+            "status": 200
+          }
+        ],
+        "errors": []
+      },
+      {
+        "run": 1,
+        "route": "arena",
+        "timestamp": "2026-10-07T10:22:19.292Z",
+        "shellMs": 790.8099999999977,
+        "readyMs": 10912.775199999996,
+        "readinessRpc": 10,
+        "firstOrganizationResponseMs": 5432.116099999999,
+        "switchMs": 151.84440000000177,
+        "idle20s": {
+          "rpc": 12,
+          "commits": 6,
+          "raf": 0,
+          "animations": 0,
+          "longTasks": []
+        },
+        "longTasks": [
+          {
+            "start": 77.09999990463257,
+            "duration": 151
+          },
+          {
+            "start": 236.79999995231628,
+            "duration": 113
+          },
+          {
+            "start": 353.6999999284744,
+            "duration": 221
+          },
+          {
+            "start": 4833.799999952316,
+            "duration": 109
+          },
+          {
+            "start": 10412.799999952316,
+            "duration": 83
+          }
+        ],
+        "commits": 12,
+        "svg": 7,
+        "phantom": false,
+        "metrics": [
+          {
+            "name": "Timestamp",
+            "value": 865535.850857
+          },
+          {
+            "name": "AudioHandlers",
+            "value": 0
+          },
+          {
+            "name": "AudioWorkletProcessors",
+            "value": 0
+          },
+          {
+            "name": "Documents",
+            "value": 1
+          },
+          {
+            "name": "Frames",
+            "value": 1
+          },
+          {
+            "name": "JSEventListeners",
+            "value": 336
+          },
+          {
+            "name": "LayoutObjects",
+            "value": 245
+          },
+          {
+            "name": "MediaKeySessions",
+            "value": 0
+          },
+          {
+            "name": "MediaKeys",
+            "value": 0
+          },
+          {
+            "name": "Nodes",
+            "value": 407
+          },
+          {
+            "name": "Resources",
+            "value": 12
+          },
+          {
+            "name": "ContextLifecycleStateObservers",
+            "value": 7
+          },
+          {
+            "name": "V8PerContextDatas",
+            "value": 2
+          },
+          {
+            "name": "WorkerGlobalScopes",
+            "value": 0
+          },
+          {
+            "name": "UACSSResources",
+            "value": 0
+          },
+          {
+            "name": "RTCPeerConnections",
+            "value": 0
+          },
+          {
+            "name": "ResourceFetchers",
+            "value": 1
+          },
+          {
+            "name": "AdSubframes",
+            "value": 0
+          },
+          {
+            "name": "DetachedScriptStates",
+            "value": 2
+          },
+          {
+            "name": "ArrayBufferContents",
+            "value": 89
+          },
+          {
+            "name": "LayoutCount",
+            "value": 19
+          },
+          {
+            "name": "RecalcStyleCount",
+            "value": 84
+          },
+          {
+            "name": "LayoutDuration",
+            "value": 0.202021
+          },
+          {
+            "name": "RecalcStyleDuration",
+            "value": 0.114037
+          },
+          {
+            "name": "DevToolsCommandDuration",
+            "value": 0.103669
+          },
+          {
+            "name": "ScriptDuration",
+            "value": 0.287513
+          },
+          {
+            "name": "V8CompileDuration",
+            "value": 0.000616
+          },
+          {
+            "name": "TaskDuration",
+            "value": 1.458445
+          },
+          {
+            "name": "TaskOtherDuration",
+            "value": 0.750589
+          },
+          {
+            "name": "ThreadTime",
+            "value": 1.445101
+          },
+          {
+            "name": "ProcessTime",
+            "value": 2.267472
+          },
+          {
+            "name": "JSHeapUsedSize",
+            "value": 14150452
+          },
+          {
+            "name": "JSHeapTotalSize",
+            "value": 23400448
+          },
+          {
+            "name": "FirstMeaningfulPaint",
+            "value": 865505.171545
+          },
+          {
+            "name": "DomContentLoaded",
+            "value": 865505.156218
+          },
+          {
+            "name": "NavigationStart",
+            "value": 865504.922149
+          }
+        ],
+        "rpc": [
+          {
+            "method": "getGenesisHash",
+            "startMs": 753.6088000000018,
+            "endMs": 2232.0633000000016,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 2237.2086999999956,
+            "endMs": 2386.9637999999977,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 3246.956099999996,
+            "endMs": 3393.6978000000017,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 4253.335099999997,
+            "endMs": 4839.389599999995,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 5266.608999999997,
+            "endMs": 5432.116099999999,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 6263.2774999999965,
+            "endMs": 6366.589,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 7279.649299999997,
+            "endMs": 7395.619699999996,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 8283.185099999995,
+            "endMs": 8382.237799999995,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 9289.9038,
+            "endMs": 9395.768199999999,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 10295.7405,
+            "endMs": 10402.263399999996,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 11302.582600000002,
+            "endMs": 11424.2517,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 12311.803699999997,
+            "endMs": 13119.380700000002,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 13319.363099999995,
+            "endMs": 13460.090100000001,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 16822.9214,
+            "endMs": 17001.485999999997,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 20331.8791,
+            "endMs": 20429.7382,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 23846.630599999997,
+            "endMs": 23950.0127,
+            "status": 200
+          },
+          {
+            "method": "getGenesisHash",
+            "startMs": 25410.4265,
+            "endMs": 25505.5345,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 26420.07,
+            "endMs": 26628.9868,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 27426.675299999995,
+            "endMs": 27560.2408,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 28434.5081,
+            "endMs": 28548.0625,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 29438.658299999996,
+            "endMs": 29827.627699999997,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 30439.3721,
+            "endMs": 30536.8024,
+            "status": 200
+          }
+        ],
+        "errors": []
+      },
+      {
+        "run": 2,
+        "route": "app",
+        "timestamp": "2026-10-07T10:22:50.045Z",
+        "shellMs": 606.7082999999984,
+        "readyMs": 10114.385499999997,
+        "readinessRpc": 10,
+        "firstOrganizationResponseMs": 4727.125999999997,
+        "switchMs": 171.13250000000698,
+        "idle20s": {
+          "rpc": 12,
+          "commits": 6,
+          "raf": 0,
+          "animations": 0,
+          "longTasks": [
+            {
+              "start": 29042.699999928474,
+              "duration": 65
+            }
+          ]
+        },
+        "longTasks": [
+          {
+            "start": 56.39999997615814,
+            "duration": 110
+          },
+          {
+            "start": 176.69999992847443,
+            "duration": 99
+          },
+          {
+            "start": 280,
+            "duration": 177
+          },
+          {
+            "start": 4073.399999976158,
+            "duration": 94
+          },
+          {
+            "start": 9803.699999928474,
+            "duration": 82
+          },
+          {
+            "start": 29042.699999928474,
+            "duration": 65
+          }
+        ],
+        "commits": 13,
+        "svg": 16,
+        "phantom": false,
+        "metrics": [
+          {
+            "name": "Timestamp",
+            "value": 865566.584839
+          },
+          {
+            "name": "AudioHandlers",
+            "value": 0
+          },
+          {
+            "name": "AudioWorkletProcessors",
+            "value": 0
+          },
+          {
+            "name": "Documents",
+            "value": 1
+          },
+          {
+            "name": "Frames",
+            "value": 1
+          },
+          {
+            "name": "JSEventListeners",
+            "value": 345
+          },
+          {
+            "name": "LayoutObjects",
+            "value": 454
+          },
+          {
+            "name": "MediaKeySessions",
+            "value": 0
+          },
+          {
+            "name": "MediaKeys",
+            "value": 0
+          },
+          {
+            "name": "Nodes",
+            "value": 685
+          },
+          {
+            "name": "Resources",
+            "value": 12
+          },
+          {
+            "name": "ContextLifecycleStateObservers",
+            "value": 7
+          },
+          {
+            "name": "V8PerContextDatas",
+            "value": 2
+          },
+          {
+            "name": "WorkerGlobalScopes",
+            "value": 0
+          },
+          {
+            "name": "UACSSResources",
+            "value": 0
+          },
+          {
+            "name": "RTCPeerConnections",
+            "value": 0
+          },
+          {
+            "name": "ResourceFetchers",
+            "value": 1
+          },
+          {
+            "name": "AdSubframes",
+            "value": 0
+          },
+          {
+            "name": "DetachedScriptStates",
+            "value": 0
+          },
+          {
+            "name": "ArrayBufferContents",
+            "value": 44
+          },
+          {
+            "name": "LayoutCount",
+            "value": 15
+          },
+          {
+            "name": "RecalcStyleCount",
+            "value": 49
+          },
+          {
+            "name": "LayoutDuration",
+            "value": 0.18026
+          },
+          {
+            "name": "RecalcStyleDuration",
+            "value": 0.064318
+          },
+          {
+            "name": "DevToolsCommandDuration",
+            "value": 0.087659
+          },
+          {
+            "name": "ScriptDuration",
+            "value": 0.269369
+          },
+          {
+            "name": "V8CompileDuration",
+            "value": 0.000604
+          },
+          {
+            "name": "TaskDuration",
+            "value": 1.321379
+          },
+          {
+            "name": "TaskOtherDuration",
+            "value": 0.719169
+          },
+          {
+            "name": "ThreadTime",
+            "value": 1.387531
+          },
+          {
+            "name": "ProcessTime",
+            "value": 2.255766
+          },
+          {
+            "name": "JSHeapUsedSize",
+            "value": 7841288
+          },
+          {
+            "name": "JSHeapTotalSize",
+            "value": 14209024
+          },
+          {
+            "name": "FirstMeaningfulPaint",
+            "value": 865536.638342
+          },
+          {
+            "name": "DomContentLoaded",
+            "value": 865536.625336
+          },
+          {
+            "name": "NavigationStart",
+            "value": 865536.450668
+          }
+        ],
+        "rpc": [
+          {
+            "method": "getGenesisHash",
+            "startMs": 604.1900999999998,
+            "endMs": 1039.7811000000002,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 1612.6105000000025,
+            "endMs": 1724.318800000001,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 2612.9405000000042,
+            "endMs": 2711.291099999995,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 3616.8710000000065,
+            "endMs": 4078.7625999999946,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 4628.480300000003,
+            "endMs": 4727.125999999997,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 5643.367000000006,
+            "endMs": 5756.175299999995,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 6649.548799999997,
+            "endMs": 6764.572099999998,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 7661.945599999999,
+            "endMs": 7775.056999999993,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 8664.617600000005,
+            "endMs": 8772.573899999996,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 9663.575799999999,
+            "endMs": 9777.923499999997,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 10682.554299999996,
+            "endMs": 10795.275300000001,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 11690.3482,
+            "endMs": 12574.273399999998,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 12689.829900000004,
+            "endMs": 12792.352099999996,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 16192.198400000001,
+            "endMs": 16303.8963,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 19696.413699999997,
+            "endMs": 19798.369899999998,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 23209.338800000005,
+            "endMs": 23320.4723,
+            "status": 200
+          },
+          {
+            "method": "getGenesisHash",
+            "startMs": 24815.442300000002,
+            "endMs": 24911.097799999996,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 25812.365599999997,
+            "endMs": 25907.8194,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 26821.0403,
+            "endMs": 26920.636399999996,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 27827.854799999994,
+            "endMs": 27927.0651,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 28833.323500000006,
+            "endMs": 29048.200999999994,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 29843.804200000006,
+            "endMs": 29952.763199999994,
+            "status": 200
+          }
+        ],
+        "errors": []
+      },
+      {
+        "run": 2,
+        "route": "arena",
+        "timestamp": "2026-10-07T10:23:20.640Z",
+        "shellMs": 573.5795999999973,
+        "readyMs": 10119.632400000002,
+        "readinessRpc": 10,
+        "firstOrganizationResponseMs": 4689.363700000002,
+        "switchMs": 234.59279999999853,
+        "idle20s": {
+          "rpc": 12,
+          "commits": 6,
+          "raf": 0,
+          "animations": 0,
+          "longTasks": []
+        },
+        "longTasks": [
+          {
+            "start": 60.60000002384186,
+            "duration": 101
+          },
+          {
+            "start": 173.10000002384186,
+            "duration": 73
+          },
+          {
+            "start": 247.90000009536743,
+            "duration": 172
+          },
+          {
+            "start": 4023.8000000715256,
+            "duration": 115
+          },
+          {
+            "start": 9727.700000047684,
+            "duration": 95
+          }
+        ],
+        "commits": 12,
+        "svg": 7,
+        "phantom": false,
+        "metrics": [
+          {
+            "name": "Timestamp",
+            "value": 865597.115423
+          },
+          {
+            "name": "AudioHandlers",
+            "value": 0
+          },
+          {
+            "name": "AudioWorkletProcessors",
+            "value": 0
+          },
+          {
+            "name": "Documents",
+            "value": 1
+          },
+          {
+            "name": "Frames",
+            "value": 1
+          },
+          {
+            "name": "JSEventListeners",
+            "value": 324
+          },
+          {
+            "name": "LayoutObjects",
+            "value": 245
+          },
+          {
+            "name": "MediaKeySessions",
+            "value": 0
+          },
+          {
+            "name": "MediaKeys",
+            "value": 0
+          },
+          {
+            "name": "Nodes",
+            "value": 405
+          },
+          {
+            "name": "Resources",
+            "value": 12
+          },
+          {
+            "name": "ContextLifecycleStateObservers",
+            "value": 7
+          },
+          {
+            "name": "V8PerContextDatas",
+            "value": 2
+          },
+          {
+            "name": "WorkerGlobalScopes",
+            "value": 0
+          },
+          {
+            "name": "UACSSResources",
+            "value": 0
+          },
+          {
+            "name": "RTCPeerConnections",
+            "value": 0
+          },
+          {
+            "name": "ResourceFetchers",
+            "value": 1
+          },
+          {
+            "name": "AdSubframes",
+            "value": 0
+          },
+          {
+            "name": "DetachedScriptStates",
+            "value": 0
+          },
+          {
+            "name": "ArrayBufferContents",
+            "value": 44
+          },
+          {
+            "name": "LayoutCount",
+            "value": 18
+          },
+          {
+            "name": "RecalcStyleCount",
+            "value": 82
+          },
+          {
+            "name": "LayoutDuration",
+            "value": 0.159456
+          },
+          {
+            "name": "RecalcStyleDuration",
+            "value": 0.093052
+          },
+          {
+            "name": "DevToolsCommandDuration",
+            "value": 0.10441
+          },
+          {
+            "name": "ScriptDuration",
+            "value": 0.218368
+          },
+          {
+            "name": "V8CompileDuration",
+            "value": 0.000795
+          },
+          {
+            "name": "TaskDuration",
+            "value": 1.329647
+          },
+          {
+            "name": "TaskOtherDuration",
+            "value": 0.753566
+          },
+          {
+            "name": "ThreadTime",
+            "value": 1.418848
+          },
+          {
+            "name": "ProcessTime",
+            "value": 2.337025
+          },
+          {
+            "name": "JSHeapUsedSize",
+            "value": 7557748
+          },
+          {
+            "name": "JSHeapTotalSize",
+            "value": 14471168
+          },
+          {
+            "name": "FirstMeaningfulPaint",
+            "value": 865567.150334
+          },
+          {
+            "name": "DomContentLoaded",
+            "value": 865567.144705
+          },
+          {
+            "name": "NavigationStart",
+            "value": 865566.974298
+          }
+        ],
+        "rpc": [
+          {
+            "method": "getGenesisHash",
+            "startMs": 547.8858000000037,
+            "endMs": 861.604800000001,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 1561.2885999999999,
+            "endMs": 1660.2016000000003,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 2568.350000000006,
+            "endMs": 2673.924700000003,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 3573.7139000000025,
+            "endMs": 4029.7473000000027,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 4585.589300000007,
+            "endMs": 4689.363700000002,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 5598.071899999995,
+            "endMs": 5712.112800000003,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 6599.159199999995,
+            "endMs": 6711.829599999997,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 7602.911900000006,
+            "endMs": 7713.306700000001,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 8608.363899999997,
+            "endMs": 8714.262000000002,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 9605.988200000007,
+            "endMs": 9714.850999999995,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 10612.447499999995,
+            "endMs": 10732.415299999993,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 11613.342499999999,
+            "endMs": 12309.6587,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 12618.8036,
+            "endMs": 12715.391799999998,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 16125.006999999998,
+            "endMs": 16225.076700000005,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 19637.0781,
+            "endMs": 19741.151700000002,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 23146.427599999995,
+            "endMs": 23241.3281,
+            "status": 200
+          },
+          {
+            "method": "getGenesisHash",
+            "startMs": 24729.763900000005,
+            "endMs": 24834.882700000002,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 25732.887499999997,
+            "endMs": 25831.288499999995,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 26741.024600000004,
+            "endMs": 26843.885800000004,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 27752.124899999995,
+            "endMs": 27853.569600000003,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 28762.0827,
+            "endMs": 28973.8281,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 29773.299,
+            "endMs": 29870.858200000002,
+            "status": 200
+          }
+        ],
+        "errors": []
+      },
+      {
+        "run": 3,
+        "route": "app",
+        "timestamp": "2026-10-07T10:23:51.291Z",
+        "shellMs": 664.007500000007,
+        "readyMs": 10273.539800000013,
+        "readinessRpc": 10,
+        "firstOrganizationResponseMs": 4784.535900000003,
+        "switchMs": 148.7428999999829,
+        "idle20s": {
+          "rpc": 12,
+          "commits": 6,
+          "raf": 0,
+          "animations": 0,
+          "longTasks": [
+            {
+              "start": 29087.100000023842,
+              "duration": 101
+            }
+          ]
+        },
+        "longTasks": [
+          {
+            "start": 43.299999952316284,
+            "duration": 83
+          },
+          {
+            "start": 135.29999995231628,
+            "duration": 73
+          },
+          {
+            "start": 210.39999997615814,
+            "duration": 254
+          },
+          {
+            "start": 509.60000002384186,
+            "duration": 63
+          },
+          {
+            "start": 4129.899999976158,
+            "duration": 165
+          },
+          {
+            "start": 9859.199999928474,
+            "duration": 104
+          },
+          {
+            "start": 29087.100000023842,
+            "duration": 101
+          }
+        ],
+        "commits": 13,
+        "svg": 16,
+        "phantom": false,
+        "metrics": [
+          {
+            "name": "Timestamp",
+            "value": 865627.852837
+          },
+          {
+            "name": "AudioHandlers",
+            "value": 0
+          },
+          {
+            "name": "AudioWorkletProcessors",
+            "value": 0
+          },
+          {
+            "name": "Documents",
+            "value": 1
+          },
+          {
+            "name": "Frames",
+            "value": 1
+          },
+          {
+            "name": "JSEventListeners",
+            "value": 377
+          },
+          {
+            "name": "LayoutObjects",
+            "value": 454
+          },
+          {
+            "name": "MediaKeySessions",
+            "value": 0
+          },
+          {
+            "name": "MediaKeys",
+            "value": 0
+          },
+          {
+            "name": "Nodes",
+            "value": 689
+          },
+          {
+            "name": "Resources",
+            "value": 12
+          },
+          {
+            "name": "ContextLifecycleStateObservers",
+            "value": 7
+          },
+          {
+            "name": "V8PerContextDatas",
+            "value": 2
+          },
+          {
+            "name": "WorkerGlobalScopes",
+            "value": 0
+          },
+          {
+            "name": "UACSSResources",
+            "value": 0
+          },
+          {
+            "name": "RTCPeerConnections",
+            "value": 0
+          },
+          {
+            "name": "ResourceFetchers",
+            "value": 1
+          },
+          {
+            "name": "AdSubframes",
+            "value": 0
+          },
+          {
+            "name": "DetachedScriptStates",
+            "value": 2
+          },
+          {
+            "name": "ArrayBufferContents",
+            "value": 48
+          },
+          {
+            "name": "LayoutCount",
+            "value": 15
+          },
+          {
+            "name": "RecalcStyleCount",
+            "value": 48
+          },
+          {
+            "name": "LayoutDuration",
+            "value": 0.174107
+          },
+          {
+            "name": "RecalcStyleDuration",
+            "value": 0.068287
+          },
+          {
+            "name": "DevToolsCommandDuration",
+            "value": 0.092794
+          },
+          {
+            "name": "ScriptDuration",
+            "value": 0.348257
+          },
+          {
+            "name": "V8CompileDuration",
+            "value": 0.000701
+          },
+          {
+            "name": "TaskDuration",
+            "value": 1.660737
+          },
+          {
+            "name": "TaskOtherDuration",
+            "value": 0.976591
+          },
+          {
+            "name": "ThreadTime",
+            "value": 1.696781
+          },
+          {
+            "name": "ProcessTime",
+            "value": 2.763449
+          },
+          {
+            "name": "JSHeapUsedSize",
+            "value": 15878260
+          },
+          {
+            "name": "JSHeapTotalSize",
+            "value": 22757376
+          },
+          {
+            "name": "FirstMeaningfulPaint",
+            "value": 865597.687508
+          },
+          {
+            "name": "DomContentLoaded",
+            "value": 865597.588869
+          },
+          {
+            "name": "NavigationStart",
+            "value": 865597.545562
+          }
+        ],
+        "rpc": [
+          {
+            "method": "getGenesisHash",
+            "startMs": 656.6741000000038,
+            "endMs": 1022.4838000000018,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 1660.3549000000057,
+            "endMs": 1770.9426000000094,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 2663.6082000000024,
+            "endMs": 2772.730500000005,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 3673.3243000000075,
+            "endMs": 4131.286399999997,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 4684.746400000004,
+            "endMs": 4784.535900000003,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 5690.8752000000095,
+            "endMs": 5805.998099999997,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 6697.678700000004,
+            "endMs": 6819.710600000006,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 7701.924600000013,
+            "endMs": 7807.8966999999975,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 8708.402699999991,
+            "endMs": 8807.159800000009,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 9711.261000000013,
+            "endMs": 9821.059300000008,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 10714.348400000003,
+            "endMs": 10816.009200000015,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 11730.6547,
+            "endMs": 12427.671400000007,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 12734.651700000002,
+            "endMs": 12839.569399999993,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 16233.878500000006,
+            "endMs": 16339.435899999997,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 19745.509600000005,
+            "endMs": 19965.245500000005,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 23254.0156,
+            "endMs": 23365.796199999997,
+            "status": 200
+          },
+          {
+            "method": "getGenesisHash",
+            "startMs": 24840.0518,
+            "endMs": 24933.839599999992,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 25854.763699999996,
+            "endMs": 25954.42779999999,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 26865.035799999998,
+            "endMs": 26968.877800000002,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 27867.993100000007,
+            "endMs": 27973.129700000005,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 28871.524900000004,
+            "endMs": 29089.7319,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 29872.916100000017,
+            "endMs": 29973.22989999999,
+            "status": 200
+          }
+        ],
+        "errors": []
+      },
+      {
+        "run": 3,
+        "route": "arena",
+        "timestamp": "2026-10-07T10:24:23.624Z",
+        "shellMs": 562.6836999999941,
+        "readyMs": 11888.907000000007,
+        "readinessRpc": 11,
+        "firstOrganizationResponseMs": 5749.475000000006,
+        "switchMs": 272.7121000000043,
+        "idle20s": {
+          "rpc": 11,
+          "commits": 6,
+          "raf": 0,
+          "animations": 0,
+          "longTasks": [
+            {
+              "start": 31103,
+              "duration": 101
+            }
+          ]
+        },
+        "longTasks": [
+          {
+            "start": 43.60000002384186,
+            "duration": 73
+          },
+          {
+            "start": 126.10000002384186,
+            "duration": 74
+          },
+          {
+            "start": 202.10000002384186,
+            "duration": 198
+          },
+          {
+            "start": 5193.200000047684,
+            "duration": 73
+          },
+          {
+            "start": 11558.300000071526,
+            "duration": 115
+          },
+          {
+            "start": 31103,
+            "duration": 101
+          }
+        ],
+        "commits": 12,
+        "svg": 7,
+        "phantom": false,
+        "metrics": [
+          {
+            "name": "Timestamp",
+            "value": 865660.062199
+          },
+          {
+            "name": "AudioHandlers",
+            "value": 0
+          },
+          {
+            "name": "AudioWorkletProcessors",
+            "value": 0
+          },
+          {
+            "name": "Documents",
+            "value": 1
+          },
+          {
+            "name": "Frames",
+            "value": 1
+          },
+          {
+            "name": "JSEventListeners",
+            "value": 324
+          },
+          {
+            "name": "LayoutObjects",
+            "value": 245
+          },
+          {
+            "name": "MediaKeySessions",
+            "value": 0
+          },
+          {
+            "name": "MediaKeys",
+            "value": 0
+          },
+          {
+            "name": "Nodes",
+            "value": 405
+          },
+          {
+            "name": "Resources",
+            "value": 12
+          },
+          {
+            "name": "ContextLifecycleStateObservers",
+            "value": 7
+          },
+          {
+            "name": "V8PerContextDatas",
+            "value": 2
+          },
+          {
+            "name": "WorkerGlobalScopes",
+            "value": 0
+          },
+          {
+            "name": "UACSSResources",
+            "value": 0
+          },
+          {
+            "name": "RTCPeerConnections",
+            "value": 0
+          },
+          {
+            "name": "ResourceFetchers",
+            "value": 1
+          },
+          {
+            "name": "AdSubframes",
+            "value": 0
+          },
+          {
+            "name": "DetachedScriptStates",
+            "value": 0
+          },
+          {
+            "name": "ArrayBufferContents",
+            "value": 44
+          },
+          {
+            "name": "LayoutCount",
+            "value": 18
+          },
+          {
+            "name": "RecalcStyleCount",
+            "value": 82
+          },
+          {
+            "name": "LayoutDuration",
+            "value": 0.170494
+          },
+          {
+            "name": "RecalcStyleDuration",
+            "value": 0.092149
+          },
+          {
+            "name": "DevToolsCommandDuration",
+            "value": 0.112396
+          },
+          {
+            "name": "ScriptDuration",
+            "value": 0.263578
+          },
+          {
+            "name": "V8CompileDuration",
+            "value": 0.000542
+          },
+          {
+            "name": "TaskDuration",
+            "value": 1.5916
+          },
+          {
+            "name": "TaskOtherDuration",
+            "value": 0.952441
+          },
+          {
+            "name": "ThreadTime",
+            "value": 1.638004
+          },
+          {
+            "name": "ProcessTime",
+            "value": 3.024775
+          },
+          {
+            "name": "JSHeapUsedSize",
+            "value": 7538296
+          },
+          {
+            "name": "JSHeapTotalSize",
+            "value": 12898304
+          },
+          {
+            "name": "FirstMeaningfulPaint",
+            "value": 865628.283293
+          },
+          {
+            "name": "DomContentLoaded",
+            "value": 865628.275098
+          },
+          {
+            "name": "NavigationStart",
+            "value": 865628.151358
+          }
+        ],
+        "rpc": [
+          {
+            "method": "getGenesisHash",
+            "startMs": 553.3917000000074,
+            "endMs": 2634.966400000005,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 2647.1453000000038,
+            "endMs": 2816.560599999997,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 3649.9003000000084,
+            "endMs": 3752.4533999999985,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 4661.512600000016,
+            "endMs": 5197.0506999999925,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 5651.296499999997,
+            "endMs": 5749.475000000006,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 6654.869899999991,
+            "endMs": 6773.350299999991,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 7655.4477999999945,
+            "endMs": 7766.447600000014,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 8667.945000000007,
+            "endMs": 8774.386599999998,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 9670.493300000002,
+            "endMs": 9791.808799999999,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 10805.723300000012,
+            "endMs": 11535.619000000006,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 11807.454700000002,
+            "endMs": 12062.909199999995,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 12700.996699999989,
+            "endMs": 13498.81289999999,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 13703.602199999994,
+            "endMs": 13862.641100000008,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 17218.728999999992,
+            "endMs": 17379.74530000001,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 20732.046399999992,
+            "endMs": 20924.2806,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 24235.042600000015,
+            "endMs": 24853.518299999996,
+            "status": 200
+          },
+          {
+            "method": "getGenesisHash",
+            "startMs": 26554.624100000015,
+            "endMs": 26814.296100000007,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 27573.602500000008,
+            "endMs": 27675.590400000016,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 28573.896700000012,
+            "endMs": 28670.533200000005,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 29578.165899999993,
+            "endMs": 29687.425699999993,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 30586.848700000002,
+            "endMs": 31105.8548,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 31590.521999999997,
+            "endMs": 31693.841799999995,
+            "status": 200
+          }
+        ],
+        "errors": []
+      }
+    ]
+  },
+  "after": {
+    "base": "http://127.0.0.1:3101",
+    "browser": "149.0.7827.55",
+    "viewport": "1440x900",
+    "cluster": "devnet",
+    "cache": "fresh context per route",
+    "build": "production static export",
+    "wallet": "disconnected; no injected provider",
+    "idleNote": "20s after accounts ready; includes progressive history and paced polling",
+    "results": [
+      {
+        "run": 1,
+        "route": "app",
+        "timestamp": "2026-10-07T10:50:57.426Z",
+        "shellMs": 895.8890999999999,
+        "readyMs": 9494.863,
+        "readinessRpc": 9,
+        "firstOrganizationResponseMs": 5148.2932,
+        "switchMs": 332.3109000000004,
+        "idle20s": {
+          "rpc": 12,
+          "commits": 5,
+          "raf": 0,
+          "animations": 0,
+          "longTasks": []
+        },
+        "longTasks": [
+          {
+            "start": 96.10000002384186,
+            "duration": 152
+          },
+          {
+            "start": 258,
+            "duration": 155
+          },
+          {
+            "start": 417.5,
+            "duration": 285
+          },
+          {
+            "start": 4616.899999976158,
+            "duration": 130
+          },
+          {
+            "start": 9092.100000023842,
+            "duration": 55
+          },
+          {
+            "start": 9147.899999976158,
+            "duration": 144
+          }
+        ],
+        "commits": 16,
+        "svg": 16,
+        "phantom": false,
+        "metrics": [
+          {
+            "name": "Timestamp",
+            "value": 867253.805313
+          },
+          {
+            "name": "AudioHandlers",
+            "value": 0
+          },
+          {
+            "name": "AudioWorkletProcessors",
+            "value": 0
+          },
+          {
+            "name": "Documents",
+            "value": 3
+          },
+          {
+            "name": "Frames",
+            "value": 1
+          },
+          {
+            "name": "JSEventListeners",
+            "value": 587
+          },
+          {
+            "name": "LayoutObjects",
+            "value": 582
+          },
+          {
+            "name": "MediaKeySessions",
+            "value": 0
+          },
+          {
+            "name": "MediaKeys",
+            "value": 0
+          },
+          {
+            "name": "Nodes",
+            "value": 785
+          },
+          {
+            "name": "Resources",
+            "value": 60
+          },
+          {
+            "name": "ContextLifecycleStateObservers",
+            "value": 12
+          },
+          {
+            "name": "V8PerContextDatas",
+            "value": 4
+          },
+          {
+            "name": "WorkerGlobalScopes",
+            "value": 0
+          },
+          {
+            "name": "UACSSResources",
+            "value": 0
+          },
+          {
+            "name": "RTCPeerConnections",
+            "value": 0
+          },
+          {
+            "name": "ResourceFetchers",
+            "value": 3
+          },
+          {
+            "name": "AdSubframes",
+            "value": 0
+          },
+          {
+            "name": "DetachedScriptStates",
+            "value": 2
+          },
+          {
+            "name": "ArrayBufferContents",
+            "value": 131
+          },
+          {
+            "name": "LayoutCount",
+            "value": 18
+          },
+          {
+            "name": "RecalcStyleCount",
+            "value": 47
+          },
+          {
+            "name": "LayoutDuration",
+            "value": 0.26021
+          },
+          {
+            "name": "RecalcStyleDuration",
+            "value": 0.101962
+          },
+          {
+            "name": "DevToolsCommandDuration",
+            "value": 0.0929
+          },
+          {
+            "name": "ScriptDuration",
+            "value": 0.389303
+          },
+          {
+            "name": "V8CompileDuration",
+            "value": 0.000954
+          },
+          {
+            "name": "TaskDuration",
+            "value": 1.72613
+          },
+          {
+            "name": "TaskOtherDuration",
+            "value": 0.880801
+          },
+          {
+            "name": "ThreadTime",
+            "value": 1.752712
+          },
+          {
+            "name": "ProcessTime",
+            "value": 2.603897
+          },
+          {
+            "name": "JSHeapUsedSize",
+            "value": 12612048
+          },
+          {
+            "name": "JSHeapTotalSize",
+            "value": 14286848
+          },
+          {
+            "name": "FirstMeaningfulPaint",
+            "value": 867225.043321
+          },
+          {
+            "name": "DomContentLoaded",
+            "value": 867224.389108
+          },
+          {
+            "name": "NavigationStart",
+            "value": 867224.29301
+          }
+        ],
+        "rpc": [
+          {
+            "method": "getGenesisHash",
+            "startMs": 922.5237999999999,
+            "endMs": 1439.2555000000002,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 1928.6097,
+            "endMs": 2099.0306999999993,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 2929.6903,
+            "endMs": 3050.0828999999994,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 3935.6493,
+            "endMs": 4634.944399999999,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 4948.6689,
+            "endMs": 5148.2932,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 5959.369699999999,
+            "endMs": 6140.666499999999,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 6963.266799999999,
+            "endMs": 7077.624599999999,
+            "status": 200
+          },
+          {
+            "method": "getMultipleAccounts",
+            "startMs": 7964.425499999999,
+            "endMs": 8069.9157,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 8980.3236,
+            "endMs": 9109.1908,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 9985.3648,
+            "endMs": 10093.6927,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 10988.9251,
+            "endMs": 11795.6978,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 12003.0864,
+            "endMs": 12135.8056,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 15507.949499999999,
+            "endMs": 15610.6751,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 19026.0445,
+            "endMs": 19188.1912,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 22541.2141,
+            "endMs": 22706.6741,
+            "status": 200
+          },
+          {
+            "method": "getGenesisHash",
+            "startMs": 24128.6801,
+            "endMs": 24288.6279,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 25140.9704,
+            "endMs": 25288.4389,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 26140.1941,
+            "endMs": 26249.4967,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 27162.2695,
+            "endMs": 29556.5244,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 28157.748,
+            "endMs": 29551.1154,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 29649.2186,
+            "endMs": 29848.6932,
+            "status": 200
+          }
+        ],
+        "errors": []
+      },
+      {
+        "run": 1,
+        "route": "arena",
+        "timestamp": "2026-10-07T10:51:27.614Z",
+        "shellMs": 845.2023999999947,
+        "readyMs": 9406.2281,
+        "readinessRpc": 9,
+        "firstOrganizationResponseMs": 5026.966499999995,
+        "switchMs": 205.0835999999981,
+        "idle20s": {
+          "rpc": 12,
+          "commits": 8,
+          "raf": 0,
+          "animations": 0,
+          "longTasks": [
+            {
+              "start": 28351,
+              "duration": 55
+            }
+          ]
+        },
+        "longTasks": [
+          {
+            "start": 68.39999997615814,
+            "duration": 134
+          },
+          {
+            "start": 220.19999992847443,
+            "duration": 151
+          },
+          {
+            "start": 373.1999999284744,
+            "duration": 264
+          },
+          {
+            "start": 4331,
+            "duration": 113
+          },
+          {
+            "start": 9078.5,
+            "duration": 145
+          },
+          {
+            "start": 28351,
+            "duration": 55
+          }
+        ],
+        "commits": 17,
+        "svg": 7,
+        "phantom": false,
+        "metrics": [
+          {
+            "name": "Timestamp",
+            "value": 867284.121927
+          },
+          {
+            "name": "AudioHandlers",
+            "value": 0
+          },
+          {
+            "name": "AudioWorkletProcessors",
+            "value": 0
+          },
+          {
+            "name": "Documents",
+            "value": 1
+          },
+          {
+            "name": "Frames",
+            "value": 1
+          },
+          {
+            "name": "JSEventListeners",
+            "value": 348
+          },
+          {
+            "name": "LayoutObjects",
+            "value": 245
+          },
+          {
+            "name": "MediaKeySessions",
+            "value": 0
+          },
+          {
+            "name": "MediaKeys",
+            "value": 0
+          },
+          {
+            "name": "Nodes",
+            "value": 414
+          },
+          {
+            "name": "Resources",
+            "value": 12
+          },
+          {
+            "name": "ContextLifecycleStateObservers",
+            "value": 7
+          },
+          {
+            "name": "V8PerContextDatas",
+            "value": 2
+          },
+          {
+            "name": "WorkerGlobalScopes",
+            "value": 0
+          },
+          {
+            "name": "UACSSResources",
+            "value": 0
+          },
+          {
+            "name": "RTCPeerConnections",
+            "value": 0
+          },
+          {
+            "name": "ResourceFetchers",
+            "value": 1
+          },
+          {
+            "name": "AdSubframes",
+            "value": 0
+          },
+          {
+            "name": "DetachedScriptStates",
+            "value": 2
+          },
+          {
+            "name": "ArrayBufferContents",
+            "value": 128
+          },
+          {
+            "name": "LayoutCount",
+            "value": 22
+          },
+          {
+            "name": "RecalcStyleCount",
+            "value": 84
+          },
+          {
+            "name": "LayoutDuration",
+            "value": 0.256346
+          },
+          {
+            "name": "RecalcStyleDuration",
+            "value": 0.110683
+          },
+          {
+            "name": "DevToolsCommandDuration",
+            "value": 0.10963
+          },
+          {
+            "name": "ScriptDuration",
+            "value": 0.370147
+          },
+          {
+            "name": "V8CompileDuration",
+            "value": 0.000839
+          },
+          {
+            "name": "TaskDuration",
+            "value": 1.746875
+          },
+          {
+            "name": "TaskOtherDuration",
+            "value": 0.89923
+          },
+          {
+            "name": "ThreadTime",
+            "value": 1.827251
+          },
+          {
+            "name": "ProcessTime",
+            "value": 2.943927
+          },
+          {
+            "name": "JSHeapUsedSize",
+            "value": 13236268
+          },
+          {
+            "name": "JSHeapTotalSize",
+            "value": 20795392
+          },
+          {
+            "name": "FirstMeaningfulPaint",
+            "value": 867254.926782
+          },
+          {
+            "name": "DomContentLoaded",
+            "value": 867254.912412
+          },
+          {
+            "name": "NavigationStart",
+            "value": 867254.698201
+          }
+        ],
+        "rpc": [
+          {
+            "method": "getGenesisHash",
+            "startMs": 859.4565999999977,
+            "endMs": 1172.9330999999947,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 1871.0049,
+            "endMs": 1972.8045999999958,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 2870.7219999999943,
+            "endMs": 2981.1870999999956,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 3875.1509000000005,
+            "endMs": 4336.5999999999985,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 4882.276399999995,
+            "endMs": 5026.966499999995,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 5888.438899999994,
+            "endMs": 6057.645899999996,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 6906.057399999998,
+            "endMs": 7019.411999999997,
+            "status": 200
+          },
+          {
+            "method": "getMultipleAccounts",
+            "startMs": 7913.3966,
+            "endMs": 8024.100399999996,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 8924.827699999994,
+            "endMs": 9056.4816,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 9924.233399999997,
+            "endMs": 10030.051799999994,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 10934.318499999994,
+            "endMs": 11705.068699999996,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 11941.592899999996,
+            "endMs": 12044.486499999999,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 15448.357799999998,
+            "endMs": 15555.176999999996,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 18960.303699999997,
+            "endMs": 19516.5187,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 22472.868499999997,
+            "endMs": 22695.0691,
+            "status": 200
+          },
+          {
+            "method": "getGenesisHash",
+            "startMs": 24068.098599999998,
+            "endMs": 24175.451699999998,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 25078.401999999995,
+            "endMs": 25184.8013,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 26087.817299999995,
+            "endMs": 26217.865399999995,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 27091.024899999997,
+            "endMs": 27197.978299999995,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 28093.418099999995,
+            "endMs": 28355.740299999998,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 29094.2569,
+            "endMs": 29200.850899999998,
+            "status": 200
+          }
+        ],
+        "errors": []
+      },
+      {
+        "run": 2,
+        "route": "app",
+        "timestamp": "2026-10-07T10:51:58.079Z",
+        "shellMs": 1033.6329000000042,
+        "readyMs": 9604.079399999995,
+        "readinessRpc": 9,
+        "firstOrganizationResponseMs": 5200.840000000004,
+        "switchMs": 197.87199999998847,
+        "idle20s": {
+          "rpc": 12,
+          "commits": 8,
+          "raf": 0,
+          "animations": 0,
+          "longTasks": [
+            {
+              "start": 28591.5,
+              "duration": 104
+            }
+          ]
+        },
+        "longTasks": [
+          {
+            "start": 70.80000007152557,
+            "duration": 153
+          },
+          {
+            "start": 239.20000004768372,
+            "duration": 136
+          },
+          {
+            "start": 381,
+            "duration": 418
+          },
+          {
+            "start": 4601.700000047684,
+            "duration": 189
+          },
+          {
+            "start": 9260.800000071526,
+            "duration": 90
+          },
+          {
+            "start": 28591.5,
+            "duration": 104
+          }
+        ],
+        "commits": 19,
+        "svg": 16,
+        "phantom": false,
+        "metrics": [
+          {
+            "name": "Timestamp",
+            "value": 867314.593429
+          },
+          {
+            "name": "AudioHandlers",
+            "value": 0
+          },
+          {
+            "name": "AudioWorkletProcessors",
+            "value": 0
+          },
+          {
+            "name": "Documents",
+            "value": 1
+          },
+          {
+            "name": "Frames",
+            "value": 1
+          },
+          {
+            "name": "JSEventListeners",
+            "value": 412
+          },
+          {
+            "name": "LayoutObjects",
+            "value": 463
+          },
+          {
+            "name": "MediaKeySessions",
+            "value": 0
+          },
+          {
+            "name": "MediaKeys",
+            "value": 0
+          },
+          {
+            "name": "Nodes",
+            "value": 691
+          },
+          {
+            "name": "Resources",
+            "value": 12
+          },
+          {
+            "name": "ContextLifecycleStateObservers",
+            "value": 7
+          },
+          {
+            "name": "V8PerContextDatas",
+            "value": 2
+          },
+          {
+            "name": "WorkerGlobalScopes",
+            "value": 0
+          },
+          {
+            "name": "UACSSResources",
+            "value": 0
+          },
+          {
+            "name": "RTCPeerConnections",
+            "value": 0
+          },
+          {
+            "name": "ResourceFetchers",
+            "value": 1
+          },
+          {
+            "name": "AdSubframes",
+            "value": 0
+          },
+          {
+            "name": "DetachedScriptStates",
+            "value": 2
+          },
+          {
+            "name": "ArrayBufferContents",
+            "value": 27
+          },
+          {
+            "name": "LayoutCount",
+            "value": 19
+          },
+          {
+            "name": "RecalcStyleCount",
+            "value": 49
+          },
+          {
+            "name": "LayoutDuration",
+            "value": 0.259283
+          },
+          {
+            "name": "RecalcStyleDuration",
+            "value": 0.087633
+          },
+          {
+            "name": "DevToolsCommandDuration",
+            "value": 0.104206
+          },
+          {
+            "name": "ScriptDuration",
+            "value": 0.409133
+          },
+          {
+            "name": "V8CompileDuration",
+            "value": 0.00126
+          },
+          {
+            "name": "TaskDuration",
+            "value": 2.056583
+          },
+          {
+            "name": "TaskOtherDuration",
+            "value": 1.195068
+          },
+          {
+            "name": "ThreadTime",
+            "value": 2.129346
+          },
+          {
+            "name": "ProcessTime",
+            "value": 3.274823
+          },
+          {
+            "name": "JSHeapUsedSize",
+            "value": 14504176
+          },
+          {
+            "name": "JSHeapTotalSize",
+            "value": 22351872
+          },
+          {
+            "name": "FirstMeaningfulPaint",
+            "value": 867285.227557
+          },
+          {
+            "name": "DomContentLoaded",
+            "value": 867285.212685
+          },
+          {
+            "name": "NavigationStart",
+            "value": 867284.977337
+          }
+        ],
+        "rpc": [
+          {
+            "method": "getGenesisHash",
+            "startMs": 1064.6142000000036,
+            "endMs": 1880.8352000000014,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 2077.3228000000017,
+            "endMs": 2177.5848999999944,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 3086.4222999999984,
+            "endMs": 3198.8346999999994,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 4088.636000000006,
+            "endMs": 4606.3153999999995,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 5100.672400000003,
+            "endMs": 5200.840000000004,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 6100.546500000004,
+            "endMs": 6208.920399999995,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 7114.648600000008,
+            "endMs": 7231.008399999999,
+            "status": 200
+          },
+          {
+            "method": "getMultipleAccounts",
+            "startMs": 8118.389799999997,
+            "endMs": 8213.800599999995,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 9122.263800000008,
+            "endMs": 9232.330299999994,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 10128.750699999997,
+            "endMs": 10224.052400000008,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 11131.753499999999,
+            "endMs": 12008.375300000007,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 12134.969699999994,
+            "endMs": 12235.537199999999,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 15649.0403,
+            "endMs": 16159.600899999998,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 19154.403500000008,
+            "endMs": 19322.805199999995,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 22655.150400000006,
+            "endMs": 22757.116400000006,
+            "status": 200
+          },
+          {
+            "method": "getGenesisHash",
+            "startMs": 24256.086499999998,
+            "endMs": 24459.3399,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 25269.739299999994,
+            "endMs": 25373.438199999997,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 26282.605400000008,
+            "endMs": 26390.879000000008,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 27298.660800000005,
+            "endMs": 27405.010000000002,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 28301.388,
+            "endMs": 28595.756100000006,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 29309.717599999996,
+            "endMs": 29407.6368,
+            "status": 200
+          }
+        ],
+        "errors": []
+      },
+      {
+        "run": 2,
+        "route": "arena",
+        "timestamp": "2026-10-07T10:52:28.279Z",
+        "shellMs": 999.5251999999891,
+        "readyMs": 9616.078399999999,
+        "readinessRpc": 9,
+        "firstOrganizationResponseMs": 5145.546099999992,
+        "switchMs": 285.8677000000025,
+        "idle20s": {
+          "rpc": 12,
+          "commits": 7,
+          "raf": 0,
+          "animations": 0,
+          "longTasks": [
+            {
+              "start": 27900.199999928474,
+              "duration": 93
+            }
+          ]
+        },
+        "longTasks": [
+          {
+            "start": 68.19999992847443,
+            "duration": 166
+          },
+          {
+            "start": 248.79999995231628,
+            "duration": 168
+          },
+          {
+            "start": 423.5,
+            "duration": 358
+          },
+          {
+            "start": 4809.5,
+            "duration": 129
+          },
+          {
+            "start": 9223.199999928474,
+            "duration": 134
+          },
+          {
+            "start": 27900.199999928474,
+            "duration": 93
+          }
+        ],
+        "commits": 16,
+        "svg": 7,
+        "phantom": false,
+        "metrics": [
+          {
+            "name": "Timestamp",
+            "value": 867344.706736
+          },
+          {
+            "name": "AudioHandlers",
+            "value": 0
+          },
+          {
+            "name": "AudioWorkletProcessors",
+            "value": 0
+          },
+          {
+            "name": "Documents",
+            "value": 1
+          },
+          {
+            "name": "Frames",
+            "value": 1
+          },
+          {
+            "name": "JSEventListeners",
+            "value": 348
+          },
+          {
+            "name": "LayoutObjects",
+            "value": 247
+          },
+          {
+            "name": "MediaKeySessions",
+            "value": 0
+          },
+          {
+            "name": "MediaKeys",
+            "value": 0
+          },
+          {
+            "name": "Nodes",
+            "value": 406
+          },
+          {
+            "name": "Resources",
+            "value": 13
+          },
+          {
+            "name": "ContextLifecycleStateObservers",
+            "value": 7
+          },
+          {
+            "name": "V8PerContextDatas",
+            "value": 2
+          },
+          {
+            "name": "WorkerGlobalScopes",
+            "value": 0
+          },
+          {
+            "name": "UACSSResources",
+            "value": 0
+          },
+          {
+            "name": "RTCPeerConnections",
+            "value": 0
+          },
+          {
+            "name": "ResourceFetchers",
+            "value": 1
+          },
+          {
+            "name": "AdSubframes",
+            "value": 0
+          },
+          {
+            "name": "DetachedScriptStates",
+            "value": 2
+          },
+          {
+            "name": "ArrayBufferContents",
+            "value": 189
+          },
+          {
+            "name": "LayoutCount",
+            "value": 21
+          },
+          {
+            "name": "RecalcStyleCount",
+            "value": 81
+          },
+          {
+            "name": "LayoutDuration",
+            "value": 0.259468
+          },
+          {
+            "name": "RecalcStyleDuration",
+            "value": 0.138645
+          },
+          {
+            "name": "DevToolsCommandDuration",
+            "value": 0.122229
+          },
+          {
+            "name": "ScriptDuration",
+            "value": 0.428337
+          },
+          {
+            "name": "V8CompileDuration",
+            "value": 0.00122
+          },
+          {
+            "name": "TaskDuration",
+            "value": 2.102728
+          },
+          {
+            "name": "TaskOtherDuration",
+            "value": 1.152829
+          },
+          {
+            "name": "ThreadTime",
+            "value": 2.195516
+          },
+          {
+            "name": "ProcessTime",
+            "value": 3.587518
+          },
+          {
+            "name": "JSHeapUsedSize",
+            "value": 13761716
+          },
+          {
+            "name": "JSHeapTotalSize",
+            "value": 21319680
+          },
+          {
+            "name": "FirstMeaningfulPaint",
+            "value": 867315.308623
+          },
+          {
+            "name": "DomContentLoaded",
+            "value": 867315.296204
+          },
+          {
+            "name": "NavigationStart",
+            "value": 867315.051069
+          }
+        ],
+        "rpc": [
+          {
+            "method": "getGenesisHash",
+            "startMs": 1033.6169999999984,
+            "endMs": 1331.160699999993,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 2034.5971999999892,
+            "endMs": 2163.9774999999936,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 3041.765699999989,
+            "endMs": 3148.88489999999,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 4045.3496999999916,
+            "endMs": 4813.02919999999,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 5047.450499999992,
+            "endMs": 5145.546099999992,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 6057.562399999995,
+            "endMs": 6173.968799999988,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 7059.817999999999,
+            "endMs": 7178.507499999992,
+            "status": 200
+          },
+          {
+            "method": "getMultipleAccounts",
+            "startMs": 8062.271599999993,
+            "endMs": 8186.352399999989,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 9071.1017,
+            "endMs": 9193.379499999995,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 10069.757699999987,
+            "endMs": 10177.02519999999,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 11074.984799999991,
+            "endMs": 13091.657299999992,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 13101.806400000001,
+            "endMs": 13242.84599999999,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 16599.39619999999,
+            "endMs": 16701.277299999987,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 20108.06379999999,
+            "endMs": 20392.843299999993,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 23612.8575,
+            "endMs": 23719.189699999988,
+            "status": 200
+          },
+          {
+            "method": "getGenesisHash",
+            "startMs": 24611.6112,
+            "endMs": 24749.1691,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 25619.944899999988,
+            "endMs": 25723.98479999999,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 26627.9954,
+            "endMs": 26767.55249999999,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 27636.63429999999,
+            "endMs": 27904.62689999999,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 28640.561499999996,
+            "endMs": 28754.12199999999,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 29653.34809999999
+          }
+        ],
+        "errors": []
+      },
+      {
+        "run": 3,
+        "route": "app",
+        "timestamp": "2026-10-07T10:52:58.213Z",
+        "shellMs": 953.1592999999993,
+        "readyMs": 9566.44140000001,
+        "readinessRpc": 9,
+        "firstOrganizationResponseMs": 5106.281000000003,
+        "switchMs": 87.49230000001262,
+        "idle20s": {
+          "rpc": 12,
+          "commits": 8,
+          "raf": 0,
+          "animations": 0,
+          "longTasks": []
+        },
+        "longTasks": [
+          {
+            "start": 67.79999995231628,
+            "duration": 138
+          },
+          {
+            "start": 225.79999995231628,
+            "duration": 150
+          },
+          {
+            "start": 383.1999999284744,
+            "duration": 314
+          },
+          {
+            "start": 775.1999999284744,
+            "duration": 55
+          },
+          {
+            "start": 4669.699999928474,
+            "duration": 123
+          },
+          {
+            "start": 9176.299999952316,
+            "duration": 99
+          }
+        ],
+        "commits": 19,
+        "svg": 16,
+        "phantom": false,
+        "metrics": [
+          {
+            "name": "Timestamp",
+            "value": 867374.839181
+          },
+          {
+            "name": "AudioHandlers",
+            "value": 0
+          },
+          {
+            "name": "AudioWorkletProcessors",
+            "value": 0
+          },
+          {
+            "name": "Documents",
+            "value": 1
+          },
+          {
+            "name": "Frames",
+            "value": 1
+          },
+          {
+            "name": "JSEventListeners",
+            "value": 412
+          },
+          {
+            "name": "LayoutObjects",
+            "value": 463
+          },
+          {
+            "name": "MediaKeySessions",
+            "value": 0
+          },
+          {
+            "name": "MediaKeys",
+            "value": 0
+          },
+          {
+            "name": "Nodes",
+            "value": 690
+          },
+          {
+            "name": "Resources",
+            "value": 12
+          },
+          {
+            "name": "ContextLifecycleStateObservers",
+            "value": 7
+          },
+          {
+            "name": "V8PerContextDatas",
+            "value": 2
+          },
+          {
+            "name": "WorkerGlobalScopes",
+            "value": 0
+          },
+          {
+            "name": "UACSSResources",
+            "value": 0
+          },
+          {
+            "name": "RTCPeerConnections",
+            "value": 0
+          },
+          {
+            "name": "ResourceFetchers",
+            "value": 1
+          },
+          {
+            "name": "AdSubframes",
+            "value": 0
+          },
+          {
+            "name": "DetachedScriptStates",
+            "value": 2
+          },
+          {
+            "name": "ArrayBufferContents",
+            "value": 112
+          },
+          {
+            "name": "LayoutCount",
+            "value": 19
+          },
+          {
+            "name": "RecalcStyleCount",
+            "value": 51
+          },
+          {
+            "name": "LayoutDuration",
+            "value": 0.269592
+          },
+          {
+            "name": "RecalcStyleDuration",
+            "value": 0.085606
+          },
+          {
+            "name": "DevToolsCommandDuration",
+            "value": 0.088816
+          },
+          {
+            "name": "ScriptDuration",
+            "value": 0.384871
+          },
+          {
+            "name": "V8CompileDuration",
+            "value": 0.001138
+          },
+          {
+            "name": "TaskDuration",
+            "value": 1.731564
+          },
+          {
+            "name": "TaskOtherDuration",
+            "value": 0.901541
+          },
+          {
+            "name": "ThreadTime",
+            "value": 1.801082
+          },
+          {
+            "name": "ProcessTime",
+            "value": 2.738972
+          },
+          {
+            "name": "JSHeapUsedSize",
+            "value": 14728708
+          },
+          {
+            "name": "JSHeapTotalSize",
+            "value": 22614016
+          },
+          {
+            "name": "FirstMeaningfulPaint",
+            "value": 867345.494986
+          },
+          {
+            "name": "DomContentLoaded",
+            "value": 867345.480052
+          },
+          {
+            "name": "NavigationStart",
+            "value": 867345.259233
+          }
+        ],
+        "rpc": [
+          {
+            "method": "getGenesisHash",
+            "startMs": 994.5987000000023,
+            "endMs": 1310.281799999997,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 1967.0849000000017,
+            "endMs": 2108.3093999999983,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 2982.6073000000033,
+            "endMs": 3392.873299999992,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 3990.7023000000045,
+            "endMs": 4674.427599999995,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 5004.502999999997,
+            "endMs": 5106.281000000003,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 6013.834699999992,
+            "endMs": 6135.170299999998,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 7023.192800000004,
+            "endMs": 7169.4372999999905,
+            "status": 200
+          },
+          {
+            "method": "getMultipleAccounts",
+            "startMs": 8026.4170999999915,
+            "endMs": 8129.050799999997,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 9040.1489,
+            "endMs": 9153.392900000006,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 10059.853700000007,
+            "endMs": 10174.682299999986,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 11062.137500000012,
+            "endMs": 11944.305300000007,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 12066.030700000003,
+            "endMs": 12174.741999999998,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 15582.116099999985,
+            "endMs": 15694.828099999984,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 19087.0386,
+            "endMs": 19227.115499999985,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 22597.596699999995,
+            "endMs": 22743.845499999996,
+            "status": 200
+          },
+          {
+            "method": "getGenesisHash",
+            "startMs": 24165.584199999983,
+            "endMs": 24275.579200000007,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 25177.925400000007,
+            "endMs": 25284.33110000001,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 26185.7255,
+            "endMs": 26291.291100000002,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 27191.175400000007,
+            "endMs": 27322.944599999988,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 28196.914900000003,
+            "endMs": 28505.8542,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 29200.49489999999,
+            "endMs": 29310.824499999988,
+            "status": 200
+          }
+        ],
+        "errors": []
+      },
+      {
+        "run": 3,
+        "route": "arena",
+        "timestamp": "2026-10-07T10:53:27.586Z",
+        "shellMs": 546.8969000000216,
+        "readyMs": 9043.885999999999,
+        "readinessRpc": 9,
+        "firstOrganizationResponseMs": 4654.054600000003,
+        "switchMs": 133.91120000000228,
+        "idle20s": {
+          "rpc": 12,
+          "commits": 8,
+          "raf": 0,
+          "animations": 0,
+          "longTasks": [
+            {
+              "start": 26997.300000071526,
+              "duration": 97
+            }
+          ]
+        },
+        "longTasks": [
+          {
+            "start": 71.89999997615814,
+            "duration": 113
+          },
+          {
+            "start": 196.89999997615814,
+            "duration": 73
+          },
+          {
+            "start": 272,
+            "duration": 146
+          },
+          {
+            "start": 3987.7000000476837,
+            "duration": 73
+          },
+          {
+            "start": 8726.5,
+            "duration": 143
+          },
+          {
+            "start": 26997.300000071526,
+            "duration": 97
+          }
+        ],
+        "commits": 18,
+        "svg": 7,
+        "phantom": false,
+        "metrics": [
+          {
+            "name": "Timestamp",
+            "value": 867404.165725
+          },
+          {
+            "name": "AudioHandlers",
+            "value": 0
+          },
+          {
+            "name": "AudioWorkletProcessors",
+            "value": 0
+          },
+          {
+            "name": "Documents",
+            "value": 1
+          },
+          {
+            "name": "Frames",
+            "value": 1
+          },
+          {
+            "name": "JSEventListeners",
+            "value": 360
+          },
+          {
+            "name": "LayoutObjects",
+            "value": 247
+          },
+          {
+            "name": "MediaKeySessions",
+            "value": 0
+          },
+          {
+            "name": "MediaKeys",
+            "value": 0
+          },
+          {
+            "name": "Nodes",
+            "value": 404
+          },
+          {
+            "name": "Resources",
+            "value": 13
+          },
+          {
+            "name": "ContextLifecycleStateObservers",
+            "value": 7
+          },
+          {
+            "name": "V8PerContextDatas",
+            "value": 2
+          },
+          {
+            "name": "WorkerGlobalScopes",
+            "value": 0
+          },
+          {
+            "name": "UACSSResources",
+            "value": 0
+          },
+          {
+            "name": "RTCPeerConnections",
+            "value": 0
+          },
+          {
+            "name": "ResourceFetchers",
+            "value": 1
+          },
+          {
+            "name": "AdSubframes",
+            "value": 0
+          },
+          {
+            "name": "DetachedScriptStates",
+            "value": 2
+          },
+          {
+            "name": "ArrayBufferContents",
+            "value": 251
+          },
+          {
+            "name": "LayoutCount",
+            "value": 21
+          },
+          {
+            "name": "RecalcStyleCount",
+            "value": 83
+          },
+          {
+            "name": "LayoutDuration",
+            "value": 0.201413
+          },
+          {
+            "name": "RecalcStyleDuration",
+            "value": 0.111349
+          },
+          {
+            "name": "DevToolsCommandDuration",
+            "value": 0.070448
+          },
+          {
+            "name": "ScriptDuration",
+            "value": 0.246075
+          },
+          {
+            "name": "V8CompileDuration",
+            "value": 0.000844
+          },
+          {
+            "name": "TaskDuration",
+            "value": 1.380156
+          },
+          {
+            "name": "TaskOtherDuration",
+            "value": 0.750027
+          },
+          {
+            "name": "ThreadTime",
+            "value": 1.398567
+          },
+          {
+            "name": "ProcessTime",
+            "value": 2.354331
+          },
+          {
+            "name": "JSHeapUsedSize",
+            "value": 14039924
+          },
+          {
+            "name": "JSHeapTotalSize",
+            "value": 21843968
+          },
+          {
+            "name": "FirstMeaningfulPaint",
+            "value": 867375.297517
+          },
+          {
+            "name": "DomContentLoaded",
+            "value": 867375.291202
+          },
+          {
+            "name": "NavigationStart",
+            "value": 867375.096451
+          }
+        ],
+        "rpc": [
+          {
+            "method": "getGenesisHash",
+            "startMs": 522.6970000000147,
+            "endMs": 803.6326000000117,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 1524.6521000000066,
+            "endMs": 1620.2323000000033,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 2539.0084999999963,
+            "endMs": 2636.3433000000077,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 3558.0386,
+            "endMs": 3990.7119999999995,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 4553.775500000018,
+            "endMs": 4654.054600000003,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 5562.138800000015,
+            "endMs": 5795.684900000022,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 6573.483100000012,
+            "endMs": 6705.9014000000025,
+            "status": 200
+          },
+          {
+            "method": "getMultipleAccounts",
+            "startMs": 7579.131800000003,
+            "endMs": 7742.916200000007,
+            "status": 200
+          },
+          {
+            "method": "getProgramAccounts",
+            "startMs": 8583.061300000001,
+            "endMs": 8694.913900000014,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 9584.29370000001,
+            "endMs": 9717.366299999994,
+            "status": 200
+          },
+          {
+            "method": "getSignaturesForAddress",
+            "startMs": 10589.584100000007,
+            "endMs": 12183.077500000014,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 12188.967700000008,
+            "endMs": 12360.846099999995,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 15696.329700000002,
+            "endMs": 15834.92690000002,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 19209.31880000001,
+            "endMs": 19543.531400000007,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 22720.302400000015,
+            "endMs": 22823.55600000001,
+            "status": 200
+          },
+          {
+            "method": "getGenesisHash",
+            "startMs": 23721.2053,
+            "endMs": 23822.915200000018,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 24726.290200000018,
+            "endMs": 24828.415100000013,
+            "status": 200
+          },
+          {
+            "method": "getSlot",
+            "startMs": 25732.324300000007,
+            "endMs": 25844.012000000017,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 26740.263200000016,
+            "endMs": 26999.69750000001,
+            "status": 200
+          },
+          {
+            "method": "getTransaction",
+            "startMs": 27739.4706,
+            "endMs": 27834.299300000013,
+            "status": 200
+          },
+          {
+            "method": "getAccountInfo",
+            "startMs": 28742.52410000001,
+            "endMs": 28848.5331,
+            "status": 200
+          }
+        ],
+        "errors": []
+      }
+    ]
+  },
+  "limitations": [
+    "disconnected only; Phantom absent",
+    "three samples per route; insufficient for robust interaction/frame p95",
+    "same Chromium/device/viewport/static build mode and endpoint; live network and Windows resource pressure vary",
+    "Story restart timer and ledger order were corrected after samples; Command/Arena logic and layout did not change"
+  ]
+}
