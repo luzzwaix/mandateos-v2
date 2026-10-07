@@ -24,7 +24,7 @@ assert.ok(
 );
 const { chromium } = await import(pathToFileURL(modulePath).href);
 const base = process.argv[2] ?? "http://127.0.0.1:3101";
-const out = resolve("artifacts/final-finish/qa");
+const out = resolve(process.argv[3] ?? "artifacts/final-finish/qa");
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const checks = [],

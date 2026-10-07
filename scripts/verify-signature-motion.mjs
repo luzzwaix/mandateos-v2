@@ -165,9 +165,10 @@ for (const width of [1440, 390]) {
   await c.close();
 }
 await b.close();
-mkdirSync("artifacts/final-finish/qa", { recursive: true });
+const output = resolve(process.argv[3] ?? "artifacts/final-finish/qa");
+mkdirSync(output, { recursive: true });
 writeFileSync(
-  "artifacts/final-finish/qa/signature-motion.json",
+  resolve(output, "signature-motion.json"),
   JSON.stringify({ checks, motion }, null, 2),
 );
 assert.ok(checks.every((c) => c.result));

@@ -30,7 +30,7 @@
   z-index: 2;
 }
 .story-title {
-  animation: story-copy-in 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: story-copy-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .story-title h1 {
   font-family: var(--sans);
@@ -683,5 +683,69 @@
     animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
     transition-delay: 0ms !important;
+  }
+}
+
+/* The same lineage stays readable while the spatial structure explains it. */
+.story-lineage {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 0;
+  margin: 8px 0 0;
+  list-style: none;
+  gap: 16px;
+}
+.story-lineage li {
+  border-top: 1px solid #c8d9c5;
+  padding: 10px 0;
+}
+.story-lineage strong {
+  font-size: 14px;
+  font-weight: 450;
+}
+.story-lineage span {
+  display: block;
+  margin-top: 6px;
+  font: 9px var(--mono);
+  text-transform: uppercase;
+  color: #a6b5ac;
+}
+.story-lineage [data-status="revoked"],
+.story-lineage [data-status="blocked"] {
+  border-color: #d48b7a;
+}
+.story-lineage [data-status="revoked"] span,
+.story-lineage [data-status="blocked"] span {
+  color: #d48b7a;
+}
+.mandate-story:has(.story-lineage) .exhibit-caption {
+  margin-top: 12px;
+}
+.mandate-story:has(.story-lineage) .story-mobile-consequence p {
+  display: none;
+}
+@media (min-width: 701px) {
+  .mandate-story:has(.story-lineage) .authority-seal svg {
+    height: calc(100svh - 410px);
+    min-height: 300px;
+    max-height: none;
+  }
+  .mandate-story:has(.story-lineage) .authority-seal {
+    margin-top: 0;
+    flex: none;
+  }
+  .mandate-story:has(.story-lineage) .seal-controls {
+    margin-top: 0;
+  }
+}
+@media (max-width: 700px) {
+  .story-lineage {
+    gap: 12px;
+  }
+  .story-lineage strong {
+    font-size: 12px;
+  }
+  .story-lineage span {
+    font-size: 8px;
   }
 }

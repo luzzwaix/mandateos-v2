@@ -120,12 +120,16 @@ strong {
   z-index: 100;
   left: 16px;
   top: -80px;
+  opacity: 0;
+  pointer-events: none;
   background: var(--bone);
   color: var(--ink);
   padding: 12px;
 }
-.skip-link:focus {
+.skip-link:focus-visible {
   top: 8px;
+  opacity: 1;
+  pointer-events: auto;
 }
 .root-anchor {
   color: var(--mint);

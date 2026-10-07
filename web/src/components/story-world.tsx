@@ -139,7 +139,7 @@ function AuthoritySeal({
   onSelect: (id: string) => void;
 }) {
   const surface = useRef<HTMLDivElement>(null);
-  const previousMotion = useRef({ cut, preview, traced, selected });
+  const previousMotion = useRef({ cut, preview, traced, selected, grant });
   const expanded = model.nodes.length > 1;
   const path = authorityPath(model, selected).map((n) => n.id);
   const grantParent = model.nodes.find((node) => node.id === grant)?.parent;
@@ -147,9 +147,10 @@ function AuthoritySeal({
     const element = surface.current;
     if (!element) return;
     const previous = previousMotion.current;
-    previousMotion.current = { cut, preview, traced, selected };
+    previousMotion.current = { cut, preview, traced, selected, grant };
+    const newGrant = grant && grant !== previous.grant;
     if (
-      !grant &&
+      !newGrant &&
       !(cut && !previous.cut) &&
       !(preview && !previous.preview) &&
       !(traced && (!previous.traced || selected !== previous.selected))
@@ -158,23 +159,48 @@ function AuthoritySeal({
     const timeline = scopedTimeline(
       element,
       cut ? "cascade" : preview ? "impact" : traced ? "trace" : "grant",
-      cut ? motionTiming.cascade : motionTiming.build,
+      cut || grant === "recursion" ? motionTiming.cascade : motionTiming.build,
     );
-    if (grant) {
+    if (newGrant && grant === "recursion") {
+      // State is already complete. Only its visual explanation is sequenced.
+      for (const shape of shapes.filter((shape) => shape.id !== "research")) {
+        const node = element.querySelector(`[data-authority-id="${shape.id}"]`);
+        const delay =
+          shape.id === "operations" ? 0 : shape.id === "scraper" ? 440 : 220;
+        timeline.pulse(node?.querySelector(".authority-joint"), 260, delay);
+        timeline.animate(
+          node?.querySelector(".mandate-surface"),
+          [{ opacity: 0.15 }, { opacity: 1 }],
+          260,
+          delay + 240,
+        );
+        node
+          ?.querySelectorAll(".authority-rail")
+          .forEach((rail) => timeline.draw(rail, 300, delay + 240));
+        timeline.animate(
+          node?.querySelector(".seal-label"),
+          [{ opacity: 0 }, { opacity: 1 }],
+          180,
+          delay + 480,
+        );
+      }
+    } else if (newGrant && grant) {
       const route = element.querySelector(".grant-path");
       timeline.pulse(route, 420);
       const node = element.querySelector(`[data-authority-id="${grant}"]`);
+      timeline.animate(node, [{ opacity: 0 }, { opacity: 1 }], 120, 420);
+      node
+        ?.querySelectorAll(".authority-rail")
+        .forEach((rail) => timeline.draw(rail, 310, 430));
       timeline.animate(
-        node,
+        node?.querySelector(".seal-label"),
         [
-          { opacity: 0 },
-          { opacity: 1 },
+          { opacity: 0, clipPath: "inset(0 0 100% 0)" },
+          { opacity: 1, clipPath: "inset(0)" },
         ],
-        120,
-        390,
+        150,
+        630,
       );
-      node?.querySelectorAll(".authority-rail").forEach((rail) => timeline.draw(rail, 310, 430));
-      timeline.animate(node?.querySelector(".seal-label"), [{ opacity: 0, clipPath: "inset(0 0 100% 0)" }, { opacity: 1, clipPath: "inset(0)" }], 150, 630);
       timeline.animate(
         element.querySelector(
           `[data-authority-id="${grantParent}"] .root-disc, [data-authority-id="${grantParent}"] .mandate-surface`,
@@ -196,7 +222,20 @@ function AuthoritySeal({
     } else if (cut) {
       for (const shape of shapes.filter((shape) => shape.id !== "operations")) {
         const node = element.querySelector(`[data-authority-id="${shape.id}"]`);
-        node?.querySelectorAll(".authority-rail").forEach((rail) => timeline.animate(rail, [{ stroke: "#c8d9c5", strokeDasharray: "1 0" }, { stroke: shape.id === "research" ? "#d97d72" : "#637166", strokeDasharray: ".035 .045" }], 360, shape.delay));
+        node?.querySelectorAll(".authority-rail").forEach((rail) =>
+          timeline.animate(
+            rail,
+            [
+              { stroke: "#c8d9c5", strokeDasharray: "1 0" },
+              {
+                stroke: shape.id === "research" ? "#d97d72" : "#637166",
+                strokeDasharray: ".035 .045",
+              },
+            ],
+            360,
+            shape.delay,
+          ),
+        );
         timeline.animate(
           node?.querySelector(".mandate-cut-source"),
           [{ opacity: 1 }, { opacity: 0 }],
@@ -258,7 +297,18 @@ function AuthoritySeal({
           ),
       );
       ["treasury", "research", "data", "scraper"].forEach((id, i) => {
-        element.querySelectorAll(`[data-authority-id="${id}"] .authority-rail`).forEach((rail) => timeline.draw(rail, 340, i * 130));
+        timeline.animate(
+          element.closest("main")?.querySelector(`[data-lineage-id="${id}"]`),
+          [
+            { opacity: 0.35, clipPath: "inset(0 100% 0 0)" },
+            { opacity: 1, clipPath: "inset(0)" },
+          ],
+          220,
+          i * 130,
+        );
+        element
+          .querySelectorAll(`[data-authority-id="${id}"] .authority-rail`)
+          .forEach((rail) => timeline.draw(rail, 340, i * 130));
         timeline.animate(
           element.querySelector(
             `[data-authority-id="${id}"] .root-disc, [data-authority-id="${id}"] .mandate-surface`,
@@ -304,10 +354,7 @@ function AuthoritySeal({
                 offset="0.45"
                 stopColor={index === 1 ? "#1c3026" : "#23382d"}
               />
-              <stop
-                offset="1"
-                stopColor="#14241c"
-              />
+              <stop offset="1" stopColor="#14241c" />
             </linearGradient>
           ))}
           <linearGradient id="authority-copper" x1="0" y1="0" x2="0.6" y2="1">
@@ -433,7 +480,12 @@ function AuthoritySeal({
                 d={sector(shape.inner, shape.outer, shape.start, shape.end)}
               />
               {[shape.start + 2, shape.end - 2].map((end, index) => (
-                <path key={index} className="authority-rail" pathLength="1" d={authorityArc(shape.inner + 5, shape.joint, end)} />
+                <path
+                  key={index}
+                  className="authority-rail"
+                  pathLength="1"
+                  d={authorityArc(shape.inner + 5, shape.joint, end)}
+                />
               ))}
               {cut && affected && (
                 <path
@@ -473,6 +525,7 @@ function AuthoritySeal({
           <path className="blast-boundary" pathLength="1" d={impactContour()} />
         )}
         {grant &&
+          grant !== "recursion" &&
           (() => {
             const shape = shapes.find((shape) => shape.id === grant)!;
             const node = model.nodes.find((node) => node.id === grant)!;
@@ -530,8 +583,12 @@ function AuthoritySeal({
             onClick={() => onSelect(node.id)}
           >
             {node.name === "Treasury" ? "Root" : node.name}
-            <span className="seal-control-status">{statusOf(model, node.id)}</span>
-            <span className="seal-control-amount">{amount(node.available, model.decimals)} {model.unit}</span>
+            <span className="seal-control-status">
+              {statusOf(model, node.id)}
+            </span>
+            <span className="seal-control-amount">
+              {amount(node.available, model.decimals)} {model.unit}
+            </span>
           </button>
         ))}
       </div>
@@ -544,30 +601,13 @@ export default function StoryWorld() {
     w = useWorld();
   const [stage, setStage] = useState(0),
     [count, setCount] = useState(1);
-  const [grant, setGrant] = useState<string>(),
-    [busy, setBusy] = useState(false);
+  const [grant, setGrant] = useState<string>();
   const [traced, setTraced] = useState(false),
     [preview, setPreview] = useState(false);
   const [settled, setSettled] = useState<AuthorityModel>(),
     [selected, setSelected] = useState("treasury");
-  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const constructionTarget = useRef(1);
   const model = settled ?? genesis(count),
     cut = !!settled;
-  useEffect(() => () => timers.current.forEach(clearTimeout), []);
-  useEffect(() => {
-    const preference = matchMedia("(prefers-reduced-motion: reduce)");
-    const finish = () => {
-      if (!preference.matches || !busy) return;
-      timers.current.forEach(clearTimeout);
-      timers.current = [];
-      setCount(constructionTarget.current);
-      setGrant(undefined);
-      setBusy(false);
-    };
-    preference.addEventListener("change", finish);
-    return () => preference.removeEventListener("change", finish);
-  }, [busy]);
   useEffect(() => {
     const sync = () => {
       if (w.mode === "demo") {
@@ -579,48 +619,20 @@ export default function StoryWorld() {
     window.addEventListener("mandateos:open-command", sync);
     return () => window.removeEventListener("mandateos:open-command", sync);
   }, [w, model, selected]);
-  const later = (fn: () => void, ms: number) => {
-    timers.current.push(
-      setTimeout(
-        fn,
-        matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : ms,
-      ),
-    );
-  };
   function delegate() {
-    if (busy || count > 1) return;
-    setBusy(true);
-    constructionTarget.current = 2;
+    if (count > 1) return;
     setCount(2);
     setGrant("research");
     setSelected("research");
     setStage(1);
-    later(() => {
-      setGrant(undefined);
-      setBusy(false);
-    }, motionTiming.build);
   }
   function build() {
-    if (busy || count === 6) return;
-    setBusy(true);
-    constructionTarget.current = 6;
-    for (let n = count + 1; n <= 6; n++)
-      later(
-        () => {
-          setCount(n);
-          setGrant(genesis(n).nodes[n - 1].id);
-        },
-        (n - count - 1) * motionTiming.build,
-      );
-    later(
-      () => {
-        setGrant(undefined);
-        setBusy(false);
-      },
-      (6 - count) * motionTiming.build,
-    );
+    if (count === 6) return;
+    setCount(6);
+    setGrant("recursion");
   }
   function trace() {
+    setGrant(undefined);
     setStage(2);
     setTraced(true);
     setPreview(false);
@@ -649,17 +661,13 @@ export default function StoryWorld() {
     );
   }
   function reset() {
-    timers.current.forEach(clearTimeout);
-    timers.current = [];
     setStage(0);
     setCount(1);
     setGrant(undefined);
-    setBusy(false);
     setTraced(false);
     setPreview(false);
     setSettled(undefined);
     setSelected("treasury");
-    constructionTarget.current = 1;
   }
   function openCommand() {
     window.dispatchEvent(
@@ -740,8 +748,8 @@ export default function StoryWorld() {
             <p>{descriptions[stage]}</p>
           </div>
           <div className="story-action-block">
-            <button className="story-primary" onClick={action} disabled={busy}>
-              <span>{busy ? "Granting authority…" : cta}</span>
+            <button className="story-primary" onClick={action}>
+              <span>{cta}</span>
               {stage === 3 ? <Scissors size={19} /> : <ArrowRight size={20} />}
             </button>
             {preview && (
@@ -789,7 +797,14 @@ export default function StoryWorld() {
               </p>
               {cut && (
                 <small className="story-capacity">
-                  <b>+{amount(genesis(6).nodes.find((node) => node.id === "research")!.remaining)} USDC capacity released</b>
+                  <b>
+                    +
+                    {amount(
+                      genesis(6).nodes.find((node) => node.id === "research")!
+                        .remaining,
+                    )}{" "}
+                    USDC capacity released
+                  </b>
                   Root available {amount(model.nodes[0].available)} USDC · vault
                   unchanged
                 </small>
@@ -820,6 +835,22 @@ export default function StoryWorld() {
             selected={selected}
             onSelect={inspect}
           />
+          {(traced || cut) && (
+            <ol className="story-lineage" aria-label="Scraper authority path">
+              {authorityPath(model, "scraper").map((node) => (
+                <li
+                  key={node.id}
+                  data-lineage-id={node.id}
+                  data-status={statusOf(model, node.id)}
+                >
+                  <strong>
+                    {node.name === "Treasury" ? "Root" : node.name}
+                  </strong>
+                  <span>{statusOf(model, node.id)}</span>
+                </li>
+              ))}
+            </ol>
+          )}
           <div className="exhibit-caption">
             <div>
               <span>
@@ -880,7 +911,7 @@ export default function StoryWorld() {
           {stages.map((name, i) => (
             <button
               key={name}
-              disabled={busy || (i !== 0 && (i > stage || cut))}
+              disabled={i !== 0 && (i > stage || cut)}
               aria-current={i === stage ? "step" : undefined}
               onClick={() => {
                 if (i === 0) reset();

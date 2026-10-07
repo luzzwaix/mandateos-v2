@@ -123,6 +123,17 @@ export default function ArenaWorld() {
         );
       });
     } else if (settled && before.status !== status) {
+      timeline.animate(
+        element.querySelector(".contender.winner"),
+        [{ opacity: 0.5 }, { opacity: 1 }],
+        220,
+      );
+      timeline.animate(
+        element.querySelector(".verifier-gate > strong"),
+        [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0)" }],
+        220,
+        280,
+      );
       const chosen = routes.find((route) =>
         route.classList.contains("selected"),
       );
@@ -341,6 +352,36 @@ export default function ArenaWorld() {
             )}
             <span>CAPITAL → MISSION ← SUBMISSIONS → VERIFIER</span>
           </div>
+          <ol className="mission-lifecycle" aria-label="Mission lifecycle">
+            <li data-complete={funded}>
+              Mission <span>{funded ? "funded" : "awaiting funding"}</span>
+            </li>
+            <li data-complete={submitted}>
+              Submissions{" "}
+              <span>
+                {submitted ? `${names.length} committed` : "awaiting results"}
+              </span>
+            </li>
+            <li
+              data-complete={settled}
+              data-preview={previewResult && !settled}
+            >
+              Verifier{" "}
+              <span>
+                {settled
+                  ? "selected winner"
+                  : previewResult
+                    ? "preview · unpaid"
+                    : "awaiting selection"}
+              </span>
+            </li>
+            <li data-complete={settled}>
+              Settlement{" "}
+              <span>
+                {settled ? (w.demo ? "simulated" : "on-chain") : "not settled"}
+              </span>
+            </li>
+          </ol>
           <div
             ref={executionField}
             className={`mission-stage ${status} ${settled ? "resolved" : ""} ${submitted && previewResult && !settled ? "verifier-preview" : ""}`}

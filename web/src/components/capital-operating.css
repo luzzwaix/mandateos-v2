@@ -1,4 +1,4 @@
-/* Final operating compositions. Frozen Story has no matching selector. */
+/* Operating compositions, within Authority Chamber. */
 .command-world,
 .arena-world {
   --operating-bone: #eee9da;
@@ -2015,4 +2015,150 @@
   .flat-node:is([data-node-id="scraper"], [data-visual-role="scraper"])
   .mandate-focus {
   inset: 0;
+}
+
+/* Startup v1: authority first, financial lens second, aligned evidence third. */
+.command-world .event-head,
+.command-world .event-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) minmax(100px, 0.3fr);
+  gap: 16px;
+  align-items: start;
+}
+.command-world .event-head {
+  padding: 12px 0;
+  border-bottom: 1px solid #354638;
+}
+.command-world .event-row {
+  padding: 16px 0;
+  border-bottom: 1px solid #354638;
+}
+.command-world .event-row > div > small {
+  display: block;
+  margin-top: 6px;
+  line-height: 1.6;
+}
+.command-world .event-row > span,
+.command-world .receipt-provenance {
+  font: 10px/1.6 var(--mono);
+  color: #a6b5ac;
+}
+.command-world .bone-instrument {
+  min-height: 0;
+}
+.arena-world .mission-lifecycle {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  gap: 24px;
+  counter-reset: mission-step;
+}
+.arena-world .mission-lifecycle li {
+  counter-increment: mission-step;
+  padding: 12px 0;
+  border-top: 1px solid #354638;
+  font-size: 14px;
+  color: #a6b5ac;
+}
+.arena-world .mission-lifecycle li::before {
+  content: counter(mission-step, decimal-leading-zero);
+  font: 9px var(--mono);
+  margin-right: 12px;
+}
+.arena-world .mission-lifecycle span {
+  display: block;
+  margin-top: 8px;
+  font: 10px var(--mono);
+}
+.arena-world .mission-lifecycle [data-complete="true"] {
+  color: #eee9da;
+  border-color: #c8d9c5;
+}
+.arena-world .mission-lifecycle [data-preview="true"] {
+  color: #d59b74;
+  border-color: #d59b74;
+}
+.arena-world .mission-stage .mission-basin h2 {
+  max-width: 10ch;
+  font-size: clamp(34px, 3vw, 44px);
+}
+.arena-world .mission-stage .mission-basin > span:first-child,
+.arena-world .mission-stage .mission-basin .mission-status {
+  align-self: flex-start;
+}
+@media (max-width: 700px) {
+  .command-world .command-field {
+    order: 1;
+  }
+  .command-world .bone-instrument,
+  .command-world .bone-instrument:not(.impact-instrument) {
+    order: 2;
+    padding: 20px;
+    gap: 20px;
+  }
+  .command-world .graph-toolbar h1 {
+    text-align: left;
+    width: 100%;
+    margin: 0;
+  }
+  .command-world .graph-toolbar {
+    justify-content: flex-start;
+    gap: 8px;
+  }
+  .command-world .instrument-authority .flat-mobile {
+    margin-top: 12px;
+  }
+  .command-world .event-head,
+  .command-world .event-row {
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 12px;
+  }
+  .command-world .event-head > :last-child {
+    display: none;
+  }
+  .command-world .event-row > :last-child {
+    grid-column: 2;
+  }
+}
+@media (max-width: 650px) {
+  .arena-world .mission-lifecycle {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 20px;
+    margin-bottom: 24px;
+  }
+  .arena-world .mission-stage .capital-source {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+  }
+  .arena-world .mission-stage .capital-source > strong {
+    grid-column: 1;
+  }
+  .arena-world .mission-stage .capital-source > b {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .arena-world .mission-stage .capital-source > small {
+    grid-column: 1/-1;
+    text-align: left;
+  }
+  .arena-world .mission-stage .mission-basin {
+    align-items: flex-start;
+    padding: 28px 30px;
+  }
+  .arena-world .mission-stage .mission-basin h2 {
+    max-width: none;
+  }
+  .arena-world .mission-stage .verifier-gate {
+    text-align: left;
+    align-items: flex-start;
+    padding-left: 24px;
+  }
+  .arena-world .mission-stage .verifier-gate > strong,
+  .arena-world .mission-stage .verifier-gate > span,
+  .arena-world .mission-stage .verifier-gate > small {
+    text-align: left;
+  }
 }
