@@ -27,7 +27,7 @@ await new Promise((res, reject) => {
 const idl = JSON.parse(readFileSync(idlFile, "utf8"));
 if (!idl.instructions.some((i) => i.name === "settle_bounty"))
   throw new Error("Build the Arena extension before starting the demo");
-syncIdl(idlFile, join(root, "web", "src", "lib", "solana", "mandateos.json"));
+syncIdl(idlFile, join(root, "packages", "sdk", "src", "mandateos.json"));
 const envFile = join(root, "web", ".env.local");
 if (!existsSync(envFile))
   writeFileSync(

@@ -1,57 +1,45 @@
-import { AnchorProvider, Program, type Idl } from "@coral-xyz/anchor";
-import { Connection } from "@solana/web3.js";
-import idl from "./mandateos.json";
+import type { Connection } from "@solana/web3.js";
+import {
+  PROGRAM_ADDRESS as SOURCE_PROGRAM_ADDRESS,
+  assertCompatibleIdl as assertProtocolIdl,
+  connection as protocolConnection,
+  programFor as protocolProgram,
+  explorer as protocolExplorer,
+  type ClientConfig,
+} from "../../../../packages/sdk/src/program";
 import type { SigningWallet } from "./types";
-import { pacedRpcFetch } from "./rpc";
+export {
+  DEVNET_GENESIS,
+  REQUIRED_INSTRUCTIONS,
+} from "../../../../packages/sdk/src/program";
 
 export const RPC_URL =
   process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.devnet.solana.com";
 export const PROGRAM_ADDRESS =
-  process.env.NEXT_PUBLIC_MANDATEOS_PROGRAM_ID || idl.address;
-export const DEVNET_GENESIS = "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG";
+  process.env.NEXT_PUBLIC_MANDATEOS_PROGRAM_ID || SOURCE_PROGRAM_ADDRESS;
 export const NETWORK = "DEVNET";
 export const IS_LOCAL = false;
 export const LOCAL_DEMO = false;
-export const REQUIRED_INSTRUCTIONS = [
-  "create_organization",
-  "deposit",
-  "delegate",
-  "spend",
-  "revoke_branch",
-  "reclaim",
-  "create_bounty",
-  "submit_result",
-  "settle_bounty",
-] as const;
-export const IDL_COMPATIBLE =
-  idl.address === PROGRAM_ADDRESS &&
-  REQUIRED_INSTRUCTIONS.every((name) =>
-    idl.instructions.some((i) => i.name === name),
-  );
+export function clientConfig(): ClientConfig {
+  return { cluster: "devnet", rpcUrl: RPC_URL, programId: PROGRAM_ADDRESS };
+}
+export const IDL_COMPATIBLE = (() => {
+  try {
+    assertProtocolIdl(clientConfig());
+    return true;
+  } catch {
+    return false;
+  }
+})();
 export function assertCompatibleIdl() {
-  if (!IDL_COMPATIBLE)
-    throw new Error(
-      "Transaction disabled: the configured program does not match the source-generated IDL and its nine instructions.",
-    );
+  assertProtocolIdl(clientConfig());
 }
 export function connection() {
-  return new Connection(RPC_URL, {
-    commitment: "confirmed",
-    confirmTransactionInitialTimeout: 45_000,
-    fetch: pacedRpcFetch,
-    disableRetryOnRateLimit: true,
-  });
+  return protocolConnection(clientConfig());
 }
-export function programFor(wallet?: SigningWallet, rpc = connection()) {
-  if (!wallet) return new Program(idl as Idl, { connection: rpc });
-  return new Program(
-    idl as Idl,
-    new AnchorProvider(rpc, wallet, {
-      commitment: "confirmed",
-      preflightCommitment: "confirmed",
-    }),
-  );
+export function programFor(wallet?: SigningWallet, rpc?: Connection) {
+  return protocolProgram(clientConfig(), wallet, rpc);
 }
 export function explorer(signature: string) {
-  return `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
+  return protocolExplorer(signature, clientConfig());
 }

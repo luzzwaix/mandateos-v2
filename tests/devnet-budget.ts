@@ -22,8 +22,8 @@ import {
   createAssociatedTokenAccountIdempotentInstruction,
   createMintToInstruction,
 } from "@solana/spl-token";
-import idl from "../web/src/lib/solana/mandateos.json";
-import manifest from "../web/src/lib/solana/build-evidence.json";
+import idl from "../packages/sdk/src/mandateos.json";
+import manifest from "../packages/sdk/src/build-evidence.json";
 import {
   organizationPda,
   rootPda,

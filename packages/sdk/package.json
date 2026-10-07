@@ -1,0 +1,27 @@
+{
+  "name": "@mandateos/sdk",
+  "version": "0.1.0",
+  "description": "Source-derived MandateOS Devnet protocol client",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "engines": {
+    "node": ">=20.18"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "0.32.1",
+    "@solana/spl-token": "0.4.14",
+    "@solana/web3.js": "1.98.4",
+    "buffer": "6.0.3"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "@types/node": "24.0.0"
+  }
+}

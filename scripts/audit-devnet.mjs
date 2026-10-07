@@ -6,7 +6,7 @@ import { createHash } from "node:crypto";
 // Public-only explicit Devnet audit: no signing keys or configuration mutations.
 const root = new URL("../", import.meta.url);
 const read = (path) => readFileSync(new URL(path, root), "utf8");
-const local = JSON.parse(read("web/src/lib/solana/mandateos.json"));
+const local = JSON.parse(read("packages/sdk/src/mandateos.json"));
 const declared = read("programs/mandateos/src/lib.rs").match(
   /declare_id!\("([^"]+)"\)/,
 )?.[1];
@@ -33,7 +33,7 @@ const published = await Program.fetchIdl(
   address,
   new AnchorProvider(rpc, wallet, { commitment: "confirmed" }),
 );
-const build = JSON.parse(read("web/src/lib/solana/build-evidence.json"));
+const build = JSON.parse(read("packages/sdk/src/build-evidence.json"));
 const binaryPath = new URL("target/deploy/mandateos.so", root);
 const binary = existsSync(binaryPath) ? readFileSync(binaryPath) : null;
 const localBinaryMatches =

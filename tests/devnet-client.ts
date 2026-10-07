@@ -109,16 +109,19 @@ describe("Deployment parity with actual source-built ELF (RPC stubs)", () => {
     });
     const c = new MandateClient(undefined, undefined, f.rpc);
     let verified: number | undefined;
-    c.accounts.organization.fetch = async () => {
-      throw Error("unit organization absent");
-    };
+    const read = c.rpc.getAccountInfo.bind(c.rpc);
+    c.rpc.getAccountInfo = async (key, ...args) =>
+      key.equals(address) ||
+      key.equals(new PublicKey(f.program.data.subarray(4, 36)))
+        ? read(key, ...args)
+        : null;
     try {
       await c.load(Keypair.generate().publicKey, (slot) => {
         verified = slot;
       });
       throw Error("expected absent organization");
     } catch (e) {
-      expect(String(e)).contains("organization absent");
+      expect(String(e)).contains("Organization account not found");
     }
     expect(verified).eq(7);
     verified = undefined;

@@ -7,7 +7,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import { getAccount, getAssociatedTokenAddressSync } from "@solana/spl-token";
 const idl = JSON.parse(
   readFileSync(
-    new URL("../web/src/lib/solana/mandateos.json", import.meta.url),
+    new URL("../packages/sdk/src/mandateos.json", import.meta.url),
     "utf8",
   ),
 );

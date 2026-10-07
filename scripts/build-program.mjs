@@ -32,7 +32,7 @@ if (result.error || result.status !== 0) {
   console.error(result.error?.message ?? "Anchor build failed");
   process.exit(result.status ?? 1);
 }
-const target = join(root, "web", "src", "lib", "solana", "mandateos.json");
+const target = join(root, "packages", "sdk", "src", "mandateos.json");
 const built = JSON.parse(
   readFileSync(join(root, "target/idl/mandateos.json"), "utf8"),
 );
@@ -57,6 +57,4 @@ writeFileSync(
     2,
   ) + "\n",
 );
-console.log(
-  "Real built IDL synchronized into web/src/lib/solana/mandateos.json",
-);
+console.log("Real built IDL synchronized into packages/sdk/src/mandateos.json");

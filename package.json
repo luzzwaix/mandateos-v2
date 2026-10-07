@@ -22,7 +22,9 @@
     "check:secrets": "node scripts/check-secrets.mjs",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write tests scripts docs README.md AGENTS.md package.json tsconfig.json",
-    "format:check": "prettier --check tests scripts docs README.md AGENTS.md package.json tsconfig.json"
+    "format:check": "prettier --check tests scripts docs README.md AGENTS.md package.json tsconfig.json",
+    "build:sdk": "npm run build --prefix packages/sdk",
+    "test:sdk": "ts-mocha -p tsconfig.json tests/sdk.ts"
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.32.1",
@@ -38,5 +40,8 @@
     "prettier": "3.6.2",
     "ts-mocha": "11.1.0",
     "typescript": "5.9.3"
-  }
+  },
+  "workspaces": [
+    "packages/sdk"
+  ]
 }

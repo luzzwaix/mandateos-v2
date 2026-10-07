@@ -85,7 +85,7 @@ const save = () =>
 try {
   const elf = readFileSync("target/deploy/mandateos.so");
   const manifest = JSON.parse(
-    readFileSync("web/src/lib/solana/build-evidence.json", "utf8"),
+    readFileSync("packages/sdk/src/build-evidence.json", "utf8"),
   );
   assert.equal(elf.length, manifest.byteLength);
   assert.equal(hash(elf), manifest.sha256);
