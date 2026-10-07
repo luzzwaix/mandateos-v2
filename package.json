@@ -20,11 +20,14 @@
     "build:program": "node scripts/build-program.mjs",
     "demo:local": "node scripts/demo-validator.mjs",
     "check:secrets": "node scripts/check-secrets.mjs",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "npm run build:sdk && tsc --noEmit",
     "format": "prettier --write tests scripts docs README.md AGENTS.md package.json tsconfig.json",
     "format:check": "prettier --check tests scripts docs README.md AGENTS.md package.json tsconfig.json",
     "build:sdk": "npm run build --prefix packages/sdk",
-    "test:sdk": "ts-mocha -p tsconfig.json tests/sdk.ts"
+    "test:sdk": "ts-mocha -p tsconfig.json tests/sdk.ts",
+    "build:agent": "npm run build:sdk && npm run build --prefix examples/agent-worker",
+    "agent:inspect": "npm run build:agent && node examples/agent-worker/dist/cli.js",
+    "test:agent": "npm run build:sdk && ts-mocha -p tsconfig.json tests/agent-worker.ts"
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.32.1",
@@ -42,6 +45,7 @@
     "typescript": "5.9.3"
   },
   "workspaces": [
-    "packages/sdk"
+    "packages/sdk",
+    "examples/agent-worker"
   ]
 }

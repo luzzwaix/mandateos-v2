@@ -128,6 +128,8 @@ if (process.argv[2] === "--reuse") {
     "tsconfig.json",
     "programs",
     "tests",
+    "packages",
+    "examples",
   ]) {
     if (existsSync(join(root, path)))
       cpSync(join(root, path), join(workspace, path), { recursive: true });

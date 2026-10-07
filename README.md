@@ -46,6 +46,8 @@ Arena's verifier is a trusted signer. A result commitment proves which hash an a
 
 ## Quick start
 
+For framework-independent integrations, the [TypeScript SDK](packages/sdk/README.md) covers configuration, authority, actions and transaction evidence. The [reference agent](examples/agent-worker/README.md) has a two-command read-only Devnet quickstart: `npm ci`, then `npm run agent:inspect`. It also exposes one caller-signed spend worker, with revoked-ancestry and uncertain-outcome handling.
+
 From this integration checkout, use Node 20.18+ and preserve existing local settings:
 
 ```powershell
