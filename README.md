@@ -2,152 +2,133 @@
 
 **Don't give agents wallets. Give them mandates.**
 
-MandateOS is recursive capital authority for autonomous organizations on Solana. An organization keeps tokens in one program-controlled vault, delegates bounded authority down an agent tree, and cuts an entire branch with one revocation transaction. Arena Lite reserves treasury capital for external work and pays one verified winner.
+An agent should be able to delegate a task without handing over the treasury. MandateOS gives agents bounded, recursive economic authority on Solana: one shared vault, a tree of mandates, and one revocation that cuts a branch's effective authority.
 
-**Verified on Solana Devnet:** one treasury → nested delegation → valid spend → ancestor revoke → included failed descendant spend (`AncestorRevoked / 6003`) → successful Operations spend → Root-only reclaim. Existing Arena funding, two result commitments and atomic winner payout also finalized. All **19 lifecycle receipts** were independently reconciled; [actual signatures, fees, logs and balances](docs/devnet-mvp-proof.json) and [verification report](docs/DEVNET-MVP-VERIFICATION.md) are available.
+![Story: the Authority Chamber in the running application](docs/images/showcase/story.webp)
 
-[Public Devnet product](https://mandateos-v2.vercel.app/app) · [Arena](https://mandateos-v2.vercel.app/arena). Anonymous HTTP access is verified for all three routes; production no longer requires Vercel SSO. Real owner-wallet signing across a fresh organization remains an open release gate: existing lifecycle receipts were CLI-signed, not browser-signed. DEMO mode is explicitly simulated; Devnet never falls back to demo data after an RPC error.
-
-![Anonymous production Devnet account state after revoke, Operations spend and reclaim](docs/images/devnet-public-command.png)
-
-## The problem
-
-AI agents increasingly need authority to spend capital. Giving an agent a treasury key is unsafe. Flat spending limits break when agents delegate work to other agents.
+[Watch the short browser recording: grant → trace → revoke → surviving Operations](docs/images/showcase/authority-story.mp4). Story is an explicitly labeled simulation; its illustrative USDC amounts are not Devnet balances. These are captured application pixels, not mockups. [Capture provenance](docs/SHOWCASE-VERIFICATION.md).
 
 ## The primitive
 
 ```text
-Human / one treasury
-└── Research agent  400 test tokens
-    └── Data agent  150 test tokens
-        └── Scraper 50 test tokens
+Treasury ── Research ── Data ── Scraper
+        └── Operations
 
-Revoke Research
-→ Research revoked; Data and Scraper blocked
-→ unused capital returns to Root authority
-→ Root can reclaim tokens from the shared vault
+Revoke Research → Data and Scraper lose effective authority.
+                  Operations remains active.
 ```
 
-Agents control signing keys, never the treasury key. Delegation moves accounting authority; tokens stay in the vault until an authorized payment or reclaim.
+Agents sign as mandate controllers. They never receive the shared vault's key. Delegation reserves the parent's own available capital. Spending validates the complete ancestor path and reduces remaining capital along that path. Revocation releases the revoked subtree's reservation to its parent without traversing descendants or moving tokens. A descendant can remain locally Active while effectively blocked. Reclaim uses only Root's own available capital.
 
-## Why Solana
+## What works today
 
-Fast, low-cost transactions make delegation and revocation usable during agent execution. PDA authority controls the SPL vault without distributing its key. Transaction atomicity keeps payout and accounting consistent, including failed token transfers. Classic SPL Token accounts let organizations pay ordinary token recipients and Arena winners.
+This is a **Devnet MVP** with six Core instructions and three Arena instructions. The browser and framework-independent SDK share the source-generated protocol client.
 
-## Product
+| Route            | Experience                                                                                                                |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `/` · Story      | Interactive authority choreography: grant, recursion, trace, blast radius, cascade. Explicit simulation; no transactions. |
+| `/app` · Command | Real account reads, ancestry, available versus reserved capital, mandate actions and transaction evidence.                |
+| `/arena` · Arena | Treasury-funded mission → committed submissions → trusted verifier → atomic winner payout.                                |
 
-- **Core Organizations:** create, deposit, recursively delegate, spend, revoke branches and reclaim. Complete ancestor validation enforces authority at every depth.
-- **Capital console:** a real Next.js desktop surface with a recursive capital tree, selected-mandate actions, wallet connection and decoded on-chain activity.
-- **Arena Lite:** fund a bounty from Root available capital, collect one 32-byte commitment per agent, and let its trusted verifier settle one winner.
+<table>
+  <tr>
+    <td><a href="docs/images/showcase/command-devnet.webp"><img src="docs/images/showcase/command-devnet.webp" alt="Real Devnet reads: revoked Research, blocked Scraper and active Operations" width="360"></a></td>
+    <td><a href="docs/images/showcase/arena-devnet.webp"><img src="docs/images/showcase/arena-devnet.webp" alt="Real Devnet reads: existing settled Arena bounty and 25 test token payout" width="360"></a></td>
+  </tr>
+  <tr>
+    <td>Command: stored-active Scraper, blocked by revoked Research.</td>
+    <td>Arena: existing settled bounty, 25 test TOKENS.</td>
+  </tr>
+</table>
 
-Arena's verifier is a trusted signer. A result commitment proves which hash an agent submitted; it does not prove useful work. Participant keys can also control mandates, but Arena eligibility is independent of branch authority. Open bounties have no cancellation path in this MVP; unavailable verifiers can leave rewards reserved.
+Both captures use actual disconnected Devnet account reads. Account observations do not imply a transaction was submitted through that browser. The fixture uses a six-decimal classic SPL test mint, **not USDC**. Arena trusts its verifier; a submission hash commits a result but does not prove quality. Open bounties have no cancellation path.
 
-![Existing Arena displaying the finalized 25-test-token Devnet payout](docs/images/devnet-arena.png)
+## Run the app
 
-## Quick start
+Node ≥20.18. From the repository root, install the pinned dependencies and copy only the public example configuration if no local configuration exists:
 
-For framework-independent integrations, the [TypeScript SDK](packages/sdk/README.md) covers configuration, authority, actions and transaction evidence. The [reference agent](examples/agent-worker/README.md) has a two-command read-only Devnet quickstart: `npm ci`, then `npm run agent:inspect`. It also exposes one caller-signed spend worker, with revoked-ancestry and uncertain-outcome handling.
-
-From this integration checkout, use Node 20.18+ and preserve existing local settings:
-
-```powershell
+```sh
 npm ci
-npm --prefix web ci
-if (!(Test-Path web/.env.local)) { Copy-Item web/.env.example web/.env.local }
-npm --prefix web run build
-$env:PORT="3101"
-node scripts/web-preview.mjs
+npm ci --prefix web
+node -e "const fs=require('node:fs');if(!fs.existsSync('web/.env.local'))fs.copyFileSync('web/.env.example','web/.env.local')"
+npm run build --prefix web
+npm run start --prefix web
 ```
 
-Open http://127.0.0.1:3101/app; Command and Arena default to DEVNET. Public reads load the canonical organization without a wallet. Its owner is 3ws8…; connecting another wallet grants no authority over it. The existing Create organization control accepts a verified classic SPL mint for your own treasury. Funding requires that mint in your source token account. Use injected Phantom/Solflare with a Devnet wallet. Never import the CLI deploy/upgrade key into the frontend.
+Open [Story](http://127.0.0.1:3000/), [Command](http://127.0.0.1:3000/app) or [Arena](http://127.0.0.1:3000/arena). Command and Arena load the public organization without a wallet. Your wallet needs its own authorized organization/controller, Devnet SOL for fees, and the correct mint's tokens to write. Connecting alone grants no authority over the public fixture. No validator or backend is required. Never put an RPC secret in `NEXT_PUBLIC_*` settings.
 
-The example environment contains only public RPC, Program ID and organization settings and disables disposable browser signing. HTTP pacing honors Retry-After; an unknown submission blocks further signing until reconciled. Do not put a paid RPC secret in NEXT_PUBLIC settings.
+## Integrate an agent
 
-```powershell
-# Read-only receipt/account verification; no keypair required:
-npm run verify:devnet:read
+After `npm ci`, run `npm run build:sdk`. Save this as `inspect.mjs` and run `node inspect.mjs`:
+
+```js
+import { PublicKey } from "@solana/web3.js";
+import {
+  MandateClient,
+  PROGRAM_ADDRESS,
+  inspectAuthority,
+} from "@mandateos/sdk";
+
+const client = new MandateClient({
+  cluster: "devnet",
+  rpcUrl: "https://api.devnet.solana.com",
+  programId: PROGRAM_ADDRESS,
+});
+const snapshot = await client.load(
+  new PublicKey("EJsA5n6BBusygH8Ze9pktPFbpP2FXGEEBBgcE6A2Dz3A"),
+);
+const authority = inspectAuthority(
+  snapshot,
+  new PublicKey("H8esVNCEEjoXTzryxfha8bB6USacX9SJihq22Knv3ytB"),
+);
+console.log(authority.local, authority.effective); // current fixture: active blocked
 ```
 
-Program **125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd**. Organization **EJsA5n6BBusygH8Ze9pktPFbpP2FXGEEBBgcE6A2Dz3A**. Classic SPL mint **6V3c3UWqXerQFyfVhFiWVMaXEjNPUmHwWsPa2c4TS1A9**, decimals 6: **test tokens, not USDC**. DEMO is separate and simulated. No validator or application backend is needed for the Devnet frontend.
+The SDK loads organizations/mandates, validates deployment identity and canonical ancestry, and exposes `delegate`, `spend`, `revoke`, `reclaim`, `transact` and read-only `reconcileSubmission`. Evidence distinguishes preflight rejection, wallet rejection, submission, confirmed success, on-chain failure and unknown delivery. Never blindly retry an unknown signature. [Authority model, SDK usage and errors](packages/sdk/README.md). For another project: `npm pack ./packages/sdk`, then install the resulting tarball.
 
-| Flow                                            | Evidence status                                                                                |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Treasury funding and recursive delegation       | Finalized on Devnet                                                                            |
-| Valid Scraper spend and Research revoke         | Finalized on Devnet                                                                            |
-| Blocked descendant action                       | Included finalized failure, Custom 6003, actual 10000-lamport fee                              |
-| Operations spend / Root reclaim                 | Finalized on Devnet                                                                            |
-| Arena commitments / trusted-verifier settlement | Finalized on Devnet, actual 25-token payout                                                    |
-| Separate verifier-result / quality proof        | No such on-chain instruction                                                                   |
-| Browser reads / Explorer evidence               | Public production reads and real Explorer links verified; adapter mocks are labeled separately |
-| Real extension approval / pending → confirmed   | In progress; CLI signatures and adapter mocks do not substitute                                |
-| Anonymous production frontend                   | Verified HTTP 200 on Story, Command and Arena; no cookies or authorization supplied            |
+The [reference worker](examples/agent-worker/README.md) has one runnable, read-only command:
 
-[Historical LOCALNET instructions](docs/README-LOCALNET-HISTORY.md) and their screenshots are preserved separately. Their ephemeral signatures are not Devnet evidence.
-
-## One delegated controller action
-
-This is a disposable CLI action, not an autonomous agent runtime. It uses the actual spend instruction and complete writable ancestor path; it cannot move vault tokens through an ordinary wallet transfer. Give a dedicated controller a mandate, retain the treasury key, and fund the controller with Devnet SOL for its fees. The utility refuses Root and a controller equal to the treasury authority.
-
-The following command is read-only and was run against the existing active Operations mandate. It reads no key and sends no transaction:
-
-```powershell
-node scripts/mandate-spend.cjs --intent my-one-action --organization EJsA5n6BBusygH8Ze9pktPFbpP2FXGEEBBgcE6A2Dz3A --mandate HzDvZ6Bg4VS8PcizrmTFXG9kbmPqZdH5yK79wshmnn21 --destination 6z9Y84r9rDTtGQw8yzypX3vi8WTZ743hxw2ML2xWM79H --amount 1
+```sh
+npm run agent:inspect
 ```
 
-To execute against your own mandate, replace the public addresses and append `--execute --keypair <protected-dedicated-controller-file-outside-the-repository>`. Do not export your connected browser wallet or supply its treasury key. Execution uses enabled preflight, saves simulation/signature/receipt before assertions and re-reads chain state. Reuse the **same intent name and parameters** to reconcile an unknown result; do not invent another intent to retry. The new wrapper's read-only path is verified; its execute path reuses the tested evidence transport but has not submitted a new spend in this release pass.
-
-No backend is required for these supported instructions. Test-token provisioning and trusted-verifier selection remain operator responsibilities; neither is an autonomous service or an on-chain quality proof.
+It builds the SDK/worker, reads the full Scraper path and reports revoked ancestry. Its caller-signed `runAuthorizedSpend` integration checks controller, amount and destination, attempts one spend, retains outcome evidence and refetches confirmed changes. No embedded secret or spending CLI. Live worker spending remains unverified.
 
 ## Architecture
 
 ```text
-Next.js static console / injected wallet or disposable LOCALNET signer
-       │ real Anchor client + generated IDL
-       ▼
-Solana MandateOS program
-├── Organization PDA ─── one classic SPL vault
-├── Mandate PDAs ─────── Root → agent → delegated agent
-└── Bounty + Submission PDAs ─── trusted verifier → winner SPL account
+Next.js static app / reference worker / external integrator
+                      │ shared TypeScript SDK + generated IDL
+                      ▼ direct RPC
+Solana program ── Organization + Mandate PDAs ── one classic SPL vault
+               └─ Bounty + Submission PDAs ── verifier → winner token account
 ```
 
-Rust remains modular: state, instructions, lineage validation, errors and events. The six Core instructions and existing Core account layouts are preserved. Arena adds only three instructions and two account types. The browser uses direct RPC; there is no database, authentication service, indexer or application backend. See [protocol/accounting](docs/PROTOCOL.md).
+There is no database, indexer or application API. [Protocol and accounting invariants](docs/PROTOCOL.md).
 
-## Security invariants
+## Evidence and boundaries
 
-**80 tests executed successfully: 48 existing Core validator tests, 16 Arena validator tests and 16 Rust tests.** The suites cover complete canonical lineage, ancestor revocation, reserved child and bounty capital, authorization, token ownership/mints, duplicate submissions/settlement, checked accounting and atomic rollback on failed token CPI.
+The existing CLI-signed Devnet lifecycle covers funding, recursive delegation, valid spend, Research revocation, an included failed descendant spend, surviving Operations spend, Root reclaim and Arena settlement. All 19 signatures were rechecked as finalized on 7 October 2026; the three receipts below were also fetched again and matched their recorded slots, fees and outcomes. [Full signatures, logs and balances](docs/devnet-mvp-proof.json) · [Lifecycle verification](docs/DEVNET-MVP-VERIFICATION.md).
 
-Root remaining equals funded minus spent minus reclaimed. Bounty creation reduces only Root available, keeping escrow in the same vault; settlement reduces Root remaining and records spending atomically with payout. Reclaim cannot consume active child or bounty reservations.
+| Receipt                                                                                                                                                      | Observed outcome                                                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| [Blocked descendant](https://explorer.solana.com/tx/2ACUqFQ5zb66UdhCnxp6F8e6JMSiDQyNf7WURfa3DuhnSwkcgyiz2DCk42R19ZvSYKrExWnJ41PC9SW5uiSJmmgv?cluster=devnet) | Included finalized failure, `AncestorRevoked / 6003`; 10,000 lamports. |
+| [Operations spend](https://explorer.solana.com/tx/4BwMQJXxy3WagC8nm2p5mPQhtg1HJF3H6xYRESU9gFP9sTr96NLXKoSiK95WToCjqUamC4BPSYSu6m6G65QF18FZ?cluster=devnet)   | Finalized success after sibling revocation; 10,000 lamports.           |
+| [Arena settlement](https://explorer.solana.com/tx/2F1Ukc4haw5PhmWZi6wLQtMqLYgH5cW4axH941gXKSiYpnrR72KoNrf3x66V5a9BbQM6GXtRAkiCMv8Dyw1QpET1?cluster=devnet)   | Finalized success, recorded 25-token payout; 5,000 lamports.           |
 
-This is an **unaudited hackathon MVP**. Controllers may choose arbitrary correct-mint recipients. Mint/freeze and upgrade authorities retain their configured powers. Pinned legacy client dependencies have audit advisories; no production-security claim is made.
+Program: `125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd`.
 
-## Development and verification
+The implementation checkpoint passed 97 TypeScript cases (including 24 SDK and 10 worker cases), 64 real local-validator cases and 16 Rust cases. [Exact verification scope](docs/STARTUP-V1-DEVELOPER.md). A fresh source-only install, app/SDK/worker builds and real read-only SDK/agent paths were rerun for this showcase. [Current showcase checks](docs/SHOWCASE-VERIFICATION.md).
 
-Pinned tools: Node 20.18+, Rust 1.89.0, Anchor 0.32.1, Agave 2.3.0, SBF platform-tools v1.52. Windows also requires Git Bash and Visual Studio x64 C++ tools; the existing scripts/setup-windows.ps1 configures user-local tools. Install these before running Rust/validator checks. The Devnet program is already deployed; do not redeploy to try the frontend.
+Remaining gates: real Phantom address/network/signing and connected-wallet performance; a fresh browser-signed lifecycle; live agent spending; security audit, dependency remediation and production operations. The accessible automation browser has no Phantom session. Historical CLI receipts and stubbed tests do not close those gates. [Measured performance fix and its limits](docs/STARTUP-V1-PERFORMANCE.md): receipt contention was removed; a general connected-wallet speedup has not been established.
 
-```powershell
-cargo fmt --all -- --check
-cargo check --locked
-cargo test --locked --lib
-npm run typecheck
-npm run test:local
-npm run check:secrets
-npm --prefix web run lint
-npm --prefix web run typecheck
-npm --prefix web run build
-```
+## Where this runs
 
-The local runner builds an isolated ignored source copy with disposable LOCALNET keys; it preserves the deployed ID and source semantics. Native Windows uses eight independent validator banks to avoid snapshot symlink limitations. Latest QA: **16 Rust unit cases**, **64 real validator cases**, **61 client/RPC/evidence/budget/UI unit cases** passed. Fresh SBF compilation passed; disk exhaustion blocked fresh IDL compilation, so the validator rerun reused the verified generated schema with its already-built isolated Localnet artifact. Exact provenance and measured performance are in [the final QA report](docs/FINAL-ADVERSARIAL-QA.md); historical Devnet receipts remain in [the verification report](docs/DEVNET-MVP-VERIFICATION.md).
+Verified on 7 October 2026. The showcase captures implementation `7350f67cafe3c29bedb2bc7c243b5288fc3d3a6c` on `startup-v1-lab`; this branch has **not** been deployed.
 
-Browser verification: node scripts/verify-devnet-browser.mjs http://127.0.0.1:3101. It requires an installed Playwright module (PLAYWRIGHT_MODULE can select it), performs actual read-only RPC checks, and separately labels adapter mocks. It never signs transactions. The existing capital-surface suite covers five viewport widths and reduced motion.
+| Deployment                                                                                                                                             | Verified provenance                                                                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [Production alias](https://mandateos-v2.vercel.app/) · [Command](https://mandateos-v2.vercel.app/app) · [Arena](https://mandateos-v2.vercel.app/arena) | Anonymous HTTP 200. Vercel source metadata: `7ce740a585774eb195ef8626876ae4a3db9f9000`; older product build.                                                                               |
+| [Latest existing Vercel preview](https://mandateos-v2-f984ud67a-luzzwaixs-projects.vercel.app/)                                                        | Older `devnet-integration` preview, Vercel authentication required. Metadata: `f5b7965dbac9f4b634bfb5eccc6b146046218f68`, **dirty build**; SHA alone does not identify all deployed bytes. |
 
-[Fresh browser fixture handoff](docs/DEVNET-BROWSER-HANDOFF.md) contains the owner approval, funded test-token account and exact expected UI sequence. The prepared 200 test TOKENS are not USDC. Public browser QA: 29 checks passed with read-only/mocked provenance recorded; mobile/reduced-motion production views: 13 checks passed. **No real browser-signed transaction is claimed.**
-
-The final local QA candidate adds 33 read-only/adapter/recovery browser checks, 111 surface assertions and 10 motion checks. It fixes receipt-cache churn, blocking history reads and real-PDA evidence/layout defects. These changes are **not yet published to the public URL**; owner review and genuine browser-wallet approvals remain release gates. The fresh dependency audit reports 12 runtime advisories (5 high, 7 moderate); no forced SDK migration was made. See the QA report for screenshots, exact provenance and remaining checks.
-
-![Actual production Arena on a mobile viewport](docs/images/devnet-public-arena-mobile.png)
-
-## Release boundaries
-
-Program/source/IDL identity and executable bytes are verified. Core and supported Arena flows have finalized receipts. Anonymous production access and account/evidence reads are verified. Real Chrome wallet approval/signing across a fresh organization and authority recovery-backup verification remain open gates. Public dependency audit reports 12 runtime advisories (5 high, 7 moderate); no forced SDK migration or security-audit claim is made.
-
-The frontend visual checkpoint remains frozen. No backend, database, x402, mainnet usage, new feature surface or another Solana deployment was added. Current work is on devnet-integration; GitHub publication and submission video follow product verification. No push or merge has been performed.
+No automatic push, merge or production promotion is part of this checkpoint.

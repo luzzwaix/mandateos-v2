@@ -1,0 +1,56 @@
+{
+  "capturedAt": "2026-10-07T08:56:14.303Z",
+  "implementationCommit": "7350f67cafe3c29bedb2bc7c243b5288fc3d3a6c",
+  "browser": "Chromium 149.0.7827.55",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "deviceScaleFactor": 1,
+  "source": "Local static production export, disconnected browser; no injected wallet",
+  "provenance": {
+    "story": "Built-in simulation driven through actual UI controls; no on-chain transaction",
+    "app": "Real disconnected Devnet account reads; selected Scraper",
+    "arena": "Real disconnected Devnet account reads; existing settled bounty"
+  },
+  "checks": {
+    "pageErrors": [],
+    "unexpectedRpcWrites": [],
+    "storyBeforeConfirmation": "All six mandates active",
+    "storyAfterConfirmation": "Three descendants blocked, Operations active",
+    "devnet": "Confirmed account reads; selected blocked Scraper and existing settled Arena bounty; no submitted transaction"
+  },
+  "assets": [
+    {
+      "file": "story.webp",
+      "bytes": 248162,
+      "sha256": "3f1396e8c8a8f9dbb32d229b1c0f206d6b6875d43a0426914adeca60b14e61ed",
+      "width": 1440,
+      "height": 1011,
+      "encoding": "lossless WebP"
+    },
+    {
+      "file": "command-devnet.webp",
+      "bytes": 81658,
+      "sha256": "6b2d57f8d046afc9ad61619ec198150eb3c7022976d59a7b61127b3971f0f4a9",
+      "width": 1440,
+      "height": 1522,
+      "encoding": "lossless WebP"
+    },
+    {
+      "file": "arena-devnet.webp",
+      "bytes": 54840,
+      "sha256": "037a958b6a23140d0d881fb055999a2e67430cef760456040a4b18cf3a109fce",
+      "width": 1440,
+      "height": 1441,
+      "encoding": "lossless WebP"
+    },
+    {
+      "file": "authority-story.mp4",
+      "bytes": 591438,
+      "sha256": "2ffb80459e1d4e63e1baefc8c5e6d74c907feaf2262f1c75004b2d173295385a",
+      "durationSeconds": 9.72,
+      "encoding": "H.264, yuv420p, CRF 23, faststart, 1280px wide; native browser recording"
+    }
+  ]
+}
