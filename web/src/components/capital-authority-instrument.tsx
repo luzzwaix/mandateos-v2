@@ -56,7 +56,7 @@ export default function CapitalAuthorityInstrument({
   const roles = capitalInstrumentRoles(model);
   const canonical = !!roles;
   const roleOf = (id: string) => roles?.[id] ?? id;
-  const dataX = 218 + (width - 228) * 0.34;
+  const dataX = Math.max(468, 218 + (width - 228) * 0.34);
   const points: Record<
     string,
     { x: number; y: number; width: number; height: number }

@@ -497,6 +497,21 @@ export default function CommandWorld() {
             </h1>
             <div>
               <button
+                className="text-button mobile-inspect"
+                onClick={() => {
+                  inspector.current?.scrollIntoView({
+                    behavior: matchMedia("(prefers-reduced-motion: reduce)")
+                      .matches
+                      ? "instant"
+                      : "smooth",
+                    block: "start",
+                  });
+                  inspector.current?.focus({ preventScroll: true });
+                }}
+              >
+                Inspect {node?.name ?? "selected mandate"}
+              </button>
+              <button
                 className="text-button"
                 onClick={() => select(model.root)}
               >
@@ -616,6 +631,7 @@ export default function CommandWorld() {
           ref={inspector}
           className={`bone-instrument ${preview ? "impact-instrument" : ""}`}
           aria-label="Mandate inspector"
+          tabIndex={-1}
         >
           {target ? (
             <>
@@ -864,7 +880,10 @@ export default function CommandWorld() {
                               ? "SIMULATED PROGRAM OUTCOME · NOT DEVNET EVIDENCE"
                               : "DERIVED DEMO STATE · LOCAL RECORD REMAINS ACTIVE"
                             : nodeRejection
-                              ? `PROGRAM RESULT · ${w.live.rejection?.code ?? "REJECTED"}`
+                              ? w.live.transaction.outcome ===
+                                "simulation-rejection"
+                                ? `RPC PREFLIGHT REJECTION · NOT SENT · NO SIGNATURE · ${w.live.rejection?.code ?? "REJECTED"}`
+                                : `ON-CHAIN PROGRAM RESULT · ${w.live.rejection?.code ?? "REJECTED"}`
                               : historicalDenial
                                 ? `HISTORICAL ON-CHAIN FAILURE · ${historicalDenial.code} / ${historicalDenial.errorNumber}`
                                 : "DERIVED FROM OBSERVED ACCOUNTS · NO EXECUTION ATTEMPTED"}

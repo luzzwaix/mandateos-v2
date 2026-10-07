@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
+import Link from "next/link";
 import { ArrowRight, RotateCcw, Check, Scissors } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -14,14 +21,25 @@ import {
 import { useWorld } from "./world-shell";
 import { motionTiming, scopedTimeline } from "./authority-motion";
 
-const stages = ["Root", "Research", "Trace", "Blast Radius", "Cascade"];
+const stages = [
+  "Root",
+  "Research",
+  "Trace",
+  "Blast Radius",
+  "Cascade",
+  "Operations",
+  "Proof",
+];
 const descriptions = [
   "One Solana treasury. Mandates give agent controllers bounded, delegable authority. Keep control at the Root.",
   "Research can delegate within its mandate. Every new permission inherits the limits above it.",
   "Scraper answers to Data. Data answers to Research. Every path must reach the Root.",
   "One Research revoke reaches three descendants. Operations sits outside the boundary.",
   "Research is revoked. Its descendants lose effective authority. Operations continues.",
+  "Operations inherits directly from Root. Research’s revocation does not cut this independent path.",
+  "Scraper remains locally active, but Research is its earliest invalid ancestor. This walkthrough is simulated; inspect Devnet for actual evidence.",
 ];
+const walkthroughDelays = [2000, 3000, 3000, 3000, 3000, 3000, 3000];
 const polar = (radius: number, angle: number) => {
   const radians = (angle * Math.PI) / 180;
   return [390 + radius * Math.cos(radians), 360 + radius * Math.sin(radians)];
@@ -141,6 +159,15 @@ function AuthoritySeal({
   const surface = useRef<HTMLDivElement>(null);
   const previousMotion = useRef({ cut, preview, traced, selected, grant });
   const expanded = model.nodes.length > 1;
+  const ledgerNodes: AuthorityModel["nodes"] = [];
+  const visitLedger = (id: string) => {
+    const node = model.nodes.find((item) => item.id === id);
+    if (!node || ledgerNodes.includes(node)) return;
+    ledgerNodes.push(node);
+    for (const child of model.nodes.filter((item) => item.parent === id))
+      visitLedger(child.id);
+  };
+  visitLedger(model.root);
   const path = authorityPath(model, selected).map((n) => n.id);
   const grantParent = model.nodes.find((node) => node.id === grant)?.parent;
   useEffect(() => {
@@ -573,13 +600,14 @@ function AuthoritySeal({
       </svg>
       <div
         className="seal-controls"
-        aria-label="Inspect mandates"
+        aria-label="Authority ledger"
         style={{ visibility: expanded ? "visible" : "hidden" }}
       >
-        {model.nodes.map((node) => (
+        {ledgerNodes.map((node) => (
           <button
             key={node.id}
             aria-pressed={selected === node.id}
+            style={{ "--mandate-depth": node.depth } as CSSProperties}
             onClick={() => onSelect(node.id)}
           >
             {node.name === "Treasury" ? "Root" : node.name}
@@ -606,6 +634,47 @@ export default function StoryWorld() {
     [preview, setPreview] = useState(false);
   const [settled, setSettled] = useState<AuthorityModel>(),
     [selected, setSelected] = useState("treasury");
+  const [playing, setPlaying] = useState(false);
+  const [walkStarted, setWalkStarted] = useState(false);
+  const [walkStep, setWalkStep] = useState(0);
+  const [walkRun, setWalkRun] = useState(0);
+  const goToWalkStep = useCallback((step: number) => {
+    setWalkStep(step);
+    setCount(step === 0 ? 1 : step === 1 ? 2 : 6);
+    setGrant(step === 1 ? "research" : step === 2 ? "recursion" : undefined);
+    setTraced(step === 3);
+    setPreview(step === 4);
+    setSettled(step >= 5 ? revokeDemo(genesis(6), "research") : undefined);
+    setSelected(
+      step === 0
+        ? "treasury"
+        : step === 1 || step === 4
+          ? "research"
+          : step === 6
+            ? "operations"
+            : "scraper",
+    );
+    setStage([0, 1, 1, 2, 3, 4, 5, 6][step]);
+  }, []);
+  useEffect(() => {
+    if (!playing) return;
+    const timer = window.setTimeout(() => {
+      goToWalkStep(walkStep + 1);
+      if (walkStep + 1 === 7) setPlaying(false);
+    }, walkthroughDelays[walkStep]);
+    const pause = () => setPlaying(false);
+    document.addEventListener("visibilitychange", pause);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", pause);
+    };
+  }, [playing, walkStep, walkRun, goToWalkStep]);
+  function runWalkthrough() {
+    setWalkRun((run) => run + 1);
+    setWalkStarted(true);
+    goToWalkStep(0);
+    setPlaying(true);
+  }
   const model = settled ?? genesis(count),
     cut = !!settled;
   useEffect(() => {
@@ -661,6 +730,8 @@ export default function StoryWorld() {
     );
   }
   function reset() {
+    setPlaying(false);
+    setWalkStarted(false);
     setStage(0);
     setCount(1);
     setGrant(undefined);
@@ -677,6 +748,7 @@ export default function StoryWorld() {
     );
   }
   function inspect(id: string) {
+    setPlaying(false);
     setSelected(id);
     if (count === 6 && !cut && !preview) {
       setTraced(id === "scraper");
@@ -693,7 +765,7 @@ export default function StoryWorld() {
             ? "Preview Research revoke"
             : stage === 3
               ? "Confirm demo revoke"
-              : "Open Command";
+              : "Inspect authority in Command";
   const action =
     count === 1
       ? delegate
@@ -738,17 +810,78 @@ export default function StoryWorld() {
                 <br />
                 <em>consequence.</em>
               </h1>
-            ) : (
+            ) : stage === 4 ? (
               <h1>
                 One cut.
                 <br />
                 <em>Control stays.</em>
               </h1>
+            ) : stage === 5 ? (
+              <h1>
+                Operations.
+                <br />
+                <em>Still active.</em>
+              </h1>
+            ) : (
+              <h1>
+                Trace the cut.
+                <br />
+                <em>Inspect proof.</em>
+              </h1>
             )}
             <p>{descriptions[stage]}</p>
           </div>
           <div className="story-action-block">
-            <button className="story-primary" onClick={action}>
+            <button
+              className="story-primary walkthrough-start"
+              onClick={runWalkthrough}
+            >
+              <span>Run the 20-second authority walkthrough</span>
+              <ArrowRight size={20} aria-hidden="true" />
+            </button>
+            <span className="story-demo">
+              Interactive demo — no transactions
+            </span>
+            <div
+              className="walkthrough-controls"
+              aria-label="Walkthrough controls"
+            >
+              {walkStarted && (
+                <>
+                  <button
+                    onClick={() => setPlaying(!playing)}
+                    disabled={walkStep === 7}
+                  >
+                    {playing ? "Pause walkthrough" : "Resume walkthrough"}
+                  </button>
+                  <button
+                    disabled={walkStep === 7}
+                    onClick={() => {
+                      setPlaying(false);
+                      goToWalkStep(walkStep + 1);
+                    }}
+                  >
+                    Next step
+                  </button>
+                  <span role="status">
+                    {walkStep + 1} / 8 ·{" "}
+                    {playing
+                      ? "Playing"
+                      : walkStep === 7
+                        ? "Complete"
+                        : "Paused"}
+                  </span>
+                </>
+              )}
+            </div>
+            <button
+              className="story-step-action"
+              onClick={() => {
+                setPlaying(false);
+                setWalkStarted(false);
+                action();
+              }}
+            >
               <span>{cta}</span>
               {stage === 3 ? <Scissors size={19} /> : <ArrowRight size={20} />}
             </button>
@@ -764,13 +897,18 @@ export default function StoryWorld() {
                 Cancel preview
               </button>
             )}
-            <span className="story-demo">
-              Interactive simulation · No transactions
-            </span>
+            <div className="story-product-links">
+              <button onClick={openCommand}>
+                Open Command <ArrowRight size={14} />
+              </button>
+              <Link href="/arena">
+                Open Arena <ArrowRight size={14} />
+              </Link>
+            </div>
           </div>
           <div className="story-context" aria-live="polite">
             <span className="context-index">
-              {String(stage + 1).padStart(2, "0")} / 05
+              {String(stage + 1).padStart(2, "0")} / 07
             </span>
             <div>
               <strong>
@@ -851,6 +989,19 @@ export default function StoryWorld() {
               ))}
             </ol>
           )}
+          {stage === 6 && (
+            <div className="story-evidence" role="status">
+              <strong>SIMULATED DENIAL · NOT SENT · NO SIGNATURE</strong>
+              <p>
+                Scraper: locally active, effectively blocked by Research. No RPC
+                or finalized 6003 receipt was produced by this demo.
+              </p>
+              <Link href="/app">
+                Inspect current Devnet accounts and receipt provenance{" "}
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+          )}
           <div className="exhibit-caption">
             <div>
               <span>
@@ -914,6 +1065,7 @@ export default function StoryWorld() {
               disabled={i !== 0 && (i > stage || cut)}
               aria-current={i === stage ? "step" : undefined}
               onClick={() => {
+                setPlaying(false);
                 if (i === 0) reset();
                 else if (i === 2) trace();
                 else if (i === 3) blast();
