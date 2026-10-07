@@ -1,6 +1,7 @@
 import { authorityFixture } from "./helpers/sdk-fixture";
 import { expect } from "chai";
 import { BN, utils, BorshInstructionCoder } from "@coral-xyz/anchor";
+import { MintLayout, AccountLayout, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   Connection,
   Keypair,
@@ -15,6 +16,7 @@ import {
   interpretProtocolError,
   explorer,
   toBaseUnits,
+  isWalletRejection,
   rootPda,
   childPda,
   type Snapshot,
@@ -64,6 +66,122 @@ function transport(walletOverride?: SigningWallet) {
   return { client, rpc, wallet, sends: () => sends };
 }
 describe("SDK explicit configuration and effective authority", () => {
+  it("does not mislabel transport and signing exceptions as user declines", () => {
+    expect(isWalletRejection({ code: 4001 })).eq(true);
+    for (const error of [
+      null,
+      "declined",
+      new Error("signing failed"),
+      { code: "4001" },
+      { code: -32603 },
+    ])
+      expect(isWalletRejection(error)).eq(false);
+  });
+  async function batchFixture(
+    vaultOwner?: PublicKey,
+    tokenProgram = TOKEN_PROGRAM_ID,
+  ) {
+    const f = transport(),
+      snapshot = authorityFixture();
+    const data = await f.client.program.coder.accounts.encode("organization", {
+      ...snapshot.organization,
+      bump: 0,
+      vaultBump: 0,
+    });
+    f.rpc.getAccountInfo = async () => ({
+      data,
+      owner: new PublicKey(PROGRAM_ADDRESS),
+      executable: false,
+      lamports: 1,
+      rentEpoch: 0,
+    });
+    const accounts = f.client.program.account as unknown as {
+      mandate: { all: () => Promise<unknown[]> };
+      bounty: { all: () => Promise<unknown[]> };
+    };
+    accounts.mandate.all = async () => snapshot.nodes;
+    accounts.bounty.all = async () => [];
+    let reads = 0;
+    f.rpc.getMultipleAccountsInfo = async (keys) => {
+      expect(keys.map((k) => k.toBase58())).deep.eq([
+        snapshot.organization.mint.toBase58(),
+        snapshot.organization.vault.toBase58(),
+      ]);
+      reads++;
+      const mint = Buffer.alloc(MintLayout.span),
+        vault = Buffer.alloc(AccountLayout.span);
+      MintLayout.encode(
+        {
+          mintAuthorityOption: 0,
+          mintAuthority: PublicKey.default,
+          supply: 500n,
+          decimals: 6,
+          isInitialized: true,
+          freezeAuthorityOption: 0,
+          freezeAuthority: PublicKey.default,
+        },
+        mint,
+      );
+      AccountLayout.encode(
+        {
+          mint: snapshot.organization.mint,
+          owner: vaultOwner ?? snapshot.address,
+          amount: 500n,
+          delegateOption: 0,
+          delegate: PublicKey.default,
+          state: 1,
+          isNativeOption: 0,
+          isNative: 0n,
+          delegatedAmount: 0n,
+          closeAuthorityOption: 0,
+          closeAuthority: PublicKey.default,
+        },
+        vault,
+      );
+      return [mint, vault].map((data) => ({
+        data,
+        owner: tokenProgram,
+        executable: false,
+        lamports: 1,
+        rentEpoch: 0,
+      }));
+    };
+    return { ...f, snapshot, reads: () => reads };
+  }
+  it("loads mint and vault together with exact SPL decoding and truthful read phases", async () => {
+    const f = await batchFixture(),
+      phases: string[] = [];
+    const result = await f.client.load(f.snapshot.address, undefined, (phase) =>
+      phases.push(phase),
+    );
+    expect(f.reads()).eq(1);
+    expect(result.decimals).eq(6);
+    expect(result.vaultBalance).eq(500n);
+    expect(phases).deep.eq([
+      "deployment",
+      "organization",
+      "accounts",
+      "submissions",
+    ]);
+  });
+  it("rejects a batch vault controlled by another organization", async () => {
+    const f = await batchFixture(key());
+    try {
+      await f.client.load(f.snapshot.address);
+      throw Error("expected rejection");
+    } catch (error) {
+      expect(String(error)).contains("vault mint or authority mismatch");
+    }
+  });
+  it("retains classic SPL owner validation for batched token accounts", async () => {
+    const f = await batchFixture(undefined, key());
+    try {
+      await f.client.load(f.snapshot.address);
+      throw Error("expected rejection");
+    } catch (error) {
+      expect(String(error)).contains("TokenInvalidAccountOwnerError");
+    }
+  });
   it("checks organization ownership before decoding or reading its mandates", async () => {
     const f = transport(),
       address = key();

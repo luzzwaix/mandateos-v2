@@ -1,5 +1,15 @@
 import type { ProtocolError } from "./errors";
 
+// A signing transport failure is not evidence that the user declined.
+export function isWalletRejection(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === 4001
+  );
+}
+
 export type TransactionOutcome<T> =
   | { kind: "confirmed-success"; value: T; signature: string; slot: number }
   | {

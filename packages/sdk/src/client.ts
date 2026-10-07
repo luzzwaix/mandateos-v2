@@ -17,8 +17,8 @@ import {
 import {
   createAssociatedTokenAccountIdempotentInstruction,
   getAssociatedTokenAddressSync,
-  getAccount,
-  getMint,
+  unpackMint,
+  unpackAccount,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import {
@@ -41,6 +41,7 @@ import { verifyProgramBinary } from "./deployment";
 import { inspectAuthority } from "./authority";
 import { interpretProtocolError } from "./errors";
 import type { TransactionOutcome } from "./lifecycle";
+import { isWalletRejection } from "./lifecycle";
 import type {
   Activity,
   BountyAccount,
@@ -131,9 +132,14 @@ export class MandateClient {
   async load(
     address: PublicKey,
     onVerified?: (slot: number) => void,
+    onProgress?: (
+      phase: "deployment" | "organization" | "accounts" | "submissions",
+    ) => void,
   ): Promise<Snapshot> {
+    onProgress?.("deployment");
     const slot = await this.verifyDeployment();
     onVerified?.(slot);
+    onProgress?.("organization");
     const info = await this.rpc.getAccountInfo(address, "confirmed");
     if (!info) throw new Error("Organization account not found");
     if (!info.owner.equals(this.program.programId) || info.executable)
@@ -146,12 +152,21 @@ export class MandateClient {
         info.data,
       );
     const filter = [{ memcmp: { offset: 8, bytes: address.toBase58() } }];
-    const [nodes, bounties, mint, vault] = await Promise.all([
+    onProgress?.("accounts");
+    const [nodes, bounties, tokenAccounts] = await Promise.all([
       this.accounts.mandate.all(filter),
       this.accounts.bounty.all(filter),
-      getMint(this.rpc, organization.mint),
-      getAccount(this.rpc, organization.vault),
+      this.rpc.getMultipleAccountsInfo(
+        [organization.mint, organization.vault],
+        "confirmed",
+      ),
     ]);
+    // The SPL decoders retain the same owner/layout checks as getMint/getAccount.
+    const mint = unpackMint(organization.mint, tokenAccounts[0]);
+    const vault = unpackAccount(organization.vault, tokenAccounts[1]);
+    if (!vault.mint.equals(organization.mint) || !vault.owner.equals(address))
+      throw new Error("Organization vault mint or authority mismatch");
+    onProgress?.("submissions");
     const submissions = (
       await Promise.all(
         bounties.map((b) =>
@@ -261,10 +276,7 @@ export class MandateClient {
           lastValidBlockHeight: progress.lastValidBlockHeight,
           error: message,
         };
-      if (
-        progress.phase === "awaiting-signature" &&
-        (error as { code?: number } | null)?.code === 4001
-      )
+      if (progress.phase === "awaiting-signature" && isWalletRejection(error))
         return { kind: "wallet-rejection", error: message };
       return { kind: "client-rejection", error: message };
     }

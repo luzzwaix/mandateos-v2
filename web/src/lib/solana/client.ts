@@ -2,6 +2,7 @@ import { MandateClient as ProtocolClient } from "../../../../packages/sdk/src/cl
 import type { Connection } from "@solana/web3.js";
 import type { SigningWallet, TransactionObserver } from "./types";
 import { clientConfig, connection } from "./program";
+export { isWalletRejection } from "../../../../packages/sdk/src/lifecycle";
 export {
   ProtocolRejection,
   SimulationRejection,

@@ -5,6 +5,7 @@ import {
   MandateClient,
   ProtocolRejection,
   SimulationRejection,
+  isWalletRejection,
 } from "./solana/client";
 import { initializeDemo, type DemoSession } from "./solana/demo";
 import { keypairWallet, connectWallet } from "./solana/wallet";
@@ -250,11 +251,26 @@ export function useConsole(enabled = true) {
             verified(await reader.verifyDeployment());
             return;
           }
-          next = await reader.load(new PublicKey(target), verified);
+          next = await reader.load(new PublicKey(target), verified, (phase) => {
+            if (generation !== readGeneration.current) return;
+            const progress = {
+              deployment: "Verifying Devnet program and source binary",
+              organization: "Reading organization",
+              accounts: "Reading mandates, missions and token accounts",
+              submissions: "Reading submitted results",
+            };
+            setHealth(progress[phase]);
+          });
         } catch (e) {
-          if (!deploymentRead && generation === readGeneration.current) {
-            setDeploymentVerified(false);
-            setHealth(e instanceof Error ? e.message : String(e));
+          if (generation === readGeneration.current) {
+            if (!deploymentRead) setDeploymentVerified(false);
+            setHealth(
+              deploymentRead
+                ? "Program verified · account read failed"
+                : e instanceof Error
+                  ? e.message
+                  : String(e),
+            );
           }
           throw e;
         }
@@ -368,6 +384,7 @@ export function useConsole(enabled = true) {
         snapshotRef.current = next;
         setSnapshot(next);
         setLastRead(Date.now());
+        setHealth("LIVE · accounts current");
         setStale(false);
         setError((old) =>
           old.startsWith(
@@ -646,7 +663,8 @@ export function useConsole(enabled = true) {
               ? "on-chain-failure"
               : e instanceof SimulationRejection
                 ? "simulation-rejection"
-                : progressRef.current.phase === "awaiting-signature"
+                : progressRef.current.phase === "awaiting-signature" &&
+                    isWalletRejection(e)
                   ? "wallet-rejection"
                   : progressRef.current.phase === "pending" ||
                       progressRef.current.phase === "submitting"

@@ -15,3 +15,4 @@ export * from "./pdas";
 export { inspectAuthority, type AuthorityInspection } from "./authority";
 export { interpretProtocolError, type ProtocolError } from "./errors";
 export type { TransactionOutcome } from "./lifecycle";
+export { isWalletRejection } from "./lifecycle";
