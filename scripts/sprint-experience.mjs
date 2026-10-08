@@ -69,48 +69,30 @@ for (const [width, height] of sampleSizes) {
   }
   await page.goto(base);
   await capture("story-genesis");
-  const run = page.getByRole("button", {
-    name: "Run the 20-second authority walkthrough",
-    exact: true,
-  });
-  const box = await run.boundingBox();
+  const box = await page
+    .getByRole("button", { name: "Delegate Research", exact: true })
+    .boundingBox();
   assert(
     box && box.y + box.height <= height,
     "Primary action must be in first viewport",
   );
-  await run.press("Enter");
-  if (width === 1440) {
-    await page.waitForTimeout(1000);
-    await run.press("Enter");
-    await page.waitForTimeout(1200);
-    assert.equal(
-      await page.locator(".mandate-story").getAttribute("data-stage"),
-      "0",
-      "Restart resets the first-step timer",
-    );
-  }
-  await page
-    .getByRole("button", { name: "Pause walkthrough", exact: true })
-    .press("Enter");
-  await page.waitForTimeout(2300);
   assert.equal(
-    await page.locator(".mandate-story").getAttribute("data-stage"),
-    "0",
-    "Pause cancels timer",
+    await page
+      .getByRole("button", { name: /walkthrough|Next step|Replay story/i })
+      .count(),
+    0,
   );
-  for (const name of [
-    "grant",
-    "recursion",
-    "trace",
-    "blast",
-    "cascade",
-    "operations",
-    "proof",
+  for (const [name, action] of [
+    ["grant", "Delegate Research"],
+    ["recursion", "Delegate further"],
+    ["trace", "Trace Scraper"],
+    ["blast", "Preview Research revoke"],
+    ["cascade", "Confirm demo revoke"],
   ]) {
     await page
-      .getByRole("button", { name: "Next step", exact: true })
+      .getByRole("button", { name: action, exact: true })
       .press("Enter");
-    await capture("walkthrough-" + name);
+    await capture("story-" + name);
     if (name === "blast")
       assert.equal(
         (await page.locator(".seal-control-status").allTextContents()).filter(
@@ -118,7 +100,7 @@ for (const [width, height] of sampleSizes) {
         ).length,
         6,
       );
-    if (["cascade", "operations", "proof"].includes(name)) {
+    if (name === "cascade") {
       assert.equal(
         (await page.locator(".seal-control-status").allTextContents()).filter(
           (s) => s === "blocked",
@@ -136,11 +118,11 @@ for (const [width, height] of sampleSizes) {
     }
   }
   assert.match(
-    await page.locator(".story-evidence").innerText(),
-    /NOT SENT · NO SIGNATURE/,
+    await page.locator(".cut-proof").innerText(),
+    /No transaction submitted; no program result or signature/,
   );
   await page
-    .getByRole("button", { name: "Replay story", exact: true })
+    .getByRole("button", { name: "Reset structure", exact: true })
     .press("Enter");
   assert.equal(
     await page.locator(".mandate-story").getAttribute("data-stage"),
@@ -152,14 +134,7 @@ for (const [width, height] of sampleSizes) {
     .locator(".world-footer")
     .getByText("CONFIRMED ACCOUNT READS")
     .waitFor({ timeout: 120000 });
-  const select = (id) =>
-    page
-      .locator(
-        width <= 1100
-          ? `[data-mobile-node="${id}"]`
-          : `[data-testid="node-${id}"]`,
-      )
-      .click();
+  const select = (id) => page.locator(`[data-testid="node-${id}"]`).click();
   await select(scraper);
   if (width <= 768) {
     await page
@@ -204,7 +179,7 @@ for (const [width, height] of sampleSizes) {
   );
   await context.close();
 }
-// Automatic timeline and cleanup measured on a separate, real browser document.
+// Direct user interactions recorded on a separate browser document.
 const recordingContext = await browser.newContext({
   viewport: { width: 1440, height: 900 },
   recordVideo: {
@@ -215,27 +190,25 @@ const recordingContext = await browser.newContext({
 const recorded = await recordingContext.newPage();
 recorded.on("pageerror", (error) => errors.push(error.message));
 await recorded.goto(base);
-const start = performance.now();
-await recorded
-  .getByRole("button", {
-    name: "Run the 20-second authority walkthrough",
-    exact: true,
-  })
-  .click();
-await recorded
-  .getByText("8 / 8 · Complete", { exact: true })
-  .waitFor({ timeout: 25000 });
-const walkthroughMs = performance.now() - start;
-assert(walkthroughMs >= 19500 && walkthroughMs < 25000);
+for (const name of [
+  "Delegate Research",
+  "Delegate further",
+  "Trace Scraper",
+  "Preview Research revoke",
+  "Confirm demo revoke",
+]) {
+  await recorded.getByRole("button", { name, exact: true }).click();
+  await recorded.waitForTimeout(1000);
+}
 await recorded.waitForTimeout(1800);
 await recorded.screenshot({
-  path: resolve(output, "walkthrough-complete.png"),
+  path: resolve(output, "story-cut.png"),
   // Full-page capture can resize the screencast; keep this recorded viewport stable.
   fullPage: false,
 });
 const video = recorded.video();
 await recordingContext.close();
-await video.saveAs(resolve(output, "authority-walkthrough.webm"));
+await video.saveAs(resolve(output, "authority-cut.webm"));
 // Actual RPC failure leaves the shell and a useful error, with no demo substitution.
 const offlineContext = await browser.newContext({
   viewport: { width: 390, height: 844 },
@@ -267,8 +240,7 @@ writeFileSync(
       base,
       checks,
       errors,
-      walkthroughMs,
-      video: "authority-walkthrough.webm",
+      video: "authority-cut.webm",
       provenance:
         "Story simulated; accounts observed on Devnet; Phantom absent; no submissions",
       zoom: "720×450 tests 200% reflow of 1440×900; native browser zoom is not measured",
@@ -278,5 +250,5 @@ writeFileSync(
   ),
 );
 console.log(
-  `${checks.length} captures: walkthrough, pause/next/replay, keyboard, reduced motion, Devnet reads, responsive and RPC failure passed; auto tour ${Math.round(walkthroughMs)}ms`,
+  `${checks.length} captures: direct Story actions, keyboard, reduced motion, Devnet reads, responsive and RPC failure passed`,
 );

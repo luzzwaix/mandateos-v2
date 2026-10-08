@@ -11,6 +11,7 @@ const { chromium } = await import(
     ),
   ).href
 );
+const base = process.env.MANDATEOS_QA_BASE || "http://127.0.0.1:3101";
 const out = resolve(
   process.argv[2] || "D:/MandateOS-final-finish-2026-10-08/pass-1",
 );
@@ -81,7 +82,7 @@ for (const [width, height, motion] of process.argv.includes("--states-only")
     );
   }
   async function story() {
-    await page.goto("http://127.0.0.1:3101/");
+    await page.goto(base + "/");
     for (const name of [
       "Delegate Research",
       "Delegate further",
@@ -376,7 +377,7 @@ const liveContext = await browser.newContext({
   permissions: ["clipboard-read", "clipboard-write"],
 });
 const live = await liveContext.newPage();
-await live.goto("http://127.0.0.1:3101/app");
+await live.goto(base + "/app");
 await live.locator(".copy-address").waitFor({ timeout: 30000 });
 await live.waitForFunction(() =>
   document.getAnimations().every((a) => a.playState !== "running"),
@@ -459,7 +460,7 @@ await offlineContext.route("https://api.devnet.solana.com/**", (r) =>
   r.abort(),
 );
 const offline = await offlineContext.newPage();
-await offline.goto("http://127.0.0.1:3101/app");
+await offline.goto(base + "/app");
 await offline.locator('[role="alert"]').first().waitFor();
 assert.equal(await offline.locator(".command-world").count(), 0);
 await offline.screenshot({
