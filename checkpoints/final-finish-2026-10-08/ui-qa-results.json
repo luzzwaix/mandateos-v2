@@ -1,0 +1,917 @@
+[
+  {
+    "width": 1440,
+    "height": 900,
+    "motion": "no-preference",
+    "samples": [
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 865.228271484375,
+            "y": 384.6402282714844,
+            "w": 182.82080078125,
+            "h": 182.82083129882812
+          }
+        ],
+        "overlay": true
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 865.228271484375,
+            "y": 384.6402282714844,
+            "w": 182.82080078125,
+            "h": 182.82083129882812
+          }
+        ],
+        "overlay": true
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 639.01416015625,
+            "y": 349.0580139160156,
+            "w": 186.4765625,
+            "h": 173.23666381835938
+          }
+        ],
+        "overlay": true
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      }
+    ],
+    "blockedRect": {
+      "x": 1028,
+      "y": 184.984375,
+      "width": 380,
+      "height": 692
+    },
+    "inspectionRect": {
+      "x": 1028,
+      "y": 184.984375,
+      "width": 380,
+      "height": 692
+    },
+    "reselectionRect": {
+      "x": 1028,
+      "y": 184.984375,
+      "width": 380,
+      "height": 692
+    },
+    "idleFrames": 0,
+    "errors": [],
+    "writes": [],
+    "phaseTasks": [
+      {
+        "name": "cascade",
+        "start": 4554,
+        "end": 6521.800000071526,
+        "tasks": []
+      },
+      {
+        "name": "handoff",
+        "start": 6664.700000047684,
+        "end": 8414.700000047684,
+        "tasks": [
+          {
+            "start": 6730.600000023842,
+            "duration": 88
+          },
+          {
+            "start": 7333.700000047684,
+            "duration": 70
+          }
+        ]
+      },
+      {
+        "name": "blocked receipt",
+        "start": 8614.300000071526,
+        "end": 8970.300000071526,
+        "tasks": []
+      },
+      {
+        "name": "disclosure",
+        "start": 8973,
+        "end": 9341.5,
+        "tasks": []
+      },
+      {
+        "name": "node selection",
+        "start": 9530.400000095367,
+        "end": 9911.200000047684,
+        "tasks": []
+      },
+      {
+        "name": "form open",
+        "start": 10051.400000095367,
+        "end": 10441.5,
+        "tasks": []
+      },
+      {
+        "name": "validation",
+        "start": 10494,
+        "end": 10873.600000023842,
+        "tasks": []
+      },
+      {
+        "name": "keyboard selection",
+        "start": 11792.400000095367,
+        "end": 12141.700000047684,
+        "tasks": []
+      },
+      {
+        "name": "evidence history",
+        "start": 12143.5,
+        "end": 12508.900000095367,
+        "tasks": []
+      },
+      {
+        "name": "Arena inspection",
+        "start": 14028.5,
+        "end": 14394.400000095367,
+        "tasks": []
+      },
+      {
+        "name": "explicit Demo settlement",
+        "start": 14623.700000047684,
+        "end": 15810.400000095367,
+        "tasks": []
+      },
+      {
+        "name": "inspect losing submission",
+        "start": 15815.700000047684,
+        "end": 16166.200000047684,
+        "tasks": []
+      }
+    ],
+    "startupTasks": [
+      {
+        "start": 123.5,
+        "duration": 99
+      },
+      {
+        "start": 234.80000007152557,
+        "duration": 97
+      },
+      {
+        "start": 336.10000002384186,
+        "duration": 140
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "motion": "no-preference",
+    "samples": [
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 152.08876037597656,
+            "y": 633.570068359375,
+            "w": 96.17752075195312,
+            "h": 96.17755126953125
+          }
+        ],
+        "overlay": true
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 152.08876037597656,
+            "y": 633.570068359375,
+            "w": 96.17752075195312,
+            "h": 96.17755126953125
+          }
+        ],
+        "overlay": true
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 115.56060791015625,
+            "y": 1159.460693359375,
+            "w": 161.97216796875,
+            "h": 143.7391357421875
+          }
+        ],
+        "overlay": true
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 101.24166870117188,
+            "y": 1365.6083984375,
+            "w": 187.76351928710938,
+            "h": 162.3831787109375
+          }
+        ],
+        "overlay": true
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 100.23959350585938,
+            "y": 1380.0350341796875,
+            "w": 189.56842041015625,
+            "h": 163.68798828125
+          }
+        ],
+        "overlay": true
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 100.03189086914062,
+            "y": 1383.0252685546875,
+            "w": 189.94253540039062,
+            "h": 163.9583740234375
+          }
+        ],
+        "overlay": true
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 100.0001220703125,
+            "y": 1383.4825439453125,
+            "w": 189.99978637695312,
+            "h": 163.9998779296875
+          }
+        ],
+        "overlay": true
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 100,
+            "y": 1383.484375,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 100,
+            "y": 1383.484375,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      }
+    ],
+    "blockedRect": {
+      "x": 20,
+      "y": 405.375,
+      "width": 350,
+      "height": 712.734375
+    },
+    "inspectionRect": {
+      "x": 20,
+      "y": 405.375,
+      "width": 350,
+      "height": 636.828125
+    },
+    "reselectionRect": {
+      "x": 20,
+      "y": 405.375,
+      "width": 350,
+      "height": 636.828125
+    },
+    "idleFrames": 0,
+    "errors": [],
+    "writes": [],
+    "phaseTasks": [
+      {
+        "name": "cascade",
+        "start": 4297.699999928474,
+        "end": 6079.600000023842,
+        "tasks": []
+      },
+      {
+        "name": "handoff",
+        "start": 6150.600000023842,
+        "end": 7519.699999928474,
+        "tasks": [
+          {
+            "start": 6198.899999976158,
+            "duration": 57
+          }
+        ]
+      },
+      {
+        "name": "blocked receipt",
+        "start": 7602.600000023842,
+        "end": 7967.199999928474,
+        "tasks": []
+      },
+      {
+        "name": "disclosure",
+        "start": 7968.399999976158,
+        "end": 8311.600000023842,
+        "tasks": []
+      },
+      {
+        "name": "node selection",
+        "start": 8408.600000023842,
+        "end": 8777.699999928474,
+        "tasks": []
+      },
+      {
+        "name": "form open",
+        "start": 8844.100000023842,
+        "end": 9198.199999928474,
+        "tasks": []
+      },
+      {
+        "name": "validation",
+        "start": 9220.699999928474,
+        "end": 9587,
+        "tasks": []
+      },
+      {
+        "name": "keyboard selection",
+        "start": 10200.199999928474,
+        "end": 10529.600000023842,
+        "tasks": []
+      },
+      {
+        "name": "evidence history",
+        "start": 10530.699999928474,
+        "end": 10871.5,
+        "tasks": []
+      },
+      {
+        "name": "Arena inspection",
+        "start": 12241.199999928474,
+        "end": 12597.100000023842,
+        "tasks": []
+      },
+      {
+        "name": "explicit Demo settlement",
+        "start": 12663.699999928474,
+        "end": 13822.100000023842,
+        "tasks": []
+      },
+      {
+        "name": "inspect losing submission",
+        "start": 13827,
+        "end": 14167.799999952316,
+        "tasks": []
+      }
+    ],
+    "startupTasks": [
+      {
+        "start": 49.199999928474426,
+        "duration": 88
+      },
+      {
+        "start": 148.10000002384186,
+        "duration": 85
+      },
+      {
+        "start": 234.60000002384186,
+        "duration": 138
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "height": 900,
+    "motion": "reduce",
+    "samples": [
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 865.228271484375,
+            "y": 384.6402282714844,
+            "w": 182.82080078125,
+            "h": 182.82083129882812
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 421,
+            "y": 314.765625,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      }
+    ],
+    "blockedRect": {
+      "x": 1028,
+      "y": 184.984375,
+      "width": 380,
+      "height": 692
+    },
+    "inspectionRect": {
+      "x": 1028,
+      "y": 184.984375,
+      "width": 380,
+      "height": 692
+    },
+    "reselectionRect": {
+      "x": 1028,
+      "y": 184.984375,
+      "width": 380,
+      "height": 692
+    },
+    "idleFrames": 0,
+    "errors": [],
+    "writes": [],
+    "phaseTasks": [
+      {
+        "name": "cascade",
+        "start": 697.1000000238419,
+        "end": 2532.4000000953674,
+        "tasks": []
+      },
+      {
+        "name": "handoff",
+        "start": 2652,
+        "end": 3986,
+        "tasks": []
+      },
+      {
+        "name": "blocked receipt",
+        "start": 4294.400000095367,
+        "end": 4645.800000071526,
+        "tasks": []
+      },
+      {
+        "name": "disclosure",
+        "start": 4648,
+        "end": 4991.700000047684,
+        "tasks": []
+      },
+      {
+        "name": "node selection",
+        "start": 5208,
+        "end": 5577.300000071526,
+        "tasks": []
+      },
+      {
+        "name": "form open",
+        "start": 5769.900000095367,
+        "end": 6137.5,
+        "tasks": []
+      },
+      {
+        "name": "validation",
+        "start": 6165.200000047684,
+        "end": 6527.800000071526,
+        "tasks": []
+      },
+      {
+        "name": "keyboard selection",
+        "start": 7000,
+        "end": 7332.100000023842,
+        "tasks": []
+      },
+      {
+        "name": "evidence history",
+        "start": 7333.5,
+        "end": 7673.5,
+        "tasks": []
+      },
+      {
+        "name": "Arena inspection",
+        "start": 7868.100000023842,
+        "end": 8217.300000071526,
+        "tasks": []
+      },
+      {
+        "name": "explicit Demo settlement",
+        "start": 8329.300000071526,
+        "end": 9498.200000047684,
+        "tasks": []
+      },
+      {
+        "name": "inspect losing submission",
+        "start": 9504.200000047684,
+        "end": 9839.600000023842,
+        "tasks": []
+      }
+    ],
+    "startupTasks": [
+      {
+        "start": 38.300000071525574,
+        "duration": 91
+      },
+      {
+        "start": 138.30000007152557,
+        "duration": 66
+      },
+      {
+        "start": 205.70000004768372,
+        "duration": 123
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "motion": "reduce",
+    "samples": [
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 152.08876037597656,
+            "y": 633.570068359375,
+            "w": 96.17752075195312,
+            "h": 96.17755126953125
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 100,
+            "y": 1383.484375,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 100,
+            "y": 1383.484375,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 100,
+            "y": 1383.484375,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 100,
+            "y": 1383.484375,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 100,
+            "y": 1383.484375,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 100,
+            "y": 1383.484375,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 100,
+            "y": 1383.484375,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      },
+      {
+        "roots": 1,
+        "rects": [
+          {
+            "x": 100,
+            "y": 1383.484375,
+            "w": 190,
+            "h": 164
+          }
+        ],
+        "overlay": false
+      }
+    ],
+    "blockedRect": {
+      "x": 20,
+      "y": 405.375,
+      "width": 350,
+      "height": 712.734375
+    },
+    "inspectionRect": {
+      "x": 20,
+      "y": 405.375,
+      "width": 350,
+      "height": 636.828125
+    },
+    "reselectionRect": {
+      "x": 20,
+      "y": 405.375,
+      "width": 350,
+      "height": 636.828125
+    },
+    "idleFrames": 0,
+    "errors": [],
+    "writes": [],
+    "phaseTasks": [
+      {
+        "name": "cascade",
+        "start": 667.3999999761581,
+        "end": 2464.7999999523163,
+        "tasks": []
+      },
+      {
+        "name": "handoff",
+        "start": 2530.6999999284744,
+        "end": 3823.399999976158,
+        "tasks": [
+          {
+            "start": 2581.2999999523163,
+            "duration": 59
+          }
+        ]
+      },
+      {
+        "name": "blocked receipt",
+        "start": 3905,
+        "end": 4255.899999976158,
+        "tasks": []
+      },
+      {
+        "name": "disclosure",
+        "start": 4257,
+        "end": 4598.100000023842,
+        "tasks": []
+      },
+      {
+        "name": "node selection",
+        "start": 4684.799999952316,
+        "end": 5065.100000023842,
+        "tasks": []
+      },
+      {
+        "name": "form open",
+        "start": 5130.899999976158,
+        "end": 5470.799999952316,
+        "tasks": []
+      },
+      {
+        "name": "validation",
+        "start": 5490.399999976158,
+        "end": 5844.199999928474,
+        "tasks": []
+      },
+      {
+        "name": "keyboard selection",
+        "start": 6182.5,
+        "end": 6511.5,
+        "tasks": []
+      },
+      {
+        "name": "evidence history",
+        "start": 6513.100000023842,
+        "end": 6866.100000023842,
+        "tasks": []
+      },
+      {
+        "name": "Arena inspection",
+        "start": 7051.799999952316,
+        "end": 7407.899999976158,
+        "tasks": []
+      },
+      {
+        "name": "explicit Demo settlement",
+        "start": 7471.799999952316,
+        "end": 8614.399999976158,
+        "tasks": []
+      },
+      {
+        "name": "inspect losing submission",
+        "start": 8619.899999976158,
+        "end": 8959,
+        "tasks": []
+      }
+    ],
+    "startupTasks": [
+      {
+        "start": 39.89999997615814,
+        "duration": 86
+      },
+      {
+        "start": 135.29999995231628,
+        "duration": 65
+      },
+      {
+        "start": 202.79999995231628,
+        "duration": 126
+      }
+    ]
+  }
+]

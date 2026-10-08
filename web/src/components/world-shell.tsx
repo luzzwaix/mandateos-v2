@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import CommandContinuity from "./command-continuity";
+import DisclosureFeedback from "./experience-feedback";
 import { ArrowRight, Wallet, X, ChevronDown } from "lucide-react";
 import { useConsole } from "@/lib/use-console";
 import { genesis, fromSnapshot, type AuthorityModel } from "@/lib/authority";
@@ -309,6 +310,7 @@ export default function WorldShell({
         </span>
       </footer>
       <CommandContinuity pathname={pathname} />
+      <DisclosureFeedback pathname={pathname} />
     </WorldContext.Provider>
   );
 }
@@ -324,6 +326,11 @@ export function ConnectionInstrument() {
         Read verified accounts or create an organization with the connected
         authority wallet.
       </p>
+      {live.snapshot && /^(Reading|Verifying)/.test(live.health) && (
+        <p className="refresh-notice" role="status">
+          Refreshing accounts · current data stays visible.
+        </p>
+      )}
       <label>
         Organization address
         <input

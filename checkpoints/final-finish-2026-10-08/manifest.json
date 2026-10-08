@@ -1,0 +1,68 @@
+{
+  "startingHead": "ad46cd13bff664df5d1a834b6a0570df09225de9",
+  "baseline": "D:\\MandateOS-final-finish-2026-10-08\\source-before",
+  "files": [
+    {
+      "path": "web/src/app/layout.tsx",
+      "beforeSHA256": "7f20d47bbdaae8ef417b0341fb5be715eb148aef6f7ba11de59de5d33b741113",
+      "afterSHA256": "3eb1e64c3290e34e68125fa3642903036bc7c3dd17fa46bc26c2d9155d994b80"
+    },
+    {
+      "path": "web/src/components/arena-world.tsx",
+      "beforeSHA256": "3031f68f44a18f37a6c95a643b4ca851a24700385fe852cc1f50f2f2cadac791",
+      "afterSHA256": "39010d03bc07d3a0f9cb20dfbc6b2170e140dc8dfc38cbc8b998bff49734e829"
+    },
+    {
+      "path": "web/src/components/capital-authority-instrument.tsx",
+      "beforeSHA256": "f1a758a0684ab8e5f6a4e601f4e1932cd6a6f5641a707ebc97119db034ff49dc",
+      "afterSHA256": "2c4cd3fa05f8d01fdb5df178a4d824b0c3680a90247ebd4dbf92d1bd63f338e1"
+    },
+    {
+      "path": "web/src/components/command-continuity.tsx",
+      "beforeSHA256": "5acae65920e8c988574e81d227346f1de3de4a9446a6649a561251b4058b3963",
+      "afterSHA256": "227aba4ba27a4c76fac2cafa710886d330c386f22f001ee5a1cc305efd71851e"
+    },
+    {
+      "path": "web/src/components/command-world.tsx",
+      "beforeSHA256": "8d440288054ada9ec4792bca332176aef68930de804f0534c246b6d5d14b5d9f",
+      "afterSHA256": "8fe6b97d9deda63426504e72d741986defbf647c5e730aca48b09c5c25cfe91f"
+    },
+    {
+      "path": "web/src/components/story-world.tsx",
+      "beforeSHA256": "f0fba09a3c7a258e1234fbfc1ad7f18f98e04498597e40322f8079b0030be6d6",
+      "afterSHA256": "df8ad053cee97209ac54e97755ad0996359d04d9f658b3909e0a70242aae0e36"
+    },
+    {
+      "path": "web/src/components/world-shell.tsx",
+      "beforeSHA256": "b29d89f998b7789be71b34af939f2cea1f13f8ed07a0aa0d64dda881fee279ef",
+      "afterSHA256": "3c39366813fe02e7867e822df7bdef710f50bcccc7454c690b7f2eb0ed1549cc"
+    },
+    {
+      "path": "web/src/components/mission-channels.tsx",
+      "beforeSHA256": "d6bbbd038cd01eb655c13a9d801388d0f9a704fd9559f6ee80943b8d71827530",
+      "afterSHA256": "1a7f6a9d67d2782356f6c6837947554069dfa9020023d3bb8cb5b74c7b316b42"
+    }
+  ],
+  "handlers": [
+    {
+      "path": "web/src/components/command-world.tsx",
+      "name": "execute",
+      "SHA256": "a723ad2d2fde250e3e1db4021248a46865d791e9ed0eecabf1690c0067520350"
+    },
+    {
+      "path": "web/src/components/arena-world.tsx",
+      "name": "advance",
+      "SHA256": "2b9ec4433ac936c5aa99a23bde53624fd6cd7c1de1f00433ff0c11463ba6a219"
+    },
+    {
+      "path": "web/src/components/arena-world.tsx",
+      "name": "create",
+      "SHA256": "a78445cfdbe556b63f666737a45182ac17e218e4c4176f67302095572b5e6aeb"
+    }
+  ],
+  "untouched": [
+    "web/src/lib/authority.ts",
+    "web/src/lib/use-console.ts"
+  ],
+  "verification": "Applied finish.delta.patch to preserved baseline copies; every resulting source hash matches the tested tree. SHA256 uses LF-normalized source. No reproducible release candidate: prerequisite source edits remain dirty."
+}

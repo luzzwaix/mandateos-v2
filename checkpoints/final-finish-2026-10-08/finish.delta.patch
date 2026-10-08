@@ -1,0 +1,665 @@
+diff --git a/web/src/app/layout.tsx b/web/src/app/layout.tsx
+--- a/web/src/app/layout.tsx
++++ b/web/src/app/layout.tsx
+@@ -17,6 +17,7 @@ import "@/components/completion.css";
+ import "@/components/story-cut.css";
+ import "@/components/final-experience.css";
+ import "@/components/sprint-experience.css";
++import "@/components/experience-finish.css";
+
+ export const metadata: Metadata = {
+   title: "MandateOS — Recursive capital authority",
+diff --git a/web/src/components/arena-world.tsx b/web/src/components/arena-world.tsx
+--- a/web/src/components/arena-world.tsx
++++ b/web/src/components/arena-world.tsx
+@@ -10,6 +10,7 @@ import CapitalNumber from "./capital-number";
+ import { scopedTimeline } from "./authority-motion";
+ import { operatingMotion } from "./operating-motion";
+ import MissionChannels from "./mission-channels";
++import { useDetailContinuity } from "./experience-feedback";
+
+ export default function ArenaWorld() {
+   const w = useWorld();
+@@ -79,6 +80,8 @@ export default function ArenaWorld() {
+     ? "demo-mission"
+     : (bounty?.publicKey.toBase58() ?? "");
+   const loaded = w.demo || !!bounty;
++  const inspection = useRef<HTMLDivElement>(null);
++  useDetailContinuity(inspection, `${missionIdentity}:${viewingId}`);
+   const root = w.model?.nodes.find((n) => n.id === w.model?.root);
+   const previousScene = useRef({
+     status,
+@@ -112,8 +115,18 @@ export default function ArenaWorld() {
+       return;
+     const timeline = scopedTimeline(
+       element,
+-      settled ? "settlement" : previewResult ? "preview" : status,
+-      settled ? operatingMotion.settlement : operatingMotion.funding,
++      settled && before.status === "settled"
++        ? "inspection"
++        : settled
++          ? "settlement"
++          : previewResult
++            ? "preview"
++            : status,
++      settled && before.status === "settled"
++        ? 240
++        : settled
++          ? operatingMotion.settlement
++          : operatingMotion.funding,
+     );
+     const routes = Array.from(element.querySelectorAll(".submission-channel"));
+     if (status === "funded" && before.status !== status) {
+@@ -172,7 +185,6 @@ export default function ArenaWorld() {
+       );
+       timeline.draw(chosen, 280);
+       timeline.pulse(chosen, 280);
+-      timeline.pulse(element.querySelector(".verifier-input"), 220, 220);
+       timeline.animate(
+         element.querySelector(".gate-aperture i"),
+         [
+@@ -226,7 +238,7 @@ export default function ArenaWorld() {
+         480,
+       );
+     } else if (before.viewingId !== viewingId && settled) {
+-      timeline.pulse(routes[viewingIndex], 280);
++      // Inspection is local feedback; a losing lane never travels through settlement.
+       timeline.animate(
+         element.querySelector('.contender[aria-pressed="true"]'),
+         [{ opacity: 0.6 }, { opacity: 1 }],
+@@ -339,7 +351,13 @@ export default function ArenaWorld() {
+           </p>
+           <div className="empty-root">
+             <span>MISSION / UNVERIFIED</span>
+-            <strong>No account state loaded</strong>
++            <strong>
++              {w.live.error
++                ? "Account read failed"
++                : /^(Reading|Verifying)/.test(w.live.health)
++                  ? "Reading account state"
++                  : "No account state loaded"}
++            </strong>
+             <small>No settlement or payout assumed.</small>
+           </div>
+         </div>
+@@ -406,7 +424,10 @@ export default function ArenaWorld() {
+                 </button>
+               ))
+             )}
+-            <span>CAPITAL → MISSION ← SUBMISSIONS → VERIFIER</span>
++            <span>
++              CAPITAL: TREASURY → MISSION · WORK: SUBMISSIONS → VERIFIER →
++              SETTLEMENT
++            </span>
+           </div>
+           <ol className="mission-lifecycle" aria-label="Mission lifecycle">
+             <li data-complete={funded}>
+@@ -483,7 +504,7 @@ export default function ArenaWorld() {
+             </span>
+             <div className="contender-lanes">
+               <div className="lane-heading">
+-                <strong>Submissions</strong>
++                <strong>Work submissions</strong>
+                 <span>{submitted ? names.length : 0} committed</span>
+               </div>
+               {(submitted ? names : ["Awaiting submissions"]).map((name, i) => (
+@@ -774,7 +795,11 @@ export default function ArenaWorld() {
+             )}
+           </div>
+           {submitted && (
+-            <div className="submission-inspection" aria-live="polite">
++            <div
++              ref={inspection}
++              className="submission-inspection"
++              aria-live="polite"
++            >
+               <div>
+                 <span>VIEWING SUBMISSION</span>
+                 <strong>{names[viewingIndex]}</strong>
+diff --git a/web/src/components/capital-authority-instrument.tsx b/web/src/components/capital-authority-instrument.tsx
+--- a/web/src/components/capital-authority-instrument.tsx
++++ b/web/src/components/capital-authority-instrument.tsx
+@@ -1,5 +1,5 @@
+ "use client";
+-import { useEffect, useRef, useState } from "react";
++import { useEffect, useLayoutEffect, useRef, useState } from "react";
+ import {
+   amount,
+   authorityPath,
+@@ -38,11 +38,14 @@ export default function CapitalAuthorityInstrument({
+   const surface = useRef<HTMLDivElement>(null);
+   const [width, setWidth] = useState(980);
+   const previous = useRef({ model, selected, preview, trace, grant, cascade });
+-  useEffect(() => {
++  useLayoutEffect(() => {
+     const observer = new ResizeObserver(([entry]) =>
+       setWidth(entry.contentRect.width),
+     );
+-    if (surface.current) observer.observe(surface.current);
++    if (surface.current) {
++      setWidth(surface.current.getBoundingClientRect().width);
++      observer.observe(surface.current);
++    }
+     return () => observer.disconnect();
+   }, []);
+   const roles = capitalInstrumentRoles(model);
+diff --git a/web/src/components/command-continuity.tsx b/web/src/components/command-continuity.tsx
+--- a/web/src/components/command-continuity.tsx
++++ b/web/src/components/command-continuity.tsx
+@@ -2,7 +2,7 @@
+ import { useEffect, useRef } from "react";
+ import { scopedTimeline } from "./authority-motion";
+
+-/** A presentation snapshot bridges real navigation; it never owns product state. */
++/** One Root travels; the destination cannot overlap its presentation snapshot. */
+ export default function CommandContinuity({ pathname }: { pathname: string }) {
+   const cleanup = useRef<() => void>(() => {});
+   useEffect(() => {
+@@ -11,136 +11,89 @@ export default function CommandContinuity({ pathname }: { pathname: string }) {
+       const navigate = (event as CustomEvent<{ navigate?: () => void }>).detail
+         ?.navigate;
+       const source = document.querySelector<SVGGraphicsElement>(".seal-root");
+-      if (!source || matchMedia("(prefers-reduced-motion: reduce)").matches) {
++      const scene = document.querySelector<SVGSVGElement>(
++        ".authority-seal > svg",
++      );
++      if (
++        !source ||
++        !scene ||
++        document.hidden ||
++        matchMedia("(prefers-reduced-motion: reduce)").matches
++      ) {
+         navigate?.();
+         return;
+       }
++      const rootRect = source.getBoundingClientRect(),
++        sceneRect = scene.getBoundingClientRect();
+       const overlay = document.createElement("div");
+-      overlay.className = "authority-handoff";
++      overlay.className = "mandate-story authority-handoff";
+       overlay.setAttribute("aria-hidden", "true");
+-      const snapshots = Array.from(
+-        document.querySelectorAll<SVGGraphicsElement>(
+-          ".authority-seal [data-authority-id]",
+-        ),
+-      ).map((node) => {
+-        const rect = node.getBoundingClientRect();
+-        const box = node.getBBox();
+-        const svg = document.createElementNS(
+-          "http://www.w3.org/2000/svg",
+-          "svg",
+-        );
+-        svg.setAttribute(
+-          "viewBox",
+-          `${box.x - 4} ${box.y - 4} ${box.width + 8} ${box.height + 8}`,
+-        );
+-        svg.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px;overflow:visible;transform-origin:0 0`;
+-        const clone = node.cloneNode(true) as SVGGraphicsElement;
+-        const copies = [clone, ...Array.from(clone.querySelectorAll("*"))];
+-        [node, ...Array.from(node.querySelectorAll("*"))].forEach(
+-          (original, i) => {
+-            const copy = copies[i] as SVGElement;
+-            const style = getComputedStyle(original);
+-            for (const property of [
+-              "fill",
+-              "stroke",
+-              "stroke-width",
+-              "opacity",
+-              "font-family",
+-              "font-size",
+-              "font-weight",
+-              "letter-spacing",
+-            ]) {
+-              const value = style.getPropertyValue(property);
+-              copy.style.setProperty(
+-                property,
+-                property === "fill" && value.includes("url(")
+-                  ? original.classList.contains("root-disc")
+-                    ? "#eee9da"
+-                    : "#263a30"
+-                  : value,
+-              );
+-            }
+-            copy.removeAttribute("tabindex");
+-            copy.removeAttribute("role");
+-            copy.removeAttribute("data-authority-id");
+-          },
+-        );
+-        clone.style.transform = "none";
+-        svg.append(clone);
+-        overlay.append(svg);
+-        return { id: node.dataset.authorityId!, svg, rect };
++      const seal = document.createElement("div");
++      seal.className = scene.parentElement!.className;
++      const snapshot = scene.cloneNode(true) as SVGSVGElement;
++      snapshot.removeAttribute("aria-label");
++      snapshot.querySelectorAll("[tabindex],[role]").forEach((node) => {
++        node.removeAttribute("tabindex");
++        node.removeAttribute("role");
+       });
++      snapshot.style.cssText = `position:fixed;left:${sceneRect.left}px;top:${sceneRect.top}px;width:${sceneRect.width}px;height:${sceneRect.height}px;min-height:0;margin:0;transform-origin:${rootRect.left - sceneRect.left}px ${rootRect.top - sceneRect.top}px`;
++      seal.append(snapshot);
++      overlay.append(seal);
+       document.body.append(overlay);
+-      const timeline = scopedTimeline(overlay, "plane-change", 1500);
+-      let frame = 0;
+-      let resolved = false;
+-      const reveal = () => {
+-        const root = document.querySelector('[data-visual-role="treasury"]');
+-        if (!root || resolved) return;
++      document.body.dataset.authorityHandoff = "flight";
++      const timeline = scopedTimeline(overlay, "handoff", 1000);
++      // Retire all non-Root geometry as one layer, including cut annotations.
++      const retiring = document.createElementNS(
++        "http://www.w3.org/2000/svg",
++        "g",
++      );
++      for (const child of Array.from(snapshot.children)) {
++        if (
++          child.tagName.toLowerCase() !== "defs" &&
++          !child.matches(".seal-root")
++        )
++          retiring.append(child);
++      }
++      retiring.style.opacity = "0";
++      snapshot.prepend(retiring);
++      timeline.animate(retiring, [{ opacity: 1 }, { opacity: 0 }], 140);
++      let frame = 0,
++        resolved = false;
++      let flight: Animation | undefined;
++      const resolve = () => {
++        const target = document.querySelector<HTMLElement>(
++          '.command-world [data-visual-role="treasury"]',
++        );
++        if (!target || resolved) return;
+         resolved = true;
+         observer.disconnect();
+-        for (const { id, svg, rect } of snapshots) {
+-          // Timelines use backwards fill: their resting snapshot must stay hidden.
+-          svg.style.opacity = "0";
+-          for (const label of svg.querySelectorAll("text")) {
+-            label.style.opacity = "0";
+-            timeline.animate(label, [{ opacity: 1 }, { opacity: 0 }], 160);
+-          }
+-          const target = document.querySelector(
+-            `[data-visual-role="${CSS.escape(id)}"]`,
+-          );
+-          if (!target) {
+-            timeline.animate(svg, [{ opacity: 1 }, { opacity: 0 }], 200);
+-            continue;
+-          }
+-          const destination = target.getBoundingClientRect();
+-          const transform = `translate(${destination.left - rect.left}px, ${destination.top - rect.top}px) scale(${destination.width / rect.width}, ${destination.height / rect.height})`;
+-          timeline.animate(
+-            svg,
+-            [
+-              { transform: "translate(0, 0) scale(1)", opacity: 1 },
+-              {
+-                transform,
+-                opacity: id === "treasury" ? 0.85 : 0.25,
+-                offset: 0.76,
+-              },
+-              { transform, opacity: 0 },
+-            ],
+-            680,
+-          );
+-          timeline.animate(
+-            target,
+-            [{ opacity: 0 }, { opacity: 1 }],
+-            420,
+-            260,
+-          );
+-        }
+-        for (const selector of [
+-          ".treasury-ledger",
+-          ".command-world .bone-instrument",
+-          ".command-history",
+-        ]) {
+-          timeline.animate(
+-            document.querySelector(selector),
+-            [
+-              { clipPath: "inset(0 0 100% 0)", opacity: 0.45 },
+-              { clipPath: "inset(0)", opacity: 1 },
+-            ],
+-            440,
+-            300,
+-          );
+-        }
++        const rect = target.getBoundingClientRect();
++        const transform = `translate(${rect.left - rootRect.left}px,${rect.top - rootRect.top}px) scale(${rect.width / rootRect.width},${rect.height / rootRect.height})`;
++        flight = snapshot.animate(
++          [{ transform: "translate(0,0) scale(1)" }, { transform }],
++          {
++            duration: 480,
++            easing: "cubic-bezier(0.16,1,0.3,1)",
++            fill: "forwards",
++          },
++        );
++        flight.onfinish = timeline.cancel;
++        timeline.animate(
++          document.querySelector(".command-world .capital-identity"),
++          [{ opacity: 0.65 }, { opacity: 1 }],
++          220,
++          120,
++        );
+       };
+       const observer = new MutationObserver(() => {
+         if (
+           !resolved &&
+-          document.querySelector('[data-visual-role="treasury"]')
++          document.querySelector('.command-world [data-visual-role="treasury"]')
+         ) {
+           cancelAnimationFrame(frame);
+-          frame = requestAnimationFrame(reveal);
++          frame = requestAnimationFrame(resolve);
+         }
+       });
+-      // The route plane is keyed and replaced on navigation; observe its stable parent.
+       observer.observe(document.body, { childList: true, subtree: true });
+       document.addEventListener("pointerdown", timeline.cancel, {
+         once: true,
+@@ -150,13 +103,15 @@ export default function CommandContinuity({ pathname }: { pathname: string }) {
+       timeline.onCancel(() => {
+         cancelAnimationFrame(frame);
+         observer.disconnect();
++        flight?.cancel();
++        overlay.remove();
++        delete document.body.dataset.authorityHandoff;
+         document.removeEventListener("pointerdown", timeline.cancel);
+         document.removeEventListener("keydown", timeline.cancel);
+-        overlay.remove();
+       });
+       cleanup.current = timeline.cancel;
+       navigate?.();
+-      reveal();
++      resolve();
+     };
+     window.addEventListener("mandateos:open-command", project);
+     return () => {
+diff --git a/web/src/components/command-world.tsx b/web/src/components/command-world.tsx
+--- a/web/src/components/command-world.tsx
++++ b/web/src/components/command-world.tsx
+@@ -1,14 +1,7 @@
+ "use client";
+ import { useEffect, useRef, useState } from "react";
+ import { PublicKey } from "@solana/web3.js";
+-import {
+-  ArrowRight,
+-  RotateCcw,
+-  Search,
+-  X,
+-  Copy,
+-  ArrowUpRight,
+-} from "lucide-react";
++import { ArrowRight, RotateCcw, Search, X, ArrowUpRight } from "lucide-react";
+ import {
+   amount,
+   authorityPath,
+@@ -26,10 +19,20 @@ import { FIXTURE_ORGANIZATION } from "@/lib/solana/fixture-labels";
+ import AuthorityTree from "./capital-authority-instrument";
+ import CapitalNumber from "./capital-number";
+ import { useWorld, ConnectionInstrument } from "./world-shell";
++import { CopyAddress, useDetailContinuity } from "./experience-feedback";
+
+ export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
+   const w = useWorld();
+   const [expanded, setExpanded] = useState(false);
++  const evidence = useRef<HTMLElement>(null);
++  const receiptIdentity = w.demo
++    ? `demo:${w.events[0]?.title}:${w.events[0]?.detail}`
++    : `devnet:${w.live.transaction.phase}:${w.live.transaction.signature ?? ""}`;
++  useDetailContinuity(
++    evidence,
++    `${receiptIdentity}:${expanded}`,
++    w.demo || expanded || w.live.transaction.phase !== "idle",
++  );
+   const events: {
+     title: string;
+     detail: string;
+@@ -51,6 +54,7 @@ export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
+       }));
+   return (
+     <section
++      ref={evidence}
+       className={`evidence-dock ${compact && !expanded ? "compact" : ""}`}
+     >
+       <div className="section-line">
+@@ -240,6 +244,12 @@ export default function CommandWorld() {
+   const node = model?.nodes.find((n) => n.id === w.selected) ?? model?.nodes[0];
+   const root = model?.nodes.find((n) => n.id === model.root);
+   const status = model && node ? statusOf(model, node.id) : "unknown";
++  const detailGroup = useRef<HTMLDivElement>(null);
++  useDetailContinuity(
++    detailGroup,
++    `${w.demo ? "demo" : "devnet"}:${node?.id}:${status}`,
++    !preview,
++  );
+   const invalidAncestor =
+     model && node
+       ? authorityPath(model, node.id).find((n) => n.local === "revoked")
+@@ -409,7 +419,13 @@ export default function CommandWorld() {
+           <p>Connect an organization to inspect its capital authority.</p>
+           <div className="empty-root">
+             <span>ROOT / UNVERIFIED</span>
+-            <strong>Awaiting account state</strong>
++            <strong>
++              {w.live.error
++                ? "Account read failed"
++                : /^(Reading|Verifying)/.test(w.live.health)
++                  ? "Reading account state"
++                  : "Awaiting account state"}
++            </strong>
+             <small>No balances or authority assumed.</small>
+           </div>
+           <p>
+@@ -552,6 +568,11 @@ export default function CommandWorld() {
+               {w.live.error}
+             </p>
+           )}
++          {!w.demo && /^(Reading|Verifying)/.test(w.live.health) && (
++            <p className="refresh-notice" role="status">
++              Refreshing accounts · current data stays visible.
++            </p>
++          )}
+           <div className="selection-register" aria-live="polite">
+             <div>
+               <span>Inspecting</span>
+@@ -779,7 +800,7 @@ export default function CommandWorld() {
+             </>
+           ) : node ? (
+             <>
+-              <div className="capital-identity">
++              <div ref={detailGroup} className="capital-identity">
+                 <div className="instrument-meta">
+                   <span>SELECTED MANDATE</span>
+                   <span>D{node.depth}</span>
+@@ -842,13 +863,11 @@ export default function CommandWorld() {
+                   </small>
+                 </div>
+                 {!w.demo && (
+-                  <button
+-                    className="copy-address"
+-                    onClick={() => void navigator.clipboard.writeText(node.id)}
+-                  >
+-                    <span>{short(node.id)}</span>
+-                    <Copy size={12} />
+-                  </button>
++                  <CopyAddress
++                    key={node.id}
++                    address={node.id}
++                    label={short(node.id)}
++                  />
+                 )}
+               </div>
+               <div className="capital-finances">
+@@ -1081,6 +1100,29 @@ function ActionInstrument({
+     );
+   const disabled =
+     !w.demo && (!canSign || !w.live.canTransact || !!w.live.busy);
++  const formSurface = useRef<HTMLDivElement>(null);
++  const trigger = useRef<HTMLButtonElement | null>(null);
++  useDetailContinuity(formSurface, `${open}:${action}:${error}`);
++  function closeForm() {
++    setOpen(false);
++    setError("");
++    trigger.current?.focus();
++  }
++  useEffect(() => {
++    if (!open) return;
++    formSurface.current
++      ?.querySelector<HTMLInputElement>("input")
++      ?.focus({ preventScroll: true });
++    const escape = (event: KeyboardEvent) => {
++      if (event.key === "Escape") {
++        setOpen(false);
++        setError("");
++        trigger.current?.focus();
++      }
++    };
++    window.addEventListener("keydown", escape);
++    return () => window.removeEventListener("keydown", escape);
++  }, [open, action]);
+   async function execute() {
+     setError("");
+     try {
+@@ -1180,7 +1222,7 @@ function ActionInstrument({
+     }
+   }
+   return (
+-    <div className="action-instrument">
++    <div ref={formSurface} className="action-instrument">
+       <div className="action-choices">
+         {(
+           [
+@@ -1207,7 +1249,8 @@ function ActionInstrument({
+                         ? w.live.snapshot?.organization.authority.toBase58()
+                         : node.controller))))
+             }
+-            onClick={() => {
++            onClick={(event) => {
++              trigger.current = event.currentTarget;
+               setAction(a);
+               setOpen(true);
+               setAddress("");
+@@ -1267,11 +1310,7 @@ function ActionInstrument({
+             {w.demo ? "Simulate" : "Review and sign"} {action}
+             <ArrowRight size={14} />
+           </button>
+-          <button
+-            type="button"
+-            className="text-button"
+-            onClick={() => setOpen(false)}
+-          >
++          <button type="button" className="text-button" onClick={closeForm}>
+             Cancel
+           </button>
+         </form>
+diff --git a/web/src/components/story-world.tsx b/web/src/components/story-world.tsx
+--- a/web/src/components/story-world.tsx
++++ b/web/src/components/story-world.tsx
+@@ -342,7 +342,13 @@ function AuthoritySeal({
+           delay,
+         );
+       }
+-      timeline.draw(element.querySelector(".cut-incision"), 140, 200);
++      timeline.draw(element.querySelector(".cut-incision"), 140, 90);
++      timeline.animate(
++        element.querySelector(".cut-isolation"),
++        [{ opacity: 0 }, { opacity: 1 }],
++        140,
++        210,
++      );
+       timeline.animate(
+         element.querySelector(".cut-port"),
+         [{ opacity: 0 }, { opacity: 1 }],
+@@ -645,12 +651,13 @@ function AuthoritySeal({
+         )}
+         {cut && (
+           <g className="cut-mark" aria-hidden="true">
+-            <circle className="cut-port" cx="390" cy="225" r="14" />
++            <circle className="cut-port" cx="390" cy="225" r="17" />
+             <path
+               className="cut-incision"
+               pathLength="1"
+-              d="M378 231 L402 219"
++              d="M374 234 L406 216"
+             />
++            <path className="cut-isolation" d="M384 205H396M384 245H396" />
+             <path className="cut-callout" d="M408 225 H484 L506 207 H568" />
+             <text x="514" y="196">
+               RESEARCH / REVOKED
+diff --git a/web/src/components/world-shell.tsx b/web/src/components/world-shell.tsx
+--- a/web/src/components/world-shell.tsx
++++ b/web/src/components/world-shell.tsx
+@@ -10,6 +10,7 @@ import {
+ import Link from "next/link";
+ import { usePathname, useRouter } from "next/navigation";
+ import CommandContinuity from "./command-continuity";
++import DisclosureFeedback from "./experience-feedback";
+ import { ArrowRight, Wallet, X, ChevronDown } from "lucide-react";
+ import { useConsole } from "@/lib/use-console";
+ import { genesis, fromSnapshot, type AuthorityModel } from "@/lib/authority";
+@@ -309,6 +310,7 @@ export default function WorldShell({
+         </span>
+       </footer>
+       <CommandContinuity pathname={pathname} />
++      <DisclosureFeedback pathname={pathname} />
+     </WorldContext.Provider>
+   );
+ }
+@@ -324,6 +326,11 @@ export function ConnectionInstrument() {
+         Read verified accounts or create an organization with the connected
+         authority wallet.
+       </p>
++      {live.snapshot && /^(Reading|Verifying)/.test(live.health) && (
++        <p className="refresh-notice" role="status">
++          Refreshing accounts · current data stays visible.
++        </p>
++      )}
+       <label>
+         Organization address
+         <input
+diff --git a/web/src/components/mission-channels.tsx b/web/src/components/mission-channels.tsx
+--- a/web/src/components/mission-channels.tsx
++++ b/web/src/components/mission-channels.tsx
+@@ -7,7 +7,6 @@ type Geometry = {
+   funding: string;
+   routes: string[];
+   pass: string;
+-  verification: string;
+ };
+ // Ports follow the rendered objects, including the vertical mobile sequence.
+ // ResizeObserver runs on layout changes only; idle screens schedule no frames.
+@@ -65,11 +64,7 @@ export default function MissionChannels({
+       };
+       const routes = Array.from({ length: count }, (_, i) => {
+         const lane = box(`[data-arena-label="lane-${i}"]`);
+-        return lane
+-          ? vertical
+-            ? link(mission, lane) + link(lane, verifier)
+-            : link(lane, mission)
+-          : "";
++        return lane ? link(lane, verifier) : "";
+       });
+       const next = {
+         width: rect.width,
+@@ -77,7 +72,6 @@ export default function MissionChannels({
+         funding: `M${source.x + source.w / 2} ${source.y + source.h}L${mission.x + mission.w / 2} ${mission.y}`,
+         routes,
+         pass: outcome ? link(verifier, outcome) : "",
+-        verification: link(mission, verifier),
+       };
+       setGeometry((old) =>
+         JSON.stringify(old) === JSON.stringify(next) ? old : next,
+@@ -113,11 +107,6 @@ export default function MissionChannels({
+           d={d}
+         />
+       ))}
+-      <path
+-        className={`verifier-input ${settled ? "active" : ""}`}
+-        pathLength="1"
+-        d={geometry.verification}
+-      />
+       {!settled && (
+         <path className="settlement-pending" pathLength="1" d={geometry.pass} />
+       )}

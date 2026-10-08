@@ -1,0 +1,253 @@
+/* Short causal scenes; quiet, immediate operating feedback. */
+.authority-handoff.mandate-story {
+  padding: 0;
+  background: transparent;
+}
+.authority-handoff .authority-seal {
+  margin: 0;
+}
+body[data-authority-handoff] .command-world .root-body,
+body[data-authority-handoff] .command-world [data-visual-role="treasury"],
+body[data-authority-handoff] .mandate-story:not(.authority-handoff) .seal-root {
+  visibility: hidden;
+}
+body[data-authority-handoff] .route-plane {
+  animation: none;
+}
+.mandate-story .cut-mark .cut-port {
+  stroke-width: 1.5;
+}
+.mandate-story .cut-mark .cut-incision {
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.mandate-story .cut-mark .cut-isolation {
+  stroke: #dc9486;
+  stroke-width: 2;
+}
+.mandate-story .severed .research .authority-joint {
+  stroke: #c77e73;
+  stroke-dasharray: 0.35 0.3 0.35;
+}
+.command-world .instrument-authority.vertical-authority .flat-node,
+.arena-world .contender {
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+.command-world
+  .instrument-authority.vertical-authority
+  .flat-node:is(:hover, :focus-visible) {
+  border-color: var(--bone);
+  background: #2a382e;
+}
+.command-world
+  .instrument-authority.vertical-authority
+  .flat-node[data-visual-role="treasury"]:is(:hover, :focus-visible) {
+  background: transparent;
+}
+.command-world .flat-node .node-identity svg,
+.arena-world .contender > span,
+.button > svg,
+.action-choices button > svg {
+  transition: translate 100ms ease;
+}
+.command-world .flat-node:active .node-identity svg,
+.arena-world .contender:active > span {
+  translate: 1px 1px;
+}
+.button:active > svg,
+.action-choices button:active > svg {
+  translate: 2px 0;
+}
+.command-world .flat-node:focus-visible,
+.arena-world .contender:focus-visible {
+  outline: 2px solid var(--mint, var(--bone));
+  outline-offset: 4px;
+}
+.arena-world .contender:is(:hover, :focus-visible):not(:disabled) {
+  border-color: var(--bone);
+}
+.arena-world .contender.winner {
+  background: #2c3328;
+}
+.arena-world .contender {
+  position: relative;
+}
+.arena-world .contender.winner::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--brass);
+}
+.arena-world .contender[aria-pressed="true"]:not(.winner)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--bone);
+}
+.arena-world .mission-stage,
+.arena-world.account-backed .mission-stage {
+  grid-template-columns: 1.38fr 1fr 0.88fr 0.88fr;
+}
+.arena-world .mission-stage .capital-source,
+.arena-world .mission-stage .mission-basin {
+  grid-column: 1;
+}
+.arena-world .mission-stage .contender-lanes {
+  grid-column: 2;
+  grid-row: 2;
+}
+.arena-world .mission-stage .verifier-gate {
+  grid-column: 3;
+  grid-row: 2;
+}
+.arena-world .mission-stage .mission-outcome {
+  grid-column: 4;
+  grid-row: 2;
+}
+.arena-world .mission-stage .funding-track-label {
+  display: none;
+}
+.arena-world .mission-stage .mission-channels .funding-channel {
+  stroke: var(--mint, #b9d8b6);
+  stroke-width: 2;
+}
+.arena-world .mission-channels .submission-channel {
+  stroke: #8f9d92;
+  stroke-width: 1.2;
+}
+.arena-world
+  .mission-stage
+  .mission-channels
+  .submission-channel.viewed:not(.selected) {
+  stroke: var(--bone);
+  stroke-dasharray: 0.02 0.016;
+  stroke-opacity: 1;
+}
+.arena-world .mission-channels .submission-channel.selected {
+  stroke: var(--brass);
+  stroke-width: 2;
+  stroke-dasharray: none;
+}
+.arena-world .mission-channels .submission-channel.preview-route {
+  stroke: var(--copper, #d59b74);
+}
+.arena-world .mission-switcher > span:last-child {
+  display: block;
+  max-width: 60ch;
+  line-height: 1.6;
+}
+.copy-feedback {
+  display: grid;
+  gap: 4px;
+}
+.copy-feedback .copy-address {
+  min-height: 44px;
+  text-align: left;
+  user-select: text;
+}
+.copy-feedback > span {
+  min-height: 15px;
+  font: 10px/1.5 var(--mono);
+}
+.command-world .action-form .text-button {
+  min-height: 44px;
+}
+.command-world .action-form {
+  scroll-margin: 20px;
+}
+.error-text {
+  border-left: 2px solid #c77e73;
+  padding-left: 10px;
+}
+summary {
+  min-height: 44px;
+  display: list-item;
+  align-content: center;
+  cursor: pointer;
+}
+summary:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+.refresh-notice {
+  font: 11px/1.6 var(--mono);
+  color: var(--mint, #b9d8b6);
+  min-height: 18px;
+}
+@media (min-width: 1001px) {
+  .command-world .bone-instrument,
+  .command-world .bone-instrument:not(.impact-instrument) {
+    height: clamp(660px, calc(100svh - 208px), 760px);
+    min-height: 660px;
+    max-height: none;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+  .command-world .bone-instrument > * {
+    flex-shrink: 0;
+  }
+}
+@media (max-width: 1000px) {
+  .arena-world .mission-stage,
+  .arena-world.account-backed .mission-stage {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  }
+  .arena-world .mission-stage .capital-source {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .arena-world .mission-stage .mission-basin {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+  }
+  .arena-world .mission-stage .contender-lanes {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .arena-world .mission-stage .verifier-gate {
+    grid-column: 2;
+    grid-row: 3;
+  }
+  .arena-world .mission-stage .mission-outcome {
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+  .arena-world .mission-channels {
+    display: none;
+  }
+}
+@media (max-width: 650px) {
+  .arena-world .mission-stage,
+  .arena-world.account-backed .mission-stage {
+    display: flex;
+    flex-direction: column;
+  }
+  .arena-world .mission-stage .capital-source {
+    order: 0;
+  }
+  .arena-world .mission-stage .mission-basin {
+    order: 1;
+  }
+  .arena-world .mission-stage .contender-lanes {
+    order: 2;
+  }
+  .arena-world .mission-stage .verifier-gate {
+    order: 3;
+  }
+  .arena-world .mission-stage .mission-outcome {
+    order: 4;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .authority-handoff {
+    display: none;
+  }
+}
