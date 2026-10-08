@@ -23,6 +23,18 @@ const page = await context.newPage(),
   errors = [],
   methods = [],
   checks = [];
+// Development OIDC is ephemeral; never send it to Solana or Explorer.
+if (process.env.VERCEL_OIDC_TOKEN) {
+  const origin = new URL(base).origin;
+  await context.route(`${origin}/**`, (route) =>
+    route.continue({
+      headers: {
+        ...route.request().headers(),
+        "x-vercel-trusted-oidc-idp-token": process.env.VERCEL_OIDC_TOKEN,
+      },
+    }),
+  );
+}
 page.on("pageerror", (e) => errors.push(e.message));
 await context.route("https://api.devnet.solana.com/**", async (route) => {
   const method = route.request().postDataJSON()?.method;
