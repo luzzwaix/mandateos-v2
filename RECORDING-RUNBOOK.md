@@ -1,6 +1,6 @@
 # Morning recording — verified UI, Demo and historical Devnet
 
-Start locally at **http://127.0.0.1:3102/** using the final isolated candidate server. The morning handoff supplies the immutable preview URL and its access requirement; substitute that base only after its route verification passes. Existing production `https://mandateos-v2.vercel.app/` serves an older commit and must not be presented as this candidate.
+Start locally at **http://127.0.0.1:3201/** using the final isolated candidate server. The morning handoff supplies the immutable preview URL and its access requirement; substitute that base only after its route verification passes. Existing production `https://mandateos-v2.vercel.app/` serves an older commit and must not be presented as this candidate.
 
 Use a 1440×900 desktop window, no wallet connected. Story is always **DEMO MODE**. Direct `/app` and `/arena` loads default to **DEVNET**. These routes do not implement `?mode=demo`, `?scene=...`, `?node=...` or `?bounty=...`; do not claim those unsupported links restore selection. Reload resets illustrative Story/mode/selection. Recovery is deliberate: load the exact route, set the visible mode, and repeat the documented selection clicks. Organization selection persists separately; verify/reset it to the public fixture below through Organization address → Open. This exact fresh-load/reload/replay is exercised by `scripts/release-rehearsal.mjs`.
 

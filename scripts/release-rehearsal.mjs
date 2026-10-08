@@ -12,7 +12,7 @@ const { chromium } = await import(
       ),
   ).href
 );
-const base = (process.argv[2] || "http://127.0.0.1:3102").replace(/\/$/, "");
+const base = (process.argv[2] || "http://127.0.0.1:3201").replace(/\/$/, "");
 const out = resolve(process.argv[3] || "artifacts/overnight-release/rehearsal");
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch();

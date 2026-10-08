@@ -21,7 +21,7 @@ npm run build:agent
 npm --prefix web run lint
 npm --prefix web run typecheck
 npm --prefix web run build
-$env:PORT = '3102'
+$env:PORT = '3201'
 npm --prefix web start
 ```
 
@@ -44,10 +44,10 @@ Fresh canonical SBF/IDL artifacts and logs go to ignored `target/overnight-relea
 Browser QA uses external Playwright **1.61.1**, Chromium installed by that runtime; it is a test dependency, not an application build dependency. Install it separately if absent: `npm install --prefix ../mandateos-qa-runtime playwright@1.61.1`, then run its CLI `install chromium`; set `PLAYWRIGHT_MODULE` to its absolute `node_modules/playwright/index.mjs`. Older visual harnesses default to the existing Codex runtime and localhost:3101. Portable release rehearsal accepts the base URL explicitly. Run:
 
 ```powershell
-node scripts/verify-startup-story.mjs http://127.0.0.1:3102
-$env:MANDATEOS_QA_BASE = 'http://127.0.0.1:3102'
+node scripts/verify-startup-story.mjs http://127.0.0.1:3201
+$env:MANDATEOS_QA_BASE = 'http://127.0.0.1:3201'
 node scripts/final-finish-qa.mjs artifacts/overnight-release/final-ui
-node scripts/release-rehearsal.mjs http://127.0.0.1:3102 artifacts/overnight-release/rehearsal
+node scripts/release-rehearsal.mjs http://127.0.0.1:3201 artifacts/overnight-release/rehearsal
 ```
 
 The guards block signing RPCs. Responsive/reduced-motion checks, lineage, retained winner, interrupted transitions, stale reads and absent Phantom do not establish native extension performance, touch hardware or native browser zoom.
