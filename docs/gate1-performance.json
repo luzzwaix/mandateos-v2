@@ -1,0 +1,423 @@
+{
+  "time": "2026-10-06T22:07:24.370Z",
+  "provenance": "Fresh disconnected headless Chromium measurements only. No Phantom mock. Not real connected-wallet evidence. Public and local differ in hosting; public RPC timing is variable.",
+  "results": [
+    {
+      "label": "public-production",
+      "base": "https://mandateos-v2.vercel.app",
+      "phases": [
+        {
+          "name": "cold-command-account-read",
+          "ms": 15622,
+          "requests": 14,
+          "methods": {
+            "getGenesisHash": 2,
+            "getAccountInfo": 7,
+            "getSlot": 2,
+            "getProgramAccounts": 3
+          },
+          "longTasks": [
+            {
+              "start": 7354.100000023842,
+              "duration": 87
+            }
+          ],
+          "reactCommits": 6,
+          "rafCallbacks": 0,
+          "taskMs": 435.064,
+          "scriptMs": 43.73500000000001,
+          "layoutMs": 34.22,
+          "styleMs": 7.991999999999999,
+          "heapBytes": 8194532,
+          "canvas": 0,
+          "runningAnimations": 0,
+          "phantomAvailable": false,
+          "overflow": false,
+          "navigationToAccountMs": 19395,
+          "http": 200,
+          "totalRequestsToAccounts": 14
+        },
+        {
+          "name": "command-history-and-idle-75s",
+          "ms": 75009,
+          "requests": 34,
+          "methods": {
+            "getSignaturesForAddress": 4,
+            "getTransaction": 16,
+            "getGenesisHash": 2,
+            "getAccountInfo": 7,
+            "getSlot": 2,
+            "getProgramAccounts": 3
+          },
+          "longTasks": [],
+          "reactCommits": 4,
+          "rafCallbacks": 0,
+          "taskMs": 309.98400000000004,
+          "scriptMs": 19.261,
+          "layoutMs": 4.01,
+          "styleMs": 11.51,
+          "heapBytes": 11175764,
+          "canvas": 0,
+          "runningAnimations": 0,
+          "phantomAvailable": false,
+          "overflow": false
+        },
+        {
+          "name": "command-steady-idle-20s",
+          "ms": 20015,
+          "requests": 15,
+          "methods": {
+            "getGenesisHash": 2,
+            "getAccountInfo": 7,
+            "getSlot": 2,
+            "getProgramAccounts": 3,
+            "getSignaturesForAddress": 1
+          },
+          "longTasks": [],
+          "reactCommits": 2,
+          "rafCallbacks": 0,
+          "taskMs": 185.2769999999999,
+          "scriptMs": 9.390999999999982,
+          "layoutMs": 0.26099999999999735,
+          "styleMs": 0,
+          "heapBytes": 6215388,
+          "canvas": 0,
+          "runningAnimations": 0,
+          "phantomAvailable": false,
+          "overflow": false
+        },
+        {
+          "name": "arena-route-switch",
+          "ms": 136,
+          "requests": 0,
+          "methods": {},
+          "longTasks": [],
+          "reactCommits": 3,
+          "rafCallbacks": 0,
+          "taskMs": 109.39399999999999,
+          "scriptMs": 27.593000000000007,
+          "layoutMs": 22.011000000000017,
+          "styleMs": 10.567,
+          "heapBytes": 7028248,
+          "canvas": 0,
+          "runningAnimations": 1,
+          "phantomAvailable": false,
+          "overflow": false
+        },
+        {
+          "name": "arena-idle-20s",
+          "ms": 20011,
+          "requests": 17,
+          "methods": {
+            "getSignaturesForAddress": 3,
+            "getGenesisHash": 2,
+            "getAccountInfo": 7,
+            "getSlot": 2,
+            "getProgramAccounts": 3
+          },
+          "longTasks": [],
+          "reactCommits": 4,
+          "rafCallbacks": 0,
+          "taskMs": 168.06199999999993,
+          "scriptMs": 10.192000000000007,
+          "layoutMs": 0.13899999999997248,
+          "styleMs": 1.0140000000000011,
+          "heapBytes": 10925672,
+          "canvas": 0,
+          "runningAnimations": 0,
+          "phantomAvailable": false,
+          "overflow": false
+        },
+        {
+          "name": "repeated-app-arena-switches",
+          "ms": 320,
+          "requests": 0,
+          "methods": {},
+          "longTasks": [],
+          "reactCommits": 14,
+          "rafCallbacks": 0,
+          "taskMs": 143.96199999999993,
+          "scriptMs": 47.83499999999999,
+          "layoutMs": 7.948000000000011,
+          "styleMs": 18.257999999999996,
+          "heapBytes": 7804512,
+          "canvas": 0,
+          "runningAnimations": 1,
+          "phantomAvailable": false,
+          "overflow": false,
+          "transitions": [
+            {
+              "route": "Command",
+              "ms": 70
+            },
+            {
+              "route": "Arena",
+              "ms": 79
+            },
+            {
+              "route": "Command",
+              "ms": 76
+            },
+            {
+              "route": "Arena",
+              "ms": 92
+            }
+          ]
+        },
+        {
+          "name": "story-idle-10s",
+          "ms": 10013,
+          "requests": 0,
+          "methods": {},
+          "longTasks": [],
+          "reactCommits": 0,
+          "rafCallbacks": 0,
+          "taskMs": 47.273000000000124,
+          "scriptMs": 2.397000000000038,
+          "layoutMs": 0,
+          "styleMs": 3.141000000000005,
+          "heapBytes": 10212112,
+          "canvas": 0,
+          "runningAnimations": 0,
+          "phantomAvailable": false,
+          "overflow": false
+        },
+        {
+          "name": "reduced-motion-story-idle-10s",
+          "ms": 10009,
+          "requests": 0,
+          "methods": {},
+          "longTasks": [],
+          "reactCommits": 0,
+          "rafCallbacks": 0,
+          "taskMs": 1.0729999999998796,
+          "scriptMs": 0,
+          "layoutMs": 0,
+          "styleMs": 0,
+          "heapBytes": 10247036,
+          "canvas": 0,
+          "runningAnimations": 0,
+          "phantomAvailable": false,
+          "overflow": false
+        }
+      ],
+      "errors": [],
+      "blocked": []
+    },
+    {
+      "label": "local-candidate",
+      "base": "http://127.0.0.1:3101",
+      "phases": [
+        {
+          "name": "cold-command-account-read",
+          "ms": 9514,
+          "requests": 10,
+          "methods": {
+            "getGenesisHash": 1,
+            "getAccountInfo": 5,
+            "getSlot": 1,
+            "getProgramAccounts": 3
+          },
+          "longTasks": [
+            {
+              "start": 4006.9000000953674,
+              "duration": 65
+            }
+          ],
+          "reactCommits": 6,
+          "rafCallbacks": 0,
+          "taskMs": 299.84900000000005,
+          "scriptMs": 42.657000000000004,
+          "layoutMs": 34.34,
+          "styleMs": 9.617999999999999,
+          "heapBytes": 8074708,
+          "canvas": 0,
+          "runningAnimations": 0,
+          "phantomAvailable": false,
+          "overflow": false,
+          "navigationToAccountMs": 9855,
+          "http": 200,
+          "totalRequestsToAccounts": 10
+        },
+        {
+          "name": "command-history-and-idle-75s",
+          "ms": 75017,
+          "requests": 38,
+          "methods": {
+            "getSignaturesForAddress": 2,
+            "getTransaction": 16,
+            "getGenesisHash": 2,
+            "getAccountInfo": 10,
+            "getSlot": 2,
+            "getProgramAccounts": 6
+          },
+          "longTasks": [],
+          "reactCommits": 20,
+          "rafCallbacks": 0,
+          "taskMs": 386.03899999999993,
+          "scriptMs": 62.344999999999985,
+          "layoutMs": 8.611999999999995,
+          "styleMs": 7.862000000000001,
+          "heapBytes": 7943184,
+          "canvas": 0,
+          "runningAnimations": 0,
+          "phantomAvailable": false,
+          "overflow": false
+        },
+        {
+          "name": "command-steady-idle-20s",
+          "ms": 20014,
+          "requests": 12,
+          "methods": {
+            "getGenesisHash": 1,
+            "getAccountInfo": 5,
+            "getSlot": 1,
+            "getProgramAccounts": 3,
+            "getSignaturesForAddress": 2
+          },
+          "longTasks": [],
+          "reactCommits": 3,
+          "rafCallbacks": 0,
+          "taskMs": 104.36199999999984,
+          "scriptMs": 10.94400000000001,
+          "layoutMs": 0.2269999999999911,
+          "styleMs": 0,
+          "heapBytes": 10163284,
+          "canvas": 0,
+          "runningAnimations": 0,
+          "phantomAvailable": false,
+          "overflow": false
+        },
+        {
+          "name": "arena-route-switch",
+          "ms": 89,
+          "requests": 0,
+          "methods": {},
+          "longTasks": [],
+          "reactCommits": 3,
+          "rafCallbacks": 0,
+          "taskMs": 65.30199999999996,
+          "scriptMs": 20.781999999999996,
+          "layoutMs": 18.88200000000001,
+          "styleMs": 6.337000000000002,
+          "heapBytes": 10952888,
+          "canvas": 0,
+          "runningAnimations": 1,
+          "phantomAvailable": false,
+          "overflow": false
+        },
+        {
+          "name": "arena-idle-20s",
+          "ms": 20005,
+          "requests": 8,
+          "methods": {
+            "getGenesisHash": 1,
+            "getAccountInfo": 4,
+            "getSlot": 1,
+            "getProgramAccounts": 2
+          },
+          "longTasks": [],
+          "reactCommits": 1,
+          "rafCallbacks": 0,
+          "taskMs": 76.77199999999984,
+          "scriptMs": 2.60100000000002,
+          "layoutMs": 0.21799999999999597,
+          "styleMs": 1.2950000000000044,
+          "heapBytes": 8707768,
+          "canvas": 0,
+          "runningAnimations": 0,
+          "phantomAvailable": false,
+          "overflow": false
+        },
+        {
+          "name": "repeated-app-arena-switches",
+          "ms": 274,
+          "requests": 0,
+          "methods": {},
+          "longTasks": [],
+          "reactCommits": 14,
+          "rafCallbacks": 0,
+          "taskMs": 107.94199999999998,
+          "scriptMs": 34.58500000000001,
+          "layoutMs": 9.068999999999994,
+          "styleMs": 18.375000000000004,
+          "heapBytes": 11364440,
+          "canvas": 0,
+          "runningAnimations": 1,
+          "phantomAvailable": false,
+          "overflow": false,
+          "transitions": [
+            {
+              "route": "Command",
+              "ms": 57
+            },
+            {
+              "route": "Arena",
+              "ms": 73
+            },
+            {
+              "route": "Command",
+              "ms": 77
+            },
+            {
+              "route": "Arena",
+              "ms": 62
+            }
+          ]
+        },
+        {
+          "name": "story-idle-10s",
+          "ms": 10007,
+          "requests": 0,
+          "methods": {},
+          "longTasks": [],
+          "reactCommits": 0,
+          "rafCallbacks": 0,
+          "taskMs": 42.07500000000009,
+          "scriptMs": 1.1329999999999951,
+          "layoutMs": 0,
+          "styleMs": 4.031999999999994,
+          "heapBytes": 13465092,
+          "canvas": 0,
+          "runningAnimations": 0,
+          "phantomAvailable": false,
+          "overflow": false
+        },
+        {
+          "name": "reduced-motion-story-idle-10s",
+          "ms": 10008,
+          "requests": 0,
+          "methods": {},
+          "longTasks": [],
+          "reactCommits": 0,
+          "rafCallbacks": 0,
+          "taskMs": 1.338999999999979,
+          "scriptMs": 0,
+          "layoutMs": 0,
+          "styleMs": 0,
+          "heapBytes": 13494080,
+          "canvas": 0,
+          "runningAnimations": 0,
+          "phantomAvailable": false,
+          "overflow": false
+        }
+      ],
+      "errors": [],
+      "blocked": []
+    }
+  ],
+  "production": {
+    "deploymentId": "dpl_6zwRZT42yGPaNsCVnPNJsAs6T3UN",
+    "status": "READY",
+    "url": "mandateos-v2-2sapm55z0-luzzwaixs-projects.vercel.app",
+    "publicAlias": "https://mandateos-v2.vercel.app",
+    "gitCommitSha": "7ce740a585774eb195ef8626876ae4a3db9f9000",
+    "gitCommitRef": "devnet-integration"
+  },
+  "candidateHead": "80db0898b949056e6a97beebde5a47c5aaa446f1",
+  "genuineConnectedWalletVerified": false,
+  "gate1Complete": false,
+  "noRuntimeChanges": true,
+  "noDevnetTransactions": true,
+  "noNewBranchOrTag": true
+}

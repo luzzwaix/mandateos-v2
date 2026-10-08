@@ -4,13 +4,17 @@
 
 MandateOS gives agents bounded, recursive economic authority on Solana: one shared treasury, a tree of mandates, and one revocation that cuts a branch's effective authority.
 
+Built for teams giving autonomous agents spending authority. Solana enforces the complete ancestry and moves classic SPL tokens atomically; revoking a parent invalidates descendants without traversing or rewriting them. This is a Devnet MVP with a trusted Arena verifier. Browser Phantom signing and connected-wallet performance remain unverified.
+
+[Recording runbook and two three-minute outlines](RECORDING-RUNBOOK.md) · [Reproduce and publish the candidate](docs/OVERNIGHT-RELEASE.md). The generated local `MORNING-RELEASE-HANDOFF.md` records the final commit, preview and fresh results. Demo is simulated; Devnet inspection displays actual accounts and historical receipts.
+
 ![Story: the runnable Authority Chamber](docs/images/completion/story.png)
 
-[Watch the 20-second authority walkthrough](docs/images/completion/authority-walkthrough.webm). This is an explicitly labeled **Interactive demo — no transactions**, captured from the running app. Illustrative Story USDC amounts are simulated; Devnet uses a classic SPL test mint, **not USDC**. [Capture and verification scope](docs/COMPLETION-SPRINT.md).
+[Previous visual pass recording (before-state archive)](docs/images/completion/authority-walkthrough.webm). Illustrative Story USDC amounts are simulated; Devnet uses a classic SPL test mint, **not USDC**. [Previous capture and verification scope](docs/COMPLETION-SPRINT.md).
 
-## What you see in 20 seconds
+## Interact with authority
 
-Click **Run the 20-second authority walkthrough**. One authority structure evolves through bounded Research delegation, deeper Data/Scraper delegation, the Scraper ancestry trace, a Research impact preview, simulated Research revocation, blocked descendants, surviving Operations and honest evidence provenance. Pause, Next step and Replay work with pointer or keyboard. Preview leaves every node active; revocation does not move tokens. Open Command or Arena directly from Story or the main navigation.
+Use the direct Story actions to delegate Research, extend its hierarchy, trace Scraper, preview the affected subtree and confirm a demo revoke. Preview leaves every mandate active. The cut blocks descendants while Operations remains active; the selected authority record distinguishes local and effective status. Story submits no transactions. Use the navigation to open Command or Arena.
 
 | Route            | Experience                                                                                                            |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------- |
@@ -31,7 +35,7 @@ These disconnected browser reads show the existing public fixture. They do not i
 
 [Story](https://mandateos-v2.vercel.app/) · [Command](https://mandateos-v2.vercel.app/app) · [Arena](https://mandateos-v2.vercel.app/arena) · [Devnet program](https://explorer.solana.com/address/125ZLPqLmkg1fuyLzAxfKGXkT2tfxnNqyGrtHyjgDCUd?cluster=devnet).
 
-The existing production deployment was checked READY on 7 October 2026. **The completion candidate shown above is local and has not been deployed.** Current Vercel metadata did not return a source SHA; the earlier recorded production SHA is historical evidence only. [Candidate, deployment and release boundaries](docs/COMPLETION-SPRINT.md).
+Production was independently inspected through Vercel's deployment API during the overnight release sprint: deployment `dpl_6zwRZT42yGPaNsCVnPNJsAs6T3UN`, source `7ce740a585774eb195ef8626876ae4a3db9f9000`, READY. Production remains unchanged. The new candidate uses a separate non-production preview; its exact URL/SHA/access result belongs in the generated morning handoff, not this older production link. The project currently protects previews with Vercel SSO.
 
 ## Architecture and why Solana
 
