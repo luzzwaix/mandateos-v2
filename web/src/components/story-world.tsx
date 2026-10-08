@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-} from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight, RotateCcw, Check, Scissors } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -21,25 +15,13 @@ import {
 import { useWorld } from "./world-shell";
 import { motionTiming, scopedTimeline } from "./authority-motion";
 
-const stages = [
-  "Root",
-  "Research",
-  "Trace",
-  "Blast Radius",
-  "Cascade",
-  "Operations",
-  "Proof",
-];
 const descriptions = [
   "One Solana treasury. Mandates give agent controllers bounded, delegable authority. Keep control at the Root.",
   "Research can delegate within its mandate. Every new permission inherits the limits above it.",
   "Scraper answers to Data. Data answers to Research. Every path must reach the Root.",
   "One Research revoke reaches three descendants. Operations sits outside the boundary.",
   "Research is revoked. Its descendants lose effective authority. Operations continues.",
-  "Operations inherits directly from Root. Research’s revocation does not cut this independent path.",
-  "Scraper remains locally active, but Research is its earliest invalid ancestor. This walkthrough is simulated; inspect Devnet for actual evidence.",
 ];
-const walkthroughDelays = [2000, 3000, 3000, 3000, 3000, 3000, 3000];
 const polar = (radius: number, angle: number) => {
   const radians = (angle * Math.PI) / 180;
   return [390 + radius * Math.cos(radians), 360 + radius * Math.sin(radians)];
@@ -71,16 +53,16 @@ const shapes = [
   },
   {
     id: "operations",
-    inner: 140,
+    inner: 144,
     outer: 208,
-    start: 30,
-    end: 168,
+    start: 32,
+    end: 148,
     x: 390,
     y: 529,
     delay: 0,
     joint: 90,
-    dx: 36,
-    dy: 44,
+    dx: 0,
+    dy: 58,
   },
   {
     id: "data",
@@ -136,7 +118,7 @@ const impactContour = () => {
     data = shapes[2],
     analysis = shapes[3],
     scraper = shapes[4];
-  return `M ${pointOn(scraper, 352, -173)} A352 352 0 0 1 ${pointOn(scraper, 352, -73)} L ${pointOn(data, 286, -73)} L ${pointOn(analysis, 286, -68)} A286 286 0 0 1 ${pointOn(analysis, 286, 18)} L ${pointOn(research, 127, 18)} A127 127 0 1 0 ${pointOn(research, 127, -173)} Z`;
+  return `M ${pointOn(scraper, 352, -173)} A352 352 0 0 1 ${pointOn(scraper, 352, -73)} L ${pointOn(data, 286, -73)} L ${pointOn(analysis, 286, -68)} A286 286 0 0 1 ${pointOn(analysis, 286, 18)} L ${pointOn(research, 133, 18)} A133 133 0 1 0 ${pointOn(research, 133, -173)} Z`;
 };
 
 function AuthoritySeal({
@@ -169,6 +151,33 @@ function AuthoritySeal({
   };
   visitLedger(model.root);
   const path = authorityPath(model, selected).map((n) => n.id);
+  const pathKey = path.join("|");
+  const tracePoints = [...authorityPath(model, selected)]
+    .reverse()
+    .map((node) => {
+      const shape = shapes.find((s) => s.id === node.id);
+      return shape
+        ? pointOn(shape, (shape.inner + shape.outer) / 2, shape.joint)
+        : polar(90, selected === "operations" ? 90 : -90);
+    });
+  const traceRelations = [...authorityPath(model, selected)]
+    .reverse()
+    .slice(0, -1)
+    .map((node) => {
+      const child = shapes.find((s) => s.id === node.id)!;
+      const parent = shapes.find((s) => s.id === node.parent);
+      const origin = pointOn(
+        child,
+        (child.inner + child.outer) / 2,
+        child.joint,
+      );
+      if (!parent) return `M ${origin} L ${polar(90, child.joint)}`;
+      const radius = (parent.inner + parent.outer) / 2;
+      const port = pointOn(parent, parent.outer, child.joint);
+      const turn = pointOn(parent, radius, child.joint);
+      const anchor = pointOn(parent, radius, parent.joint);
+      return `M ${origin} L ${port} L ${turn} A ${radius} ${radius} 0 0 ${parent.joint > child.joint ? 1 : 0} ${anchor}`;
+    });
   const grantParent = model.nodes.find((node) => node.id === grant)?.parent;
   useEffect(() => {
     const element = surface.current;
@@ -186,36 +195,67 @@ function AuthoritySeal({
     const timeline = scopedTimeline(
       element,
       cut ? "cascade" : preview ? "impact" : traced ? "trace" : "grant",
-      cut || grant === "recursion" ? motionTiming.cascade : motionTiming.build,
+      cut ? 1500 : grant === "recursion" ? 1500 : motionTiming.build,
     );
     if (newGrant && grant === "recursion") {
       // State is already complete. Only its visual explanation is sequenced.
       for (const shape of shapes.filter((shape) => shape.id !== "research")) {
         const node = element.querySelector(`[data-authority-id="${shape.id}"]`);
         const delay =
-          shape.id === "operations" ? 0 : shape.id === "scraper" ? 440 : 220;
-        timeline.pulse(node?.querySelector(".authority-joint"), 260, delay);
+          shape.id === "scraper" ? 600 : shape.id === "operations" ? 0 : 120;
+        timeline.pulse(node?.querySelector(".authority-joint"), 340, delay);
         timeline.animate(
-          node?.querySelector(".mandate-surface"),
-          [{ opacity: 0.15 }, { opacity: 1 }],
-          260,
-          delay + 240,
+          node?.querySelector(".authority-anchor"),
+          [
+            { r: 0, opacity: 0 },
+            { r: 4, opacity: 1 },
+          ],
+          120,
+          delay + 310,
         );
+        for (const selector of [".mandate-surface", ".mandate-relief"])
+          timeline.animate(
+            node?.querySelector(selector),
+            [
+              { opacity: 0, clipPath: "inset(100% 0 0 0)" },
+              { opacity: 1, clipPath: "inset(0)" },
+            ],
+            360,
+            delay + 370,
+          );
         node
           ?.querySelectorAll(".authority-rail")
-          .forEach((rail) => timeline.draw(rail, 300, delay + 240));
+          .forEach((rail) => timeline.draw(rail, 310, delay + 360));
         timeline.animate(
           node?.querySelector(".seal-label"),
           [{ opacity: 0 }, { opacity: 1 }],
-          180,
-          delay + 480,
+          160,
+          delay + 610,
         );
       }
     } else if (newGrant && grant) {
       const route = element.querySelector(".grant-path");
       timeline.pulse(route, 420);
       const node = element.querySelector(`[data-authority-id="${grant}"]`);
-      timeline.animate(node, [{ opacity: 0 }, { opacity: 1 }], 120, 420);
+      timeline.animate(
+        node?.querySelector(".authority-anchor"),
+        [
+          { r: 0, opacity: 0 },
+          { r: 4, opacity: 1 },
+        ],
+        120,
+        360,
+      );
+      for (const selector of [".mandate-surface", ".mandate-relief"])
+        timeline.animate(
+          node?.querySelector(selector),
+          [
+            { opacity: 0, clipPath: "inset(100% 0 0 0)" },
+            { opacity: 1, clipPath: "inset(0)" },
+          ],
+          300,
+          420,
+        );
       node
         ?.querySelectorAll(".authority-rail")
         .forEach((rail) => timeline.draw(rail, 310, 430));
@@ -247,72 +287,83 @@ function AuthoritySeal({
         300,
       );
     } else if (cut) {
+      // Domain state is immediate. The copper overlay drains by inheritance rank;
+      // Root and Operations never move or animate during the cut.
       for (const shape of shapes.filter((shape) => shape.id !== "operations")) {
         const node = element.querySelector(`[data-authority-id="${shape.id}"]`);
+        const delay =
+          shape.id === "research"
+            ? 260
+            : shape.id === "data"
+              ? 560
+              : shape.id === "analysis"
+                ? 610
+                : 840;
         node?.querySelectorAll(".authority-rail").forEach((rail) =>
           timeline.animate(
             rail,
             [
-              { stroke: "#c8d9c5", strokeDasharray: "1 0" },
               {
-                stroke: shape.id === "research" ? "#d97d72" : "#637166",
-                strokeDasharray: ".035 .045",
+                stroke: "#d9b48e",
+                strokeDasharray: "1 0",
+                strokeDashoffset: 0,
+              },
+              {
+                stroke: shape.id === "research" ? "#d97d72" : "#68716d",
+                strokeDasharray: ".012 .035",
               },
             ],
-            360,
-            shape.delay,
+            380,
+            delay,
           ),
         );
         timeline.animate(
           node?.querySelector(".mandate-cut-source"),
           [{ opacity: 1 }, { opacity: 0 }],
-          430,
-          shape.delay,
-        );
-        const displacement =
-          shape.id === "research"
-            ? "translate(0px, -36px)"
-            : `translate(${shape.dx - shape.delay / 30}px, ${shape.dy - shape.delay / 20}px)`;
-        timeline.animate(
-          node,
-          [
-            { transform: `translate(${shape.dx}px, ${shape.dy}px)` },
-            { transform: displacement },
-          ],
-          520,
-          shape.delay,
+          420,
+          delay,
         );
         timeline.animate(
-          node?.querySelector(".seal-label"),
-          [{ opacity: 0.65 }, { opacity: 1 }],
-          220,
-          shape.delay + 200,
+          node?.querySelector(".seal-label .mandate-value"),
+          [{ opacity: 0 }, { opacity: 1 }],
+          140,
+          delay + 180,
+        );
+        timeline.animate(
+          node?.querySelector(".mandate-hatch"),
+          [{ opacity: 0 }, { opacity: 0.2 }],
+          380,
+          delay,
+        );
+        timeline.animate(
+          node?.querySelector(".authority-joint"),
+          [{ stroke: "#d9b48e" }, { stroke: "#68716d" }],
+          240,
+          delay,
         );
       }
+      timeline.draw(element.querySelector(".cut-incision"), 140, 90);
       timeline.animate(
-        element.querySelector(".cut-mark"),
-        [
-          { transform: "scaleY(.15)", opacity: 0 },
-          { transform: "scaleY(1.3)", opacity: 1, offset: 0.4 },
-          { transform: "scaleY(1)", opacity: 1 },
-        ],
-        360,
-      );
-      timeline.animate(
-        element.closest("main")?.querySelector(".story-capacity"),
+        element.querySelector(".cut-isolation"),
         [{ opacity: 0 }, { opacity: 1 }],
-        320,
-        900,
+        140,
+        210,
       );
+      timeline.animate(
+        element.querySelector(".cut-port"),
+        [{ opacity: 0 }, { opacity: 1 }],
+        160,
+        200,
+      );
+      timeline.draw(element.querySelector(".lost-lineage"), 650, 470);
     } else if (preview) {
       timeline.draw(
         element.querySelector(".blast-boundary"),
         motionTiming.impact,
       );
     } else if (traced) {
-      timeline.draw(
-        element.querySelector(".trace-ray path"),
-        motionTiming.trace,
+      Array.from(element.querySelectorAll(".trace-ray path")).forEach(
+        (relation, i) => timeline.draw(relation, 160, i * 130),
       );
       Array.from(element.querySelectorAll(".trace-ray circle")).forEach(
         (point, i) =>
@@ -323,42 +374,45 @@ function AuthoritySeal({
             i * 130,
           ),
       );
-      ["treasury", "research", "data", "scraper"].forEach((id, i) => {
-        timeline.animate(
-          element.closest("main")?.querySelector(`[data-lineage-id="${id}"]`),
-          [
-            { opacity: 0.35, clipPath: "inset(0 100% 0 0)" },
-            { opacity: 1, clipPath: "inset(0)" },
-          ],
-          220,
-          i * 130,
-        );
-        element
-          .querySelectorAll(`[data-authority-id="${id}"] .authority-rail`)
-          .forEach((rail) => timeline.draw(rail, 340, i * 130));
-        timeline.animate(
-          element.querySelector(
-            `[data-authority-id="${id}"] .root-disc, [data-authority-id="${id}"] .mandate-surface`,
-          ),
-          [
-            { strokeWidth: 0.7 },
-            { strokeWidth: 3, offset: 0.35 },
-            { strokeWidth: 1.5 },
-          ],
-          320,
-          i * 150,
-        );
-      });
+      pathKey
+        .split("|")
+        .reverse()
+        .forEach((id, i) => {
+          timeline.animate(
+            element.closest("main")?.querySelector(`[data-lineage-id="${id}"]`),
+            [
+              { opacity: 0.35, clipPath: "inset(0 100% 0 0)" },
+              { opacity: 1, clipPath: "inset(0)" },
+            ],
+            220,
+            i * 80,
+          );
+          element
+            .querySelectorAll(`[data-authority-id="${id}"] .authority-rail`)
+            .forEach((rail) => timeline.draw(rail, 180, i * 80));
+          timeline.animate(
+            element.querySelector(
+              `[data-authority-id="${id}"] .root-disc, [data-authority-id="${id}"] .mandate-surface`,
+            ),
+            [
+              { strokeWidth: 0.7 },
+              { strokeWidth: 3, offset: 0.35 },
+              { strokeWidth: 1.5 },
+            ],
+            320,
+            i * 80,
+          );
+        });
     }
     return timeline.cancel;
-  }, [grant, grantParent, traced, preview, cut, selected]);
+  }, [grant, grantParent, traced, preview, cut, selected, pathKey]);
   return (
     <div
       ref={surface}
       className={`authority-seal ${expanded ? "expanded" : "root-only"} ${traced ? "tracing" : ""} ${preview ? "previewing" : ""} ${cut ? "severed" : ""}`}
     >
       <svg
-        viewBox="-35 -135 815 800"
+        viewBox="-45 -110 845 790"
         aria-label="Nested authority boundaries: Treasury contains Research and Operations. Research contains Data and Analysis; Data contains Scraper."
       >
         <defs>
@@ -399,7 +453,7 @@ function AuthoritySeal({
             <feDropShadow
               dx="0"
               dy="12"
-              stdDeviation="10"
+              stdDeviation="3"
               floodColor="#040b07"
               floodOpacity="0.48"
             />
@@ -451,7 +505,7 @@ function AuthoritySeal({
             {amount(model.vault)}
           </text>
           <text className="root-unit" x="390" y="408" textAnchor="middle">
-            USDC · ONE TREASURY
+            {model.unit} · ONE TREASURY
           </text>
         </g>
         {shapes.map((shape) => {
@@ -473,6 +527,8 @@ function AuthoritySeal({
               }
               data-parent-id={node.parent}
               data-name={node.name}
+              data-status={status}
+              data-local-status={node.local}
               data-available={amount(node.available, model.decimals)}
               role="button"
               tabIndex={0}
@@ -494,8 +550,16 @@ function AuthoritySeal({
                     ? pointOn(parent, parent.outer - 2, shape.joint)
                     : polar(108, shape.joint);
                   const b = polar(shape.inner + 2, shape.joint);
-                  return `M ${a[0] - shape.dx} ${a[1] - shape.dy} L ${b}`;
+                  return cut && shape.id === "research"
+                    ? "M390 268 V255 M390 230 V222"
+                    : `M ${a[0] - shape.dx} ${a[1] - shape.dy} L ${b}`;
                 })()}
+              />
+              <circle
+                className="authority-anchor"
+                cx={polar(shape.inner + 2, shape.joint)[0]}
+                cy={polar(shape.inner + 2, shape.joint)[1]}
+                r="4"
               />
               <path
                 className="mandate-relief"
@@ -542,7 +606,7 @@ function AuthoritySeal({
                     ? status === "revoked"
                       ? "REVOKED"
                       : "BLOCKED"
-                    : `${amount(node.budget, model.decimals)} USDC`}
+                    : `${amount(node.budget, model.decimals)} ${model.unit}`}
                 </text>
               </g>
             </g>
@@ -569,16 +633,10 @@ function AuthoritySeal({
           })()}
         {traced && !cut && (
           <g key={selected} className="trace-ray" aria-hidden="true">
-            <path
-              d={`M ${polar(90, -150)} L ${pointOn(shapes[0], 174, -150)} L ${pointOn(shapes[2], 250, -150)} L ${pointOn(shapes[4], 318, -150)}`}
-              pathLength="1"
-            />
-            {[
-              polar(90, -150),
-              pointOn(shapes[0], 174, -150),
-              pointOn(shapes[2], 250, -150),
-              pointOn(shapes[4], 318, -150),
-            ].map((p, i) => {
+            {traceRelations.map((d, i) => (
+              <path key={i} d={d} pathLength="1" />
+            ))}
+            {tracePoints.map((p, i) => {
               return (
                 <circle
                   key={i}
@@ -593,8 +651,22 @@ function AuthoritySeal({
         )}
         {cut && (
           <g className="cut-mark" aria-hidden="true">
-            <path d="M382 216 L398 226 M382 228 L398 238" />
-            <path className="cut-gap" d="M390 207V214 M390 242V251" />
+            <circle className="cut-port" cx="390" cy="225" r="17" />
+            <path
+              className="cut-incision"
+              pathLength="1"
+              d="M374 234 L406 216"
+            />
+            <path className="cut-isolation" d="M384 205H396M384 245H396" />
+            <path className="cut-callout" d="M408 225 H484 L506 207 H568" />
+            <text x="514" y="196">
+              RESEARCH / REVOKED
+            </text>
+            <path
+              className="lost-lineage"
+              pathLength="1"
+              d={`M ${pointOn(shapes[0], 174, -150)} L ${pointOn(shapes[2], 250, -150)} L ${pointOn(shapes[4], 318, -150)}`}
+            />
           </g>
         )}
       </svg>
@@ -634,47 +706,6 @@ export default function StoryWorld() {
     [preview, setPreview] = useState(false);
   const [settled, setSettled] = useState<AuthorityModel>(),
     [selected, setSelected] = useState("treasury");
-  const [playing, setPlaying] = useState(false);
-  const [walkStarted, setWalkStarted] = useState(false);
-  const [walkStep, setWalkStep] = useState(0);
-  const [walkRun, setWalkRun] = useState(0);
-  const goToWalkStep = useCallback((step: number) => {
-    setWalkStep(step);
-    setCount(step === 0 ? 1 : step === 1 ? 2 : 6);
-    setGrant(step === 1 ? "research" : step === 2 ? "recursion" : undefined);
-    setTraced(step === 3);
-    setPreview(step === 4);
-    setSettled(step >= 5 ? revokeDemo(genesis(6), "research") : undefined);
-    setSelected(
-      step === 0
-        ? "treasury"
-        : step === 1 || step === 4
-          ? "research"
-          : step === 6
-            ? "operations"
-            : "scraper",
-    );
-    setStage([0, 1, 1, 2, 3, 4, 5, 6][step]);
-  }, []);
-  useEffect(() => {
-    if (!playing) return;
-    const timer = window.setTimeout(() => {
-      goToWalkStep(walkStep + 1);
-      if (walkStep + 1 === 7) setPlaying(false);
-    }, walkthroughDelays[walkStep]);
-    const pause = () => setPlaying(false);
-    document.addEventListener("visibilitychange", pause);
-    return () => {
-      window.clearTimeout(timer);
-      document.removeEventListener("visibilitychange", pause);
-    };
-  }, [playing, walkStep, walkRun, goToWalkStep]);
-  function runWalkthrough() {
-    setWalkRun((run) => run + 1);
-    setWalkStarted(true);
-    goToWalkStep(0);
-    setPlaying(true);
-  }
   const model = settled ?? genesis(count),
     cut = !!settled;
   useEffect(() => {
@@ -726,12 +757,10 @@ export default function StoryWorld() {
     );
     w.record(
       "Parent capacity released",
-      `${amount(model.nodes.find((node) => node.id === "research")!.remaining)} USDC → Root available · vault unchanged · demo`,
+      `${amount(model.nodes.find((node) => node.id === "research")!.remaining)} ${model.unit} → Root available · vault unchanged · demo`,
     );
   }
   function reset() {
-    setPlaying(false);
-    setWalkStarted(false);
     setStage(0);
     setCount(1);
     setGrant(undefined);
@@ -741,6 +770,10 @@ export default function StoryWorld() {
     setSelected("treasury");
   }
   function openCommand() {
+    // Explicitly enter the operator demo with this same illustrative structure.
+    w.setMode("demo");
+    if (w.fixture.reserved === 0n && w.mission === "ready") w.setFixture(model);
+    w.select(selected);
     window.dispatchEvent(
       new CustomEvent("mandateos:open-command", {
         detail: { navigate: () => router.push("/app") },
@@ -748,10 +781,10 @@ export default function StoryWorld() {
     );
   }
   function inspect(id: string) {
-    setPlaying(false);
     setSelected(id);
     if (count === 6 && !cut && !preview) {
-      setTraced(id === "scraper");
+      setTraced(true);
+      setStage(2);
     }
   }
   const cta =
@@ -778,6 +811,11 @@ export default function StoryWorld() {
             : stage === 3
               ? confirm
               : openCommand;
+  const inspected = model.nodes.find((node) => node.id === selected)!;
+  const inspectedPath = authorityPath(model, selected);
+  const invalidAncestor = inspectedPath.find(
+    (node) => node.local === "revoked",
+  );
   return (
     <main
       className={`mandate-story ${preview ? "is-preview" : ""} ${cut ? "is-cut" : ""}`}
@@ -785,6 +823,7 @@ export default function StoryWorld() {
     >
       <div className="story-composition">
         <section className="story-voice">
+          <span className="story-kicker">ONE VAULT / BOUNDED AUTHORITY</span>
           <div className="story-title" key={stage}>
             {stage === 0 ? (
               <h1>
@@ -810,81 +849,30 @@ export default function StoryWorld() {
                 <br />
                 <em>consequence.</em>
               </h1>
-            ) : stage === 4 ? (
+            ) : (
               <h1>
                 One cut.
                 <br />
                 <em>Control stays.</em>
-              </h1>
-            ) : stage === 5 ? (
-              <h1>
-                Operations.
-                <br />
-                <em>Still active.</em>
-              </h1>
-            ) : (
-              <h1>
-                Trace the cut.
-                <br />
-                <em>Inspect proof.</em>
               </h1>
             )}
             <p>{descriptions[stage]}</p>
           </div>
           <div className="story-action-block">
             <button
-              className="story-primary walkthrough-start"
-              onClick={runWalkthrough}
+              className="story-primary story-step-action"
+              onClick={action}
             >
-              <span>Run the 20-second authority walkthrough</span>
-              <ArrowRight size={20} aria-hidden="true" />
+              <span>{cta}</span>
+              {preview ? (
+                <Scissors size={19} aria-hidden="true" />
+              ) : (
+                <ArrowRight size={20} aria-hidden="true" />
+              )}
             </button>
             <span className="story-demo">
               Interactive demo — no transactions
             </span>
-            <div
-              className="walkthrough-controls"
-              aria-label="Walkthrough controls"
-            >
-              {walkStarted && (
-                <>
-                  <button
-                    onClick={() => setPlaying(!playing)}
-                    disabled={walkStep === 7}
-                  >
-                    {playing ? "Pause walkthrough" : "Resume walkthrough"}
-                  </button>
-                  <button
-                    disabled={walkStep === 7}
-                    onClick={() => {
-                      setPlaying(false);
-                      goToWalkStep(walkStep + 1);
-                    }}
-                  >
-                    Next step
-                  </button>
-                  <span role="status">
-                    {walkStep + 1} / 8 ·{" "}
-                    {playing
-                      ? "Playing"
-                      : walkStep === 7
-                        ? "Complete"
-                        : "Paused"}
-                  </span>
-                </>
-              )}
-            </div>
-            <button
-              className="story-step-action"
-              onClick={() => {
-                setPlaying(false);
-                setWalkStarted(false);
-                action();
-              }}
-            >
-              <span>{cta}</span>
-              {stage === 3 ? <Scissors size={19} /> : <ArrowRight size={20} />}
-            </button>
             {preview && (
               <button
                 className="story-cancel"
@@ -897,6 +885,11 @@ export default function StoryWorld() {
                 Cancel preview
               </button>
             )}
+            {cut && (
+              <span className="story-inspect-hint">
+                Select a branch to inspect its authority.
+              </span>
+            )}
             <div className="story-product-links">
               <button onClick={openCommand}>
                 Open Command <ArrowRight size={14} />
@@ -906,10 +899,57 @@ export default function StoryWorld() {
               </Link>
             </div>
           </div>
+          {cut && (
+            <section
+              className="cut-proof"
+              aria-label="Selected authority proof"
+              aria-live="polite"
+            >
+              <div className="proof-heading">
+                <span>AUTHORITY RECORD / D{inspected.depth}</span>
+                <span>DEMO</span>
+              </div>
+              <div className="proof-identity">
+                <h2>
+                  {inspected.name === "Treasury" ? "Root" : inspected.name}
+                </h2>
+                <span data-effective={statusOf(model, selected)}>
+                  {statusOf(model, selected)}
+                </span>
+              </div>
+              <dl>
+                <div>
+                  <dt>Local status</dt>
+                  <dd>{inspected.local}</dd>
+                </div>
+                <div>
+                  <dt>Effective authority</dt>
+                  <dd data-effective={statusOf(model, selected)}>
+                    {statusOf(model, selected)}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Earliest invalid ancestor</dt>
+                  <dd>{invalidAncestor?.name ?? "None"}</dd>
+                </div>
+              </dl>
+              <div className="proof-path">
+                <span>COMPLETE AUTHORITY PATH</span>
+                <p>
+                  {inspectedPath
+                    .map((node) =>
+                      node.name === "Treasury" ? "Root" : node.name,
+                    )
+                    .join(" → ")}
+                </p>
+              </div>
+              <p className="proof-provenance">
+                Illustrative authority state. No transaction submitted; no
+                program result or signature.
+              </p>
+            </section>
+          )}
           <div className="story-context" aria-live="polite">
-            <span className="context-index">
-              {String(stage + 1).padStart(2, "0")} / 07
-            </span>
             <div>
               <strong>
                 {stage === 0
@@ -941,10 +981,10 @@ export default function StoryWorld() {
                       genesis(6).nodes.find((node) => node.id === "research")!
                         .remaining,
                     )}{" "}
-                    USDC capacity released
+                    {model.unit} capacity released
                   </b>
-                  Root available {amount(model.nodes[0].available)} USDC · vault
-                  unchanged
+                  Root available {amount(model.nodes[0].available)} {model.unit}{" "}
+                  · vault unchanged
                 </small>
               )}
             </div>
@@ -974,8 +1014,11 @@ export default function StoryWorld() {
             onSelect={inspect}
           />
           {(traced || cut) && (
-            <ol className="story-lineage" aria-label="Scraper authority path">
-              {authorityPath(model, "scraper").map((node) => (
+            <ol
+              className="story-lineage"
+              aria-label={`${inspected.name} authority path`}
+            >
+              {inspectedPath.map((node) => (
                 <li
                   key={node.id}
                   data-lineage-id={node.id}
@@ -988,19 +1031,6 @@ export default function StoryWorld() {
                 </li>
               ))}
             </ol>
-          )}
-          {stage === 6 && (
-            <div className="story-evidence" role="status">
-              <strong>SIMULATED DENIAL · NOT SENT · NO SIGNATURE</strong>
-              <p>
-                Scraper: locally active, effectively blocked by Research. No RPC
-                or finalized 6003 receipt was produced by this demo.
-              </p>
-              <Link href="/app">
-                Inspect current Devnet accounts and receipt provenance{" "}
-                <ArrowRight size={14} />
-              </Link>
-            </div>
           )}
           <div className="exhibit-caption">
             <div>
@@ -1016,8 +1046,8 @@ export default function StoryWorld() {
                   ? "4 mandates"
                   : cut
                     ? "Research + 3 descendants"
-                    : "1,590.00"}
-                {!preview && !cut && <small> USDC</small>}
+                    : amount(model.vault, model.decimals)}
+                {!preview && !cut && <small> {model.unit}</small>}
               </strong>
             </div>
             <div className={cut || preview ? "sibling-proof" : "capital-proof"}>
@@ -1029,12 +1059,17 @@ export default function StoryWorld() {
               <strong>
                 {cut || preview ? (
                   <>
-                    <Check size={16} /> 200 USDC · Active
+                    <Check size={16} />{" "}
+                    {amount(
+                      model.nodes.find((n) => n.id === "operations")!.available,
+                      model.decimals,
+                    )}{" "}
+                    {model.unit} · Active
                   </>
                 ) : (
                   <>
                     {amount(model.nodes[0].available)}
-                    <small> USDC</small>
+                    <small> {model.unit}</small>
                   </>
                 )}
               </strong>
@@ -1049,8 +1084,8 @@ export default function StoryWorld() {
               </p>
               {cut && (
                 <small>
-                  Root available {amount(model.nodes[0].available)} USDC · vault
-                  unchanged
+                  Root available {amount(model.nodes[0].available)} {model.unit}{" "}
+                  · vault unchanged
                 </small>
               )}
             </div>
@@ -1058,31 +1093,11 @@ export default function StoryWorld() {
         </section>
       </div>
       <footer className="story-bottom">
-        <nav aria-label="Story progress">
-          {stages.map((name, i) => (
-            <button
-              key={name}
-              disabled={i !== 0 && (i > stage || cut)}
-              aria-current={i === stage ? "step" : undefined}
-              onClick={() => {
-                setPlaying(false);
-                if (i === 0) reset();
-                else if (i === 2) trace();
-                else if (i === 3) blast();
-                else {
-                  setStage(i);
-                  setTraced(false);
-                  setPreview(false);
-                }
-              }}
-            >
-              <span>{String(i + 1).padStart(2, "0")}</span>
-              {name}
-            </button>
-          ))}
-        </nav>
+        <span className="story-legend">
+          <i /> Active authority <i /> Preview boundary <i /> Invalid lineage
+        </span>
         <button className="story-reset" onClick={reset}>
-          <RotateCcw size={14} /> Replay story
+          <RotateCcw size={14} /> Reset structure
         </button>
       </footer>
     </main>

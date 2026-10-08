@@ -54,7 +54,7 @@ export function genesis(count = 6): AuthorityModel {
     nodes,
     root: "treasury",
     decimals: 6,
-    unit: "USDC",
+    unit: "TOKENS",
     vault: units(1590),
     spent: 0n,
     reclaimed: 0n,

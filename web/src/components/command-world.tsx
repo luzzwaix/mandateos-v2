@@ -1,14 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
-import {
-  ArrowRight,
-  RotateCcw,
-  Search,
-  X,
-  Copy,
-  ArrowUpRight,
-} from "lucide-react";
+import { ArrowRight, RotateCcw, Search, X, ArrowUpRight } from "lucide-react";
 import {
   amount,
   authorityPath,
@@ -23,14 +16,23 @@ import {
 import { short, toBaseUnits } from "@/lib/solana/pdas";
 import { explorer, PROGRAM_ADDRESS, NETWORK } from "@/lib/solana/program";
 import { FIXTURE_ORGANIZATION } from "@/lib/solana/fixture-labels";
-import { AuthorityTrace } from "./authority-tree";
 import AuthorityTree from "./capital-authority-instrument";
 import CapitalNumber from "./capital-number";
 import { useWorld, ConnectionInstrument } from "./world-shell";
+import { CopyAddress, useDetailContinuity } from "./experience-feedback";
 
 export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
   const w = useWorld();
   const [expanded, setExpanded] = useState(false);
+  const evidence = useRef<HTMLElement>(null);
+  const receiptIdentity = w.demo
+    ? `demo:${w.events[0]?.title}:${w.events[0]?.detail}`
+    : `devnet:${w.live.transaction.phase}:${w.live.transaction.signature ?? ""}`;
+  useDetailContinuity(
+    evidence,
+    `${receiptIdentity}:${expanded}`,
+    w.demo || expanded || w.live.transaction.phase !== "idle",
+  );
   const events: {
     title: string;
     detail: string;
@@ -52,6 +54,7 @@ export function EvidenceLedger({ compact = false }: { compact?: boolean }) {
       }));
   return (
     <section
+      ref={evidence}
       className={`evidence-dock ${compact && !expanded ? "compact" : ""}`}
     >
       <div className="section-line">
@@ -241,6 +244,21 @@ export default function CommandWorld() {
   const node = model?.nodes.find((n) => n.id === w.selected) ?? model?.nodes[0];
   const root = model?.nodes.find((n) => n.id === model.root);
   const status = model && node ? statusOf(model, node.id) : "unknown";
+  const detailGroup = useRef<HTMLDivElement>(null);
+  useDetailContinuity(
+    detailGroup,
+    `${w.demo ? "demo" : "devnet"}:${node?.id}:${status}`,
+    !preview,
+  );
+  const invalidAncestor =
+    model && node
+      ? authorityPath(model, node.id).find((n) => n.local === "revoked")
+      : undefined;
+  const controllerMismatch =
+    !w.demo &&
+    !!w.live.wallet &&
+    !!node?.controller &&
+    w.live.wallet.publicKey.toBase58() !== node.controller;
   const nodeRejection =
     !w.demo &&
     !!w.live.rejection &&
@@ -319,13 +337,6 @@ export default function CommandWorld() {
     setProof(false);
     setPreview(undefined);
     setReview(false);
-    if (window.innerWidth < 768)
-      inspector.current?.scrollIntoView({
-        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
-          ? "instant"
-          : "smooth",
-        block: "start",
-      });
   }
   function openPreview() {
     if (!node) return;
@@ -408,7 +419,13 @@ export default function CommandWorld() {
           <p>Connect an organization to inspect its capital authority.</p>
           <div className="empty-root">
             <span>ROOT / UNVERIFIED</span>
-            <strong>Awaiting account state</strong>
+            <strong>
+              {w.live.error
+                ? "Account read failed"
+                : /^(Reading|Verifying)/.test(w.live.health)
+                  ? "Reading account state"
+                  : "Awaiting account state"}
+            </strong>
             <small>No balances or authority assumed.</small>
           </div>
           <p>
@@ -551,6 +568,29 @@ export default function CommandWorld() {
               {w.live.error}
             </p>
           )}
+          {!w.demo && /^(Reading|Verifying)/.test(w.live.health) && (
+            <p className="refresh-notice" role="status">
+              Refreshing accounts · current data stays visible.
+            </p>
+          )}
+          <div className="selection-register" aria-live="polite">
+            <div>
+              <span>Inspecting</span>
+              <strong>{node?.name}</strong>
+              <b className={`status ${status}`}>{status}</b>
+            </div>
+            <p>
+              {invalidAncestor
+                ? `${invalidAncestor.name} revoked · dependent authority blocked`
+                : "Complete lineage to Root"}
+              <small>
+                {node &&
+                  authorityPath(model, node.id)
+                    .map((n) => n.name)
+                    .join(" → ")}
+              </small>
+            </p>
+          </div>
           <AuthorityTree
             model={model}
             selected={node?.id ?? model.root}
@@ -760,7 +800,7 @@ export default function CommandWorld() {
             </>
           ) : node ? (
             <>
-              <div className="capital-identity">
+              <div ref={detailGroup} className="capital-identity">
                 <div className="instrument-meta">
                   <span>SELECTED MANDATE</span>
                   <span>D{node.depth}</span>
@@ -784,14 +824,50 @@ export default function CommandWorld() {
                     </dd>
                   </div>
                 </dl>
+                <div className="inspector-parent">
+                  Parent{" "}
+                  <b>
+                    {model.nodes.find((n) => n.id === node.parent)?.name ??
+                      "Organization authority"}
+                  </b>
+                </div>
+                {controllerMismatch && (
+                  <div className="controller-mismatch" role="status">
+                    <strong>Execution authority: No</strong>
+                    <dl>
+                      <dt>Connected wallet</dt>
+                      <dd>{w.live.wallet!.publicKey.toBase58()}</dd>
+                      <dt>Required controller</dt>
+                      <dd>{node.controller}</dd>
+                    </dl>
+                    <p>
+                      This wallet is connected, but it is not the controller
+                      authorized for this mandate.
+                    </p>
+                  </div>
+                )}
+                <div className="selected-authority-path">
+                  <span>AUTHORITY PATH</span>
+                  <p>
+                    {authorityPath(model, node.id)
+                      .map((n) => n.name)
+                      .join(" → ")}
+                  </p>
+                  <small>
+                    Earliest invalid ancestor{" "}
+                    <b>
+                      {authorityPath(model, node.id).find(
+                        (n) => n.local === "revoked",
+                      )?.name ?? (status === "unknown" ? "Unverified" : "None")}
+                    </b>
+                  </small>
+                </div>
                 {!w.demo && (
-                  <button
-                    className="copy-address"
-                    onClick={() => void navigator.clipboard.writeText(node.id)}
-                  >
-                    <span>{short(node.id)}</span>
-                    <Copy size={12} />
-                  </button>
+                  <CopyAddress
+                    key={node.id}
+                    address={node.id}
+                    label={short(node.id)}
+                  />
                 )}
               </div>
               <div className="capital-finances">
@@ -818,42 +894,11 @@ export default function CommandWorld() {
                           {amount(node.remaining, model.decimals)} {model.unit}
                         </dd>
                       </div>
-                      <div>
-                        <dt>Depth / children</dt>
-                        <dd>
-                          {node.depth} /{" "}
-                          {
-                            model.nodes.filter((n) => n.parent === node.id)
-                              .length
-                          }
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Parent</dt>
-                        <dd>
-                          {model.nodes.find((n) => n.id === node.parent)
-                            ?.name ?? "Organization authority"}
-                        </dd>
-                      </div>
                     </dl>
-                    <div className="path-breadcrumb">
-                      <span>AUTHORITY PATH</span>
-                      <p>
-                        {authorityPath(model, node.id)
-                          .map((n) => n.name)
-                          .join(" → ")}
-                      </p>
-                    </div>
                   </>
                 }
               </div>
               <div className="capital-controls">
-                {(status === "blocked" || trace) && (
-                  <div className="inspector-trace">
-                    <h3>Effective authority</h3>
-                    <AuthorityTrace model={model} selected={node.id} />
-                  </div>
-                )}
                 {status === "blocked" ? (
                   <>
                     <div className="blocked-proof">
@@ -944,30 +989,33 @@ export default function CommandWorld() {
                         are required.
                       </p>
                     )}
-                    <dl className="details financial-impact">
-                      <div>
-                        <dt>Authority cut</dt>
-                        <dd>
-                          {w.demo ? "Confirmed in demo" : "Account revoked"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Capacity release</dt>
-                        <dd>
-                          {w.demo
-                            ? "Parent available updated"
-                            : "Inspect parent account"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt>Reclaim</dt>
-                        <dd>Separate operation</dd>
-                      </div>
-                      <div>
-                        <dt>Token movement</dt>
-                        <dd>None from revoke</dd>
-                      </div>
-                    </dl>
+                    <details className="accounting-consequences">
+                      <summary>Accounting consequences</summary>
+                      <dl className="details financial-impact">
+                        <div>
+                          <dt>Authority cut</dt>
+                          <dd>
+                            {w.demo ? "Confirmed in demo" : "Account revoked"}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Capacity release</dt>
+                          <dd>
+                            {w.demo
+                              ? "Parent available updated"
+                              : "Inspect parent account"}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Reclaim</dt>
+                          <dd>Separate operation</dd>
+                        </div>
+                        <div>
+                          <dt>Token movement</dt>
+                          <dd>None from revoke</dd>
+                        </div>
+                      </dl>
+                    </details>
                   </>
                 ) : status === "revoked" ? (
                   <p className="instrument-explainer">
@@ -1020,7 +1068,7 @@ export default function CommandWorld() {
         </aside>
       </div>
       <div className="command-history">
-        <EvidenceLedger />
+        <EvidenceLedger compact />
       </div>
     </main>
   );
@@ -1052,6 +1100,29 @@ function ActionInstrument({
     );
   const disabled =
     !w.demo && (!canSign || !w.live.canTransact || !!w.live.busy);
+  const formSurface = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement | null>(null);
+  useDetailContinuity(formSurface, `${open}:${action}:${error}`);
+  function closeForm() {
+    setOpen(false);
+    setError("");
+    trigger.current?.focus();
+  }
+  useEffect(() => {
+    if (!open) return;
+    formSurface.current
+      ?.querySelector<HTMLInputElement>("input")
+      ?.focus({ preventScroll: true });
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        setError("");
+        trigger.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", escape);
+    return () => window.removeEventListener("keydown", escape);
+  }, [open, action]);
   async function execute() {
     setError("");
     try {
@@ -1151,7 +1222,7 @@ function ActionInstrument({
     }
   }
   return (
-    <div className="action-instrument">
+    <div ref={formSurface} className="action-instrument">
       <div className="action-choices">
         {(
           [
@@ -1167,8 +1238,19 @@ function ActionInstrument({
           <button
             key={a}
             className={open && action === a ? "chosen" : ""}
-            disabled={a === "delegate" && node.depth >= 4}
-            onClick={() => {
+            disabled={
+              (a === "delegate" && node.depth >= 4) ||
+              (!w.demo &&
+                (!w.live.canTransact ||
+                  !!w.live.busy ||
+                  (!w.live.demo &&
+                    w.live.wallet?.publicKey.toBase58() !==
+                      (a === "deposit" || a === "reclaim"
+                        ? w.live.snapshot?.organization.authority.toBase58()
+                        : node.controller))))
+            }
+            onClick={(event) => {
+              trigger.current = event.currentTarget;
               setAction(a);
               setOpen(true);
               setAddress("");
@@ -1228,11 +1310,7 @@ function ActionInstrument({
             {w.demo ? "Simulate" : "Review and sign"} {action}
             <ArrowRight size={14} />
           </button>
-          <button
-            type="button"
-            className="text-button"
-            onClick={() => setOpen(false)}
-          >
+          <button type="button" className="text-button" onClick={closeForm}>
             Cancel
           </button>
         </form>

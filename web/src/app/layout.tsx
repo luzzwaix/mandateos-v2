@@ -14,6 +14,10 @@ import "@/components/authored-fields.css";
 import "@/components/register-fields.css";
 import "@/components/capital-operating.css";
 import "@/components/completion.css";
+import "@/components/story-cut.css";
+import "@/components/final-experience.css";
+import "@/components/sprint-experience.css";
+import "@/components/experience-finish.css";
 
 export const metadata: Metadata = {
   title: "MandateOS — Recursive capital authority",

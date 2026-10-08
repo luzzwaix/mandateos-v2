@@ -97,7 +97,8 @@ body[data-authority-handoff] .route-plane {
   grid-template-columns: 1.38fr 1fr 0.88fr 0.88fr;
 }
 .arena-world .mission-stage .capital-source,
-.arena-world .mission-stage .mission-basin {
+.arena-world .mission-stage .mission-basin,
+.arena-world.account-backed .mission-stage .mission-basin {
   grid-column: 1;
 }
 .arena-world .mission-stage .contender-lanes {
@@ -204,7 +205,8 @@ summary:focus-visible {
     grid-column: 1;
     grid-row: 1;
   }
-  .arena-world .mission-stage .mission-basin {
+  .arena-world .mission-stage .mission-basin,
+  .arena-world.account-backed .mission-stage .mission-basin {
     grid-column: 1;
     grid-row: 2 / span 2;
   }

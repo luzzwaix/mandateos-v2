@@ -9,6 +9,8 @@ import { EvidenceLedger } from "./command-world";
 import CapitalNumber from "./capital-number";
 import { scopedTimeline } from "./authority-motion";
 import { operatingMotion } from "./operating-motion";
+import MissionChannels from "./mission-channels";
+import { useDetailContinuity } from "./experience-feedback";
 
 export default function ArenaWorld() {
   const w = useWorld();
@@ -20,6 +22,7 @@ export default function ArenaWorld() {
     [creating, setCreating] = useState(false),
     [error, setError] = useState("");
   const [previewResult, setPreviewResult] = useState(false);
+  const [selectedSubmissionId, setSelectedSubmissionId] = useState("");
   const executionField = useRef<HTMLDivElement>(null);
 
   const s = w.live.snapshot,
@@ -53,12 +56,40 @@ export default function ArenaWorld() {
   const submitted = status === "submitted" || status === "settled",
     funded = status !== "ready",
     settled = status === "settled";
+  const entryIds = w.demo
+    ? names.map((_, i) => `demo-submission-${i}`)
+    : submissions.map((sub) => sub.publicKey.toBase58());
+  const winnerIndex = settled
+    ? w.demo
+      ? w.missionWinner.charCodeAt(0) - 65
+      : submissions.findIndex((sub) =>
+          sub.account.agent.equals(bounty!.account.winner),
+        )
+    : -1;
+  const explicitIndex = entryIds.indexOf(selectedSubmissionId);
+  const viewingIndex =
+    explicitIndex >= 0
+      ? explicitIndex
+      : winnerIndex >= 0
+        ? winnerIndex
+        : w.demo
+          ? candidate.charCodeAt(0) - 65
+          : 0;
+  const viewingId = submitted ? (entryIds[viewingIndex] ?? "") : "";
+  const missionIdentity = w.demo
+    ? "demo-mission"
+    : (bounty?.publicKey.toBase58() ?? "");
+  const loaded = w.demo || !!bounty;
+  const inspection = useRef<HTMLDivElement>(null);
+  useDetailContinuity(inspection, `${missionIdentity}:${viewingId}`);
   const root = w.model?.nodes.find((n) => n.id === w.model?.root);
   const previousScene = useRef({
     status,
     previewResult,
     candidate,
-    mission: selected,
+    mission: missionIdentity,
+    loaded,
+    viewingId,
   });
   useEffect(() => {
     const before = previousScene.current;
@@ -66,21 +97,36 @@ export default function ArenaWorld() {
       status,
       previewResult,
       candidate,
-      mission: selected,
+      mission: missionIdentity,
+      loaded,
+      viewingId,
     };
+    // Observing an already settled account must not replay a new payout.
+    if (!before.loaded || before.mission !== missionIdentity) return;
     const element = executionField.current;
     if (
       !element ||
       (before.status === status &&
         before.previewResult === previewResult &&
         before.candidate === candidate &&
-        before.mission === selected)
+        before.mission === missionIdentity &&
+        before.viewingId === viewingId)
     )
       return;
     const timeline = scopedTimeline(
       element,
-      settled ? "settlement" : previewResult ? "preview" : status,
-      settled ? operatingMotion.settlement : operatingMotion.funding,
+      settled && before.status === "settled"
+        ? "inspection"
+        : settled
+          ? "settlement"
+          : previewResult
+            ? "preview"
+            : status,
+      settled && before.status === "settled"
+        ? 240
+        : settled
+          ? operatingMotion.settlement
+          : operatingMotion.funding,
     );
     const routes = Array.from(element.querySelectorAll(".submission-channel"));
     if (status === "funded" && before.status !== status) {
@@ -182,14 +228,21 @@ export default function ArenaWorld() {
           { opacity: 0, clipPath: "inset(0 0 100% 0)" },
           { opacity: 1, clipPath: "inset(0 0 0% 0)" },
         ],
-        180,
-        740,
+        440,
+        480,
       );
       timeline.animate(
         element.closest("main")?.querySelector(".event-row"),
         [{ opacity: 0 }, { opacity: 1 }],
-        180,
-        740,
+        440,
+        480,
+      );
+    } else if (before.viewingId !== viewingId && settled) {
+      // Inspection is local feedback; a losing lane never travels through settlement.
+      timeline.animate(
+        element.querySelector('.contender[aria-pressed="true"]'),
+        [{ opacity: 0.6 }, { opacity: 1 }],
+        160,
       );
     } else if (previewResult && !settled) {
       timeline.pulse(
@@ -206,10 +259,22 @@ export default function ArenaWorld() {
       );
     }
     return timeline.cancel;
-  }, [status, previewResult, candidate, selected, settled]);
+  }, [
+    status,
+    previewResult,
+    candidate,
+    missionIdentity,
+    loaded,
+    viewingId,
+    viewingIndex,
+    settled,
+  ]);
   function choose(index: number) {
-    setCandidate(String.fromCharCode(65 + index));
-    setPreviewResult(true);
+    setSelectedSubmissionId(entryIds[index]);
+    if (w.demo && !settled) {
+      setCandidate(String.fromCharCode(65 + index));
+      setPreviewResult(true);
+    }
   }
   const hasOwner = !!(
     w.live.demo ||
@@ -232,13 +297,13 @@ export default function ArenaWorld() {
       if (status === "ready") {
         if (r.available < value)
           throw new Error(
-            "Treasury needs 100 USDC available to reserve the mission.",
+            "Treasury needs 100 TOKENS available to reserve the mission.",
           );
         w.setFixture(fundDemoMission(m, value));
         w.setMission("funded");
         w.record(
           "Mission funded",
-          "100.00 USDC reserved from Root available · demo",
+          "100.00 TOKENS reserved from Root available · demo",
         );
       } else if (status === "funded") {
         w.setMission("submitted");
@@ -252,7 +317,7 @@ export default function ArenaWorld() {
         w.setMission("settled");
         w.record(
           "Verifier selects and settles",
-          `Submission ${candidate} · 100.00 USDC payout simulated`,
+          `Submission ${candidate} · 100.00 TOKENS payout simulated`,
         );
       }
     } catch (e) {
@@ -286,7 +351,13 @@ export default function ArenaWorld() {
           </p>
           <div className="empty-root">
             <span>MISSION / UNVERIFIED</span>
-            <strong>No account state loaded</strong>
+            <strong>
+              {w.live.error
+                ? "Account read failed"
+                : /^(Reading|Verifying)/.test(w.live.health)
+                  ? "Reading account state"
+                  : "No account state loaded"}
+            </strong>
             <small>No settlement or payout assumed.</small>
           </div>
         </div>
@@ -302,7 +373,7 @@ export default function ArenaWorld() {
       <section className="arena-heading">
         <div>
           <h1>
-            Work resolves. <em>To capital.</em>
+            Arena <em> / Funded work</em>
           </h1>
           <span>
             {w.demo
@@ -313,11 +384,13 @@ export default function ArenaWorld() {
           </span>
         </div>
         <p>
-          Capital funds a mission.
-          <br />
-          Submissions converge at a trusted verifier.
-          <br />
-          One result receives settlement.
+          {settled
+            ? "Settlement recorded. Inspect any submission."
+            : submitted
+              ? "Submissions committed. Verifier selection is next."
+              : funded
+                ? "Mission funded. Awaiting submission commitments."
+                : "Reserve Root capital to begin a mission."}
         </p>
         <button
           className="text-button"
@@ -325,6 +398,7 @@ export default function ArenaWorld() {
             if (w.demo) {
               w.reset();
               setPreviewResult(false);
+              setSelectedSubmissionId("");
               setError("");
             } else setCreating(!creating);
           }}
@@ -350,7 +424,10 @@ export default function ArenaWorld() {
                 </button>
               ))
             )}
-            <span>CAPITAL → MISSION ← SUBMISSIONS → VERIFIER</span>
+            <span>
+              CAPITAL: TREASURY → MISSION · WORK: SUBMISSIONS → VERIFIER →
+              SETTLEMENT
+            </span>
           </div>
           <ol className="mission-lifecycle" aria-label="Mission lifecycle">
             <li data-complete={funded}>
@@ -387,41 +464,17 @@ export default function ArenaWorld() {
             className={`mission-stage ${status} ${settled ? "resolved" : ""} ${submitted && previewResult && !settled ? "verifier-preview" : ""}`}
             data-testid="mission-execution-field"
           >
-            <svg
-              className="mission-channels"
-              viewBox="0 0 1000 500"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <path
-                className={`funding-channel ${funded ? "active" : ""}`}
-                pathLength="1"
-                d="M465 28V70"
-              />
-              {submitted &&
-                names.map((name, i) => (
-                  <path
-                    key={name}
-                    className={`submission-channel ${settled && name === winner ? "selected" : !settled && previewResult && i === candidate.charCodeAt(0) - 65 ? "preview-route" : ""}`}
-                    d={`M245 ${147 + i * 88}H275Q295 ${147 + i * 88} 330 230H352V330H718V230H735`}
-                    pathLength="1"
-                  />
-                ))}
-              {settled && names.includes(winner) && (
-                <path
-                  className="verifier-pass"
-                  pathLength="1"
-                  d="M735 230H810"
-                />
-              )}
-              {settled && (
-                <path
-                  className="settlement-channel active"
-                  pathLength="1"
-                  d="M810 230H895V277H860"
-                />
-              )}
-            </svg>
+            <MissionChannels
+              scope={executionField}
+              count={submitted ? names.length : 0}
+              funded={funded}
+              settled={settled}
+              winnerIndex={winnerIndex}
+              viewingIndex={viewingIndex}
+              previewIndex={
+                previewResult && !settled ? candidate.charCodeAt(0) - 65 : -1
+              }
+            />
             <div className="capital-source" data-arena-label="capital">
               <span>CAPITAL SOURCE</span>
               <strong>Treasury</strong>
@@ -450,30 +503,32 @@ export default function ArenaWorld() {
               </b>
             </span>
             <div className="contender-lanes">
+              <div className="lane-heading">
+                <strong>Work submissions</strong>
+                <span>{submitted ? names.length : 0} committed</span>
+              </div>
               {(submitted ? names : ["Awaiting submissions"]).map((name, i) => (
                 <button
-                  key={name}
+                  key={entryIds[i] ?? name}
                   data-arena-label={`lane-${i}`}
-                  className={`contender ${settled && name === winner ? "winner" : ""} ${!submitted ? "empty" : ""}`}
-                  disabled={!w.demo || !submitted || settled}
+                  className={`contender ${settled && i === winnerIndex ? "winner" : ""} ${!submitted ? "empty" : ""}`}
+                  disabled={!submitted}
                   onClick={() => choose(i)}
-                  aria-pressed={
-                    w.demo &&
-                    previewResult &&
-                    candidate === String.fromCharCode(65 + i)
-                  }
+                  aria-pressed={submitted && i === viewingIndex}
                 >
                   <span>
                     {submitted ? String(i + 1).padStart(2, "0") : "—"}
                   </span>
                   <strong>{name}</strong>
                   <small>
-                    {settled && name === winner
-                      ? "SELECTED RESULT"
+                    {settled && i === winnerIndex
+                      ? "RECORDED WINNER"
                       : submitted
                         ? previewResult && i === candidate.charCodeAt(0) - 65
                           ? "VERIFIER PREVIEW · UNPAID"
-                          : "SUBMISSION COMMITMENT"
+                          : i === viewingIndex
+                            ? "VIEWING COMMITMENT"
+                            : "SUBMISSION COMMITMENT"
                         : "NOT YET SUBMITTED"}
                   </small>
                 </button>
@@ -528,8 +583,8 @@ export default function ArenaWorld() {
                     </button>
                     {status === "submitted" && (
                       <p className="instrument-explainer">
-                        Select a submission lane, then simulate verifier
-                        selection and atomic payout.
+                        Inspect a submission, then explicitly simulate verifier
+                        selection and payout. Inspection does not settle work.
                       </p>
                     )}
                   </>
@@ -684,6 +739,10 @@ export default function ArenaWorld() {
                     ? short(bounty.account.verifier)
                     : "TRUSTED SIGNER"}
               </small>
+              <p className="verifier-boundary">
+                {settled ? "Recorded selection" : "Trusted signer required"}
+                <small>Selection and payout are atomic.</small>
+              </p>
             </div>
             {settled && (
               <div className="mission-outcome" data-arena-label="outcome">
@@ -695,10 +754,84 @@ export default function ArenaWorld() {
                   {amount(value, w.model!.decimals)}{" "}
                   <small>{w.model?.unit}</small>
                 </b>
-                <small>Trusted verifier · atomic payout</small>
+                <small>
+                  {w.demo
+                    ? "Trusted verifier · simulated payout"
+                    : "Winner recorded in bounty account"}
+                </small>
+                {!w.demo && bounty && (
+                  <a
+                    href={`https://explorer.solana.com/address/${bounty.publicKey.toBase58()}?cluster=devnet`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Settlement account ↗
+                  </a>
+                )}
+              </div>
+            )}
+            {!settled && (
+              <div
+                className="mission-outcome pending"
+                data-arena-label="outcome"
+              >
+                <span>SETTLEMENT</span>
+                <strong>
+                  {submitted
+                    ? "Awaiting verifier"
+                    : funded
+                      ? "Awaiting work"
+                      : "Not funded"}
+                </strong>
+                <p>
+                  {w.demo
+                    ? "No simulated payout."
+                    : "No settlement recorded in this bounty."}
+                </p>
+                <small>
+                  A submitted winner must be selected before capital is paid.
+                </small>
               </div>
             )}
           </div>
+          {submitted && (
+            <div
+              ref={inspection}
+              className="submission-inspection"
+              aria-live="polite"
+            >
+              <div>
+                <span>VIEWING SUBMISSION</span>
+                <strong>{names[viewingIndex]}</strong>
+                <small>
+                  {settled && viewingIndex === winnerIndex
+                    ? "Recorded winner"
+                    : settled
+                      ? "Not the recorded winner"
+                      : "Awaiting settlement"}
+                </small>
+              </div>
+              {w.demo ? (
+                <p>Illustrative commitment · no onchain result</p>
+              ) : (
+                <div className="commitment-proof">
+                  <span>SHA-256 COMMITMENT</span>
+                  <code>
+                    {submissions[viewingIndex]?.account.resultHash
+                      .map((byte) => byte.toString(16).padStart(2, "0"))
+                      .join("")}
+                  </code>
+                  <a
+                    href={`https://explorer.solana.com/address/${viewingId}?cluster=devnet`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Submission account ↗
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
           <div className="arena-method">
             <span>
               {settled ? "SETTLEMENT RESOLVED" : "EXECUTION SEQUENCE"}
