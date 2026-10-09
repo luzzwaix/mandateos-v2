@@ -47,7 +47,7 @@ const check = (name, code) => {
 run("set", "viewport", "1440", "900");
 run("set", "media", "no-preference");
 open("/");
-click("Delegate Research");
+click("Try demo");
 click("Trace");
 wait(1000);
 check(
@@ -55,7 +55,7 @@ check(
   "document.querySelectorAll('.loom-label').length===2 && !document.querySelector('[data-resolved=false]') && document.querySelector('.authority-loom').dataset.director==='idle'",
 );
 click("Reset");
-click("Delegate Research");
+click("Try demo");
 wait(1300);
 click("Build demo hierarchy");
 click("Genesis");
@@ -66,7 +66,7 @@ check(
 );
 click("Reset");
 run("set", "viewport", "390", "844");
-click("Delegate Research");
+click("Try demo");
 click("Build demo hierarchy");
 click("Trace");
 click("Trace Scraper");

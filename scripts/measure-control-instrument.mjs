@@ -74,7 +74,7 @@ const device = ev(
   `(()=>{const g=document.querySelector('canvas').getContext('webgl2'),d=g.getExtension('WEBGL_debug_renderer_info');return{gpu:d?g.getParameter(d.UNMASKED_RENDERER_WEBGL):'unavailable',userAgent:navigator.userAgent,hardwareConcurrency:navigator.hardwareConcurrency,startupCompilationMs:window.__loomProfile?.startupMs,navigation:performance.getEntriesByType('navigation').map(n=>({domContentLoadedMs:n.domContentLoadedEventEnd,loadMs:n.loadEventEnd})),paint:performance.getEntriesByType('paint').map(p=>({name:p.name,ms:p.startTime}))};})()`,
 );
 const displayCadence = ev(`new Promise(resolve=>{const samples=[];let last;function frame(now){if(last!==undefined)samples.push(now-last);last=now;if(samples.length<90)requestAnimationFrame(frame);else{samples.sort((a,b)=>a-b);resolve({samples:samples.length,p50:samples[45],p95:samples[85],max:samples.at(-1),scope:'display rAF while the demand-rendered canvas is idle'});}}requestAnimationFrame(frame);})`);
-sample("Genesis / first delegate", () => click("Delegate Research"), 1100);
+sample("Genesis / first delegate", () => click("Try demo"), 1100);
 sample("Recursion / four grants", () => click("Build demo hierarchy"), 2400);
 click("Trace");
 wait(250);
@@ -104,7 +104,7 @@ const idleStopped = ev(
 run("set", "viewport", "390", "844");
 open("/");
 const mobileStart = ev(`performance.now()`);
-click("Delegate Research");
+click("Try demo");
 click("Build demo hierarchy");
 click("Trace");
 click("Trace Scraper");

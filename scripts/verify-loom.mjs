@@ -104,7 +104,7 @@ recording("story", () => {
   evaluate(
     "window.__root=document.querySelector('[data-loom-label=treasury]');window.__world=document.querySelector('[data-testid=persistent-authority-world]');true",
   );
-  click("Delegate Research");
+  click("Try demo");
   wait(1300);
   click("Build demo hierarchy");
   wait(2200);
@@ -251,7 +251,7 @@ for (const width of [1280, 768, 390]) {
 run("set", "viewport", "1440", "900");
 run("set", "media", "reduced-motion");
 open("/");
-click("Delegate Research");
+click("Try demo");
 click("Build demo hierarchy");
 click("Blast Radius");
 click("Preview Research revoke");

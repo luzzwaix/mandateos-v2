@@ -44,7 +44,7 @@ for (const width of [1440, 390]) {
   }
   await page.goto(base);
   await shot("story-genesis");
-  await click("Delegate Research");
+  await click("Try demo");
   await page
     .getByRole("button", { name: "Delegate further", exact: true })
     .waitFor({ timeout: 10000 });

@@ -4,6 +4,16 @@ Framework independent TypeScript client extracted from the application's Solana 
 
 ## Quickstart
 
+For the exact minimal external integration, download `mandateos-sdk-0.1.0.tgz` and `inspect-devnet.mjs` from the candidate app's `/developers` page. In a new directory containing both files:
+
+```sh
+npm init -y
+npm install ./mandateos-sdk-0.1.0.tgz
+node inspect-devnet.mjs
+```
+
+This tarball distribution is not an npm registry publication. The [source example](../../examples/inspect-devnet.mjs) uses the exported client and real public Devnet reads, traces Scraper ancestry, and parses the historical finalized 6003 receipt. It never creates a wallet or submits a transaction. Set `MANDATEOS_RPC_URL` only in your execution environment if the public endpoint is unavailable; never expose a private RPC key in frontend configuration.
+
 From the repository root:
 
 ```sh

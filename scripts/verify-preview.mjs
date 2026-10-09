@@ -69,7 +69,10 @@ assert.deepEqual(actual, expected);
 const files = expected.files.filter(
   (f) =>
     /\.(?:js|css)$/.test(f.path) ||
-    ["index.html", "app.html", "arena.html"].includes(f.path),
+    ["index.html", "app.html", "arena.html", "developers.html"].includes(
+      f.path,
+    ) ||
+    f.path.startsWith("downloads/"),
 );
 const matches = [];
 for (let i = 0; i < files.length; i += 4)
@@ -78,7 +81,7 @@ for (let i = 0; i < files.length; i += 4)
       const path =
         f.path === "index.html"
           ? "/"
-          : /^(app|arena)\.html$/.test(f.path)
+          : /^(app|arena|developers)\.html$/.test(f.path)
             ? "/" + f.path.slice(0, -5)
             : "/" + f.path;
       const bytes = await read(path),
@@ -98,7 +101,7 @@ const report = {
   signedOut: access,
   independentlyVerifiedCorrespondence: true,
   method:
-    "remote release manifest plus SHA256 of all served JS/CSS and three route HTML files vs exact isolated checkout",
+    "remote release manifest plus SHA256 of served JS/CSS, route HTML and SDK downloads vs exact isolated checkout",
   matchedFiles: matches.sort(),
   authorization: process.env.VERCEL_OIDC_TOKEN
     ? "ephemeral development OIDC; origin scoped; protection unchanged"

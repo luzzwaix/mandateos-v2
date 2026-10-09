@@ -16,7 +16,7 @@ import { useWorld } from "./world-shell";
 import { motionTiming, scopedTimeline } from "./authority-motion";
 
 const descriptions = [
-  "One Solana treasury. Mandates give agent controllers bounded, delegable authority. Keep control at the Root.",
+  "Give agents spending limits from one Solana treasury. Revoke a parent to block its descendants; independent branches keep working.",
   "Research can delegate within its mandate. Every new permission inherits the limits above it.",
   "Scraper answers to Data. Data answers to Research. Every path must reach the Root.",
   "One Research revoke reaches three descendants. Operations sits outside the boundary.",
@@ -789,7 +789,7 @@ export default function StoryWorld() {
   }
   const cta =
     count === 1
-      ? "Delegate Research"
+      ? "Try demo"
       : count < 6
         ? "Delegate further"
         : stage < 2
@@ -871,7 +871,9 @@ export default function StoryWorld() {
               )}
             </button>
             <span className="story-demo">
-              Interactive demo — no transactions
+              {count === 1
+                ? "Start with Research · simulated, no transactions"
+                : "Interactive demo — no transactions"}
             </span>
             {preview && (
               <button
@@ -891,11 +893,11 @@ export default function StoryWorld() {
               </span>
             )}
             <div className="story-product-links">
-              <button onClick={openCommand}>
-                Open Command <ArrowRight size={14} />
-              </button>
-              <Link href="/arena">
-                Open Arena <ArrowRight size={14} />
+              <Link href="/app" onClick={() => w.setMode("devnet")}>
+                Inspect real Devnet <ArrowRight size={14} />
+              </Link>
+              <Link href="/developers">
+                Integrate with SDK <ArrowRight size={14} />
               </Link>
             </div>
           </div>

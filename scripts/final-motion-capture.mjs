@@ -27,7 +27,7 @@ async function action(name, fn, wait = 1000) {
 }
 await p.goto("http://127.0.0.1:3101/");
 for (const name of [
-  "Delegate Research",
+  "Try demo",
   "Delegate further",
   "Trace Scraper",
   "Preview Research revoke",

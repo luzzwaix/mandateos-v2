@@ -21,7 +21,7 @@ const sourceCommit = git("rev-parse", "HEAD");
 const sourceTree = git("rev-parse", "HEAD^{tree}");
 const web = join(root, "web"),
   source = join(web, "out");
-for (const name of ["index.html", "app.html", "arena.html"])
+for (const name of ["index.html", "app.html", "arena.html", "developers.html"])
   if (!existsSync(join(source, name)))
     throw new Error(`Build missing: ${name}`);
 const output = join(web, ".vercel", "output");

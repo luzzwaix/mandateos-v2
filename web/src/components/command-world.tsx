@@ -416,7 +416,7 @@ export default function CommandWorld() {
       <main className="unconnected-world">
         <div className="unconnected-field">
           <h1>Command</h1>
-          <p>Connect an organization to inspect its capital authority.</p>
+          <p>Read an organization&apos;s capital authority on Devnet. No wallet needed.</p>
           <div className="empty-root">
             <span>ROOT / UNVERIFIED</span>
             <strong>

@@ -26,7 +26,7 @@ function useWorldState() {
   const pathname = usePathname();
   const [mode, setMode] = useState<"demo" | "devnet">("devnet");
   const demo = mode === "demo" || pathname === "/";
-  const live = useConsole(!demo);
+  const live = useConsole(!demo && pathname !== "/developers");
   const [fixture, setFixture] = useState<AuthorityModel>(() => genesis());
   const [selected, setSelected] = useState("research");
   const [events, setEvents] = useState<
@@ -104,6 +104,14 @@ export function useWorld() {
   if (!state) throw new Error("World provider missing");
   return state;
 }
+export function DevnetLink({ children }: { children: React.ReactNode }) {
+  const world = useWorld();
+  return (
+    <Link href="/app" onClick={() => world.setMode("devnet")}>
+      {children}
+    </Link>
+  );
+}
 export function RootAnchor() {
   return (
     <svg
@@ -159,6 +167,7 @@ export default function WorldShell({
             ["/", "Story"],
             ["/app", "Command"],
             ["/arena", "Arena"],
+            ["/developers", "SDK"],
           ].map(([href, label]) => (
             <Link
               href={href}
@@ -186,42 +195,44 @@ export default function WorldShell({
             </Link>
           ))}
         </nav>
-        <div className="shell-controls">
-          <label className="mode-control">
-            <span className="sr-only">Product mode</span>
-            <select
-              aria-label="Product mode"
-              value={world.demo ? "demo" : "devnet"}
-              disabled={pathname === "/" || !!world.live.busy}
-              onChange={(e) => {
-                world.setMode(e.target.value as "demo" | "devnet");
-                setWalletOpen(false);
-              }}
+        {pathname !== "/developers" && (
+          <div className="shell-controls">
+            <label className="mode-control">
+              <span className="sr-only">Product mode</span>
+              <select
+                aria-label="Product mode"
+                value={world.demo ? "demo" : "devnet"}
+                disabled={pathname === "/" || !!world.live.busy}
+                onChange={(e) => {
+                  world.setMode(e.target.value as "demo" | "devnet");
+                  setWalletOpen(false);
+                }}
+              >
+                <option value="demo">DEMO MODE</option>
+                <option value="devnet">DEVNET</option>
+              </select>
+              {pathname !== "/" && <ChevronDown size={12} />}
+            </label>
+            <button
+              ref={walletButton}
+              className="wallet-control"
+              aria-label={
+                world.live.wallet
+                  ? `Wallet ${short(world.live.wallet.publicKey)}`
+                  : "Wallet"
+              }
+              aria-expanded={walletOpen}
+              onClick={() => setWalletOpen(!walletOpen)}
             >
-              <option value="demo">DEMO MODE</option>
-              <option value="devnet">DEVNET</option>
-            </select>
-            {pathname !== "/" && <ChevronDown size={12} />}
-          </label>
-          <button
-            ref={walletButton}
-            className="wallet-control"
-            aria-label={
-              world.live.wallet
-                ? `Wallet ${short(world.live.wallet.publicKey)}`
-                : "Wallet"
-            }
-            aria-expanded={walletOpen}
-            onClick={() => setWalletOpen(!walletOpen)}
-          >
-            <Wallet size={16} />
-            <span>
-              {world.live.wallet
-                ? short(world.live.wallet.publicKey)
-                : "Wallet"}
-            </span>
-          </button>
-        </div>
+              <Wallet size={16} />
+              <span>
+                {world.live.wallet
+                  ? short(world.live.wallet.publicKey)
+                  : "Wallet"}
+              </span>
+            </button>
+          </div>
+        )}
         {walletOpen && (
           <div className="wallet-popover">
             <div className="section-line">
@@ -245,15 +256,11 @@ export default function WorldShell({
                   onClick={() => {
                     world.setMode("devnet");
                     setWalletOpen(false);
+                    router.push("/app");
                   }}
                 >
-                  Open Devnet mode <ArrowRight size={14} />
+                  Open Devnet Command <ArrowRight size={14} />
                 </button>
-                {pathname === "/" && (
-                  <Link href="/app" onClick={() => setWalletOpen(false)}>
-                    Continue to Command
-                  </Link>
-                )}
               </>
             ) : (
               <>
@@ -304,9 +311,11 @@ export default function WorldShell({
           <RootAnchor /> One vault. Recursive authority.
         </span>
         <span>
-          {world.demo
-            ? "SIMULATED STATE · NO ONCHAIN TRANSACTIONS"
-            : `${NETWORK} · ${world.live.stale ? "UNVERIFIED / STALE" : world.live.lastRead ? "CONFIRMED ACCOUNT READS" : "AWAITING ACCOUNT READS"}`}
+          {pathname === "/developers"
+            ? "SDK · READ-ONLY DEVNET EXAMPLE"
+            : world.demo
+              ? "SIMULATED STATE · NO ONCHAIN TRANSACTIONS"
+              : `${NETWORK} · ${world.live.stale ? "UNVERIFIED / STALE" : world.live.lastRead ? "CONFIRMED ACCOUNT READS" : "AWAITING ACCOUNT READS"}`}
         </span>
       </footer>
       <CommandContinuity pathname={pathname} />
@@ -323,8 +332,8 @@ export function ConnectionInstrument() {
     <section className="connection-instrument">
       <h2>Open an organization</h2>
       <p>
-        Read verified accounts or create an organization with the connected
-        authority wallet.
+        Public Devnet reads need no wallet. Creating an organization requires
+        its authority wallet.
       </p>
       {live.snapshot && /^(Reading|Verifying)/.test(live.health) && (
         <p className="refresh-notice" role="status">
@@ -356,7 +365,8 @@ export function ConnectionInstrument() {
           )
         }
       >
-        Read accounts <ArrowRight size={14} />
+        {live.error ? "Retry account reads" : "Read accounts"}{" "}
+        <ArrowRight size={14} />
       </button>
       <details>
         <summary>Create organization</summary>
@@ -411,9 +421,19 @@ export function ConnectionInstrument() {
         {live.health}
       </p>
       {live.error && (
-        <p className="error-text" role="alert">
-          {live.error}
-        </p>
+        <>
+          <p className="error-text" role="alert">
+            {live.error}
+          </p>
+          <p>
+            {live.snapshot
+              ? "Previously read accounts remain visible. Retry to refresh; verify read status before acting."
+              : "Check the organization address and retry. No Devnet state is assumed."}
+          </p>
+          <Link href="/">
+            Try the demo while RPC recovers <ArrowRight size={14} />
+          </Link>
+        </>
       )}
     </section>
   );

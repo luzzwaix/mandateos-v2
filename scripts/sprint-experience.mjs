@@ -70,7 +70,7 @@ for (const [width, height] of sampleSizes) {
   await page.goto(base);
   await capture("story-genesis");
   const box = await page
-    .getByRole("button", { name: "Delegate Research", exact: true })
+    .getByRole("button", { name: "Try demo", exact: true })
     .boundingBox();
   assert(
     box && box.y + box.height <= height,
@@ -83,7 +83,7 @@ for (const [width, height] of sampleSizes) {
     0,
   );
   for (const [name, action] of [
-    ["grant", "Delegate Research"],
+    ["grant", "Try demo"],
     ["recursion", "Delegate further"],
     ["trace", "Trace Scraper"],
     ["blast", "Preview Research revoke"],
@@ -191,7 +191,7 @@ const recorded = await recordingContext.newPage();
 recorded.on("pageerror", (error) => errors.push(error.message));
 await recorded.goto(base);
 for (const name of [
-  "Delegate Research",
+  "Try demo",
   "Delegate further",
   "Trace Scraper",
   "Preview Research revoke",

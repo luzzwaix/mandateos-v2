@@ -95,7 +95,7 @@ for (const [width, height, reducedMotion] of [
   await page.goto("http://127.0.0.1:3101/");
   const rootElement = await page.locator(".seal-root").elementHandle();
   for (const [action, name] of [
-    ["Delegate Research", "story-grant"],
+    ["Try demo", "story-grant"],
     ["Delegate further", "story-recursion"],
     ["Trace Scraper", "story-trace"],
     ["Preview Research revoke", "story-preview"],
@@ -291,7 +291,7 @@ for (const [width, height, reducedMotion] of [
   assert.equal(idleFrames, 0);
   await page.getByRole("link", { name: "Story", exact: true }).click();
   await page
-    .getByRole("button", { name: "Delegate Research", exact: true })
+    .getByRole("button", { name: "Try demo", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Delegate further", exact: true })

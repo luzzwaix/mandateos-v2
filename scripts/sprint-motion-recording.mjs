@@ -12,7 +12,7 @@ const page=await context.newPage(), events=[];
 const started=Date.now();
 async function action(name,fn,duration=1000) { events.push({name,seconds:(Date.now()-started)/1000});await fn();await page.waitForTimeout(duration); }
 await page.goto('http://127.0.0.1:3101/');
-for(const [name,duration] of [['Delegate Research',1300],['Delegate further',1500],['Trace Scraper',900],['Preview Research revoke',1100],['Confirm demo revoke',1700],['Inspect authority in Command',1300]]) await action(name,()=>page.getByRole('button',{name,exact:true}).click(),duration);
+for(const [name,duration] of [['Try demo',1300],['Delegate further',1500],['Trace Scraper',900],['Preview Research revoke',1100],['Confirm demo revoke',1700],['Inspect authority in Command',1300]]) await action(name,()=>page.getByRole('button',{name,exact:true}).click(),duration);
 assert.match(await page.locator('.local-state').innerText(),/ACTIVE[\s\S]*BLOCKED/);
 await action('Blocked Scraper proof',()=>page.getByRole('button',{name:'Attempt demo spend',exact:true}).click(),800);
 await action('Surviving Operations',()=>page.getByRole('button',{name:'Select Operations',exact:true}).click(),750);

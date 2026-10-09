@@ -18,6 +18,7 @@ import "@/components/story-cut.css";
 import "@/components/final-experience.css";
 import "@/components/sprint-experience.css";
 import "@/components/experience-finish.css";
+import "@/components/product-entry.css";
 
 export const metadata: Metadata = {
   title: "MandateOS — Recursive capital authority",

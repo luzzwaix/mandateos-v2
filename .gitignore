@@ -8,6 +8,7 @@
 **/tsconfig.tsbuildinfo
 /web/next-env.d.ts
 /web/public/demo.json
+/web/public/downloads/
 /artifacts/
 /.localnet/
 /test-ledger/

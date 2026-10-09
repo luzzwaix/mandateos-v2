@@ -12,7 +12,7 @@ const { chromium } = await import(
       ),
   ).href
 );
-const base = (process.argv[2] || "http://127.0.0.1:3201").replace(/\/$/, "");
+const base = (process.argv[2] || "http://127.0.0.1:3211").replace(/\/$/, "");
 const out = resolve(process.argv[3] || "artifacts/overnight-release/rehearsal");
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch();
@@ -48,7 +48,7 @@ await context.route("https://api.devnet.solana.com/**", async (route) => {
 const click = (name) => page.getByRole("button", { name, exact: true }).click();
 async function storyCut() {
   for (const name of [
-    "Delegate Research",
+    "Try demo",
     "Delegate further",
     "Trace Scraper",
     "Preview Research revoke",

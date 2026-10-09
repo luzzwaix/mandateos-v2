@@ -43,7 +43,7 @@ for (const [width, height, reducedMotion] of [
     "1",
   );
   await p
-    .getByRole("button", { name: "Delegate Research", exact: true })
+    .getByRole("button", { name: "Try demo", exact: true })
     .click();
   await p.evaluate(
     () => (window.__root = document.querySelector(".seal-root")),

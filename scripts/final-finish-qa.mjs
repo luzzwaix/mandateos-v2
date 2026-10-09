@@ -84,7 +84,7 @@ for (const [width, height, motion] of process.argv.includes("--states-only")
   async function story() {
     await page.goto(base + "/");
     for (const name of [
-      "Delegate Research",
+      "Try demo",
       "Delegate further",
       "Trace Scraper",
       "Preview Research revoke",

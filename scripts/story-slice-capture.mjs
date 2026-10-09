@@ -42,7 +42,7 @@ for (const viewport of [
     }
   else await page.goto("http://127.0.0.1:3101/");
   for (const name of [
-    "Delegate Research",
+    "Try demo",
     "Delegate further",
     "Trace Scraper",
     "Preview Research revoke",
@@ -123,7 +123,7 @@ if (phase === "after") {
   const page = await context.newPage();
   await page.goto("http://127.0.0.1:3101/");
   for (const name of [
-    "Delegate Research",
+    "Try demo",
     "Delegate further",
     "Trace Scraper",
     "Preview Research revoke",

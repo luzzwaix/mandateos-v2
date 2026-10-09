@@ -82,7 +82,7 @@ for (const [width, height, motion] of [
   }
   await p.goto("http://127.0.0.1:3101/");
   for (const [action, state] of [
-    ["Delegate Research", "story-grant"],
+    ["Try demo", "story-grant"],
     ["Delegate further", "story-recursion"],
     ["Trace Scraper", "story-trace"],
     ["Preview Research revoke", "story-blast"],

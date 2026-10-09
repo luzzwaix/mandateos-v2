@@ -1,0 +1,95 @@
+/* Discovery and integration only; preserve the Authority Chamber composition. */
+.mandate-story .story-product-links {
+  display: flex;
+  gap: 8px 20px;
+}
+.mandate-story.is-cut .story-product-links {
+  display: flex;
+}
+.developer-guide {
+  max-width: 1040px;
+  padding: 32px 40px 64px;
+  margin: 0 auto;
+}
+.developer-guide h1 {
+  font-size: clamp(32px, 4vw, 42px);
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+}
+.developer-guide h1 em {
+  font-style: normal;
+  color: var(--mint);
+}
+.developer-guide p {
+  max-width: 72ch;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 20px 0;
+}
+.developer-guide .developer-intro {
+  font-size: 20px;
+  color: var(--text);
+}
+.developer-guide strong {
+  color: var(--text);
+}
+.developer-guide section {
+  border-top: 1px solid var(--line);
+  padding-top: 28px;
+  margin-top: 36px;
+}
+.developer-guide h2 {
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.developer-guide pre {
+  background: var(--world);
+  color: var(--text);
+  border: 1px solid var(--line);
+  padding: 20px;
+  overflow-x: auto;
+  font: 13px/1.7 var(--mono);
+  border-radius: 2px;
+  margin: 20px 0;
+}
+.developer-guide code {
+  font-family: var(--mono);
+}
+.developer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+.developer-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  color: var(--mint);
+}
+.developer-guide summary {
+  cursor: pointer;
+  padding: 12px 0;
+  min-height: 44px;
+}
+@media (max-width: 768px) {
+  .developer-guide {
+    padding: 32px 20px 56px;
+  }
+  .developer-guide .developer-intro {
+    font-size: 17px;
+  }
+  .developer-guide pre {
+    padding: 16px;
+    max-width: calc(100vw - 40px);
+  }
+  .mandate-story .story-product-links {
+    display: flex;
+    gap: 0 20px;
+  }
+}

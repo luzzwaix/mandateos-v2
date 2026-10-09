@@ -6,7 +6,7 @@ MandateOS gives agents bounded, recursive economic authority on Solana: one shar
 
 Built for teams giving autonomous agents spending authority. Solana enforces the complete ancestry and moves classic SPL tokens atomically; revoking a parent invalidates descendants without traversing or rewriting them. This is a Devnet MVP with a trusted Arena verifier. Browser Phantom signing and connected-wallet performance remain unverified.
 
-[Recording runbook and two three-minute outlines](RECORDING-RUNBOOK.md) · [Reproduce and publish the candidate](docs/OVERNIGHT-RELEASE.md). The generated local `MORNING-RELEASE-HANDOFF.md` records the final commit, preview and fresh results. Demo is simulated; Devnet inspection displays actual accounts and historical receipts.
+[Recording runbook and complete founder script](RECORDING-RUNBOOK.md) · [Reproduce and publish the candidate](docs/OVERNIGHT-RELEASE.md). The generated local `MORNING-RELEASE-HANDOFF.md` is the current concise founder handoff. Demo is simulated; Devnet inspection displays actual accounts and historical receipts.
 
 ![Story: the runnable Authority Chamber](docs/images/completion/story.png)
 
@@ -21,6 +21,7 @@ Use the direct Story actions to delegate Research, extend its hierarchy, trace S
 | `/` · Story      | Authored simulation; no wallet or transactions.                                                                       |
 | `/app` · Command | Real account reads, local/effective authority, available/reserved capital, eligible actions and transaction evidence. |
 | `/arena` · Arena | Funded mission → submissions → trusted verifier → atomic winner payout.                                               |
+| `/developers` · SDK | Download the independently consumable SDK tarball and exact runnable read-only Devnet example. Not published on npm. |
 
 <table>
   <tr>
@@ -69,6 +70,10 @@ npm run start --prefix web
 Open [local Story](http://127.0.0.1:3000/), [Command](http://127.0.0.1:3000/app) or [Arena](http://127.0.0.1:3000/arena). Command/Arena read the public organization without a wallet. Writing requires the actual authorized controller, Devnet SOL for fees and the organization's mint. Connecting grants no authority over the public fixture. Never put an RPC secret in `NEXT_PUBLIC_*` settings.
 
 ## SDK and reference agent
+
+The candidate's **Integrate with SDK** entry opens `/developers`: download the package and [runnable example](examples/inspect-devnet.mjs) into a new directory, then run `npm init -y`, `npm install ./mandateos-sdk-0.1.0.tgz`, and `node inspect-devnet.mjs`. Node ≥20.18; no wallet or signing keys. It reads the actual organization, traces Scraper's ancestry and parses the actual historical finalized 6003 receipt. The web build generates both downloads from this checkout's SDK source; the package is **not published on npm**.
+
+Your existing LLM or workflow proposes a job; your execution service calls MandateOS, a legitimate signer authorizes the transaction, and Solana checks limits and ancestry at execution. A prior read is not an execution guarantee. The reference worker has no LLM and stops before payment when authority is blocked.
 
 After `npm ci`, run `npm run build:sdk`. Save this as `inspect.mjs`, then run `node inspect.mjs`:
 

@@ -67,12 +67,12 @@ const story = await context(true),
   page = await story.newPage();
 await page.goto(base + "/");
 await page
-  .getByRole("button", { name: "Delegate Research", exact: true })
+  .getByRole("button", { name: "Try demo", exact: true })
   .waitFor();
 await page.waitForTimeout(1400);
 await page.screenshot({ path: resolve(out, "story.png"), fullPage: true });
 for (const name of [
-  "Delegate Research",
+  "Try demo",
   "Delegate further",
   "Trace Scraper",
   "Preview Research revoke",

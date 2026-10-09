@@ -57,7 +57,7 @@ for (const [name, route, width, flow] of [
       return {samples:s.length,medianMs:s[Math.floor(s.length*.5)],p95Ms:s[Math.floor(s.length*.95)],maxMs:Math.max(...s),framesOver22ms:s.filter(t=>t>22).length,longTasks,cls:shifts.reduce((a,b)=>a+b,0),director:root?.dataset.director??'native fallback',canvas:!!canvas,renderScale:canvas?canvas.width/canvas.getBoundingClientRect().width:null,gpu:debug?gl.getParameter(debug.UNMASKED_RENDERER_WEBGL):null,userAgent:navigator.userAgent,hardwareConcurrency:navigator.hardwareConcurrency};};return true;
   })()`);
   if (flow === "story") {
-    click("Delegate Research");
+    click("Try demo");
     wait(1350);
     click("Build demo hierarchy");
     wait(width < 1100 ? 200 : 2200);

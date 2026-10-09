@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack -H 127.0.0.1",
-    "build": "next build --webpack",
+    "build": "node ../scripts/prepare-sdk-download.mjs && next build --webpack",
     "start": "node ../scripts/web-preview.mjs",
     "lint": "eslint src --max-warnings 0",
     "typecheck": "next typegen && tsc --noEmit"
