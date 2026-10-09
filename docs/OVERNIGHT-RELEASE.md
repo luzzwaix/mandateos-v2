@@ -44,10 +44,10 @@ Fresh canonical SBF/IDL artifacts and logs go to ignored `target/overnight-relea
 Browser QA uses external Playwright **1.61.1**, Chromium installed by that runtime; it is a test dependency, not an application build dependency. Install it separately if absent: `npm install --prefix ../mandateos-qa-runtime playwright@1.61.1`, then run its CLI `install chromium`; set `PLAYWRIGHT_MODULE` to its absolute `node_modules/playwright/index.mjs`. Older visual harnesses default to the existing Codex runtime and localhost:3101. Portable release rehearsal accepts the base URL explicitly. Run:
 
 ```powershell
-node scripts/verify-startup-story.mjs http://127.0.0.1:3201
-$env:MANDATEOS_QA_BASE = 'http://127.0.0.1:3201'
+node scripts/verify-startup-story.mjs http://127.0.0.1:3211
+$env:MANDATEOS_QA_BASE = 'http://127.0.0.1:3211'
 node scripts/final-finish-qa.mjs artifacts/overnight-release/final-ui
-node scripts/release-rehearsal.mjs http://127.0.0.1:3201 artifacts/overnight-release/rehearsal
+node scripts/release-rehearsal.mjs http://127.0.0.1:3211 artifacts/overnight-release/rehearsal
 ```
 
 The guards block signing RPCs. Responsive/reduced-motion checks, lineage, retained winner, interrupted transitions, stale reads and absent Phantom do not establish native extension performance, touch hardware or native browser zoom.
@@ -66,8 +66,16 @@ Expected project `prj_v4gBCH12utH88xbMagyDNMKYieG6`, team `team_QJiQiSLRu2OfhaxT
 
 The generated `/release.json` identifies the commit/tree and hashes of the locally built files. Verify deployment API metadata and independently fetch/compare served route HTML and all JavaScript/CSS asset hashes against that exact checkout. Self-declared metadata alone is insufficient. Inspect `/`, `/app`, `/arena`, client navigation and refresh in a clean browser. Test signed-out access first; an SSO page is an access requirement, not a public preview. Use existing authenticated access or `vercel curl` for protected read verification. Save deployment ID, immutable URL, source SHA, access result and correspondence evidence in the final receipt. If source changes, build and deploy another preview; never relabel an older deployment.
 
-## Founder approvals and GitHub publication
+## Public access and founder approvals
 
-No push, merge, production deployment/promotion, program upgrade or Devnet transaction is authorized by this release. Review local commits with `git log --oneline 7449977..HEAD` and `git diff --stat 7449977..HEAD`. To publish, the founder must explicitly authorize the existing remote/branch push after checking `git remote -v`; no force push. Then create/review a scoped PR, preserving the frozen frontend and unchanged protocol. Promotion requires separate explicit approval of the exact verified candidate/deployment. A protected preview needs the founder's Vercel login, not a protection-setting change.
+For the final productization pass, reuse `72900b0`'s 64-validator/SDK/worker evidence when protocol and SDK implementation are unchanged. Run changed frontend/build/example checks; do not repeat the complete validator suite or SDK extraction without a concrete reason. The updated web build generates the downloadable SDK and exact read-only example from committed source. Verify `/developers` and the downloaded files as well as Story/Command/Arena.
+
+A protected preview does **not** meet public judge access. The narrow recommended action is the final deployment's **Share → Anyone with the link**, then copy the generated shareable URL and test it in a signed-out browser, including fresh `/app`, `/arena`, `/developers` and SDK downloads. This changes access only to the reviewed deployment and preserves production and project-wide protection. Obtain the founder's approval of the exact deployment ID and SHA before enabling it. Do not distribute development OIDC or automation bypass credentials as judge links. Vercel documents this supported action in [Sharable Links](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/sharable-links); Hobby accounts may have only one shareable link. If the account's role or quota blocks it, report that exact limitation and seek separate approval for the prepared prebuilt production deployment; do not silently replace production or disable global protection.
+
+The current generated `MORNING-RELEASE-HANDOFF.md` supplies one concise return-home sequence and the exact final deployment/dashboard URL. The committed `RECORDING-RUNBOOK.md` contains the technical take and complete spoken founder script; no additional overlapping report is needed.
+
+## GitHub publication
+
+No push, merge, production deployment/promotion, program upgrade or Devnet transaction is authorized by this release. Review local commits with `git log --oneline 7449977..HEAD` and `git diff --stat 7449977..HEAD`. To publish Git source, the founder must explicitly authorize the existing remote/branch push after checking `git remote -v`; no force push. Then create/review a scoped PR, preserving the frozen frontend and unchanged protocol. Production publication requires separate explicit approval of the exact verified candidate/deployment.
 
 Before any future Phantom action provide: exact instruction; legitimate controller and fee payer; Devnet genesis/program; organization/full ancestry; amount in human/base units and mint; source/destination PDAs/token accounts; current fee/rent quote (including ATA creation); expected state/accounting/token change; signatures/receipt/logs/balances to retain. Obtain explicit action-specific approval, then native wallet approval once. The founder's connected wallet may not control this historical fixture. Use an owner-controlled organization for the future E2E. On unknown outcome, reconcile the saved signed signature, finality/expiry and accounts before considering a retry. Never export a seed/key or fabricate a receipt.
