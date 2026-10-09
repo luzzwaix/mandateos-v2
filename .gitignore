@@ -33,3 +33,6 @@
 *.key
 .DS_Store
 Thumbs.db
+
+# Generated npm package archives
+/*.tgz

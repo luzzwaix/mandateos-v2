@@ -4,7 +4,7 @@ Framework independent TypeScript client extracted from the application's Solana 
 
 ## Quickstart
 
-For the exact minimal external integration, download `mandateos-sdk-0.1.0.tgz` and `inspect-devnet.mjs` from the candidate app's `/developers` page. In a new directory containing both files:
+For the exact minimal external integration, download `mandateos-sdk-0.1.0.tgz` and `inspect-devnet.mjs` from the [production developer page](https://mandateos-protocol.vercel.app/developers). In a new directory containing both files:
 
 ```sh
 npm init -y
@@ -26,11 +26,8 @@ Import `./packages/sdk/dist` in this checkout. To use in another project, run `n
 
 ```ts
 import { PublicKey } from "@solana/web3.js";
-import {
-  MandateClient,
-  PROGRAM_ADDRESS,
-  inspectAuthority,
-} from "@mandateos/sdk";
+import sdk from "@mandateos/sdk";
+const { MandateClient, PROGRAM_ADDRESS, inspectAuthority } = sdk;
 
 const client = new MandateClient({
   cluster: "devnet",
