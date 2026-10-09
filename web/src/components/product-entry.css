@@ -93,3 +93,13 @@
     gap: 0 20px;
   }
 }
+/* The evidence ledger includes account details before its receipt table.
+   A legacy two-column compact grid placed the table in the 150px label track. */
+.command-world .command-history .evidence-dock.compact {
+  display: block;
+}
+.command-world .command-history .evidence-dock.compact .section-line {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
