@@ -335,6 +335,11 @@ export function ConnectionInstrument() {
         Public Devnet reads need no wallet. Creating an organization requires
         its authority wallet.
       </p>
+      {!live.snapshot && !live.error && (
+        <p>
+          <Link href="/">Try demo while accounts load <ArrowRight size={14} /></Link>
+        </p>
+      )}
       {live.snapshot && /^(Reading|Verifying)/.test(live.health) && (
         <p className="refresh-notice" role="status">
           Refreshing accounts · current data stays visible.
