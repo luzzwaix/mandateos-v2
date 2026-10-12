@@ -8,7 +8,9 @@ Recursive financial authority for agent organizations, enforced on Solana. One t
 
 `Solana Devnet` · `Rust / Anchor` · `TS SDK`
 
-**[Live Demo](https://mandateos-protocol.vercel.app/) · [Technical Demo](https://youtu.be/h_Qn1jujxw8) · [Devnet Proof](#verify-the-chain-proof) · [Quick Start](#quick-start) · [Docs](docs/README.md) · [SDK](packages/sdk/README.md)**
+**[Live Demo](https://mandateos-protocol.vercel.app/) · [Technical Demo](https://youtu.be/h_Qn1jujxw8) · [Devnet Proof](#verify-the-chain-proof)**
+
+[Quick Start](#quick-start) · [SDK](packages/sdk/README.md) · [Documentation](docs/README.md)
 
 **Devnet MVP.** Demo and public account reads need no wallet. [Colosseum project](https://colosseum.com/arena/projects/mandateos).
 
@@ -30,21 +32,19 @@ Revocation releases unused branch authority to its parent; it does **not** itsel
 
 ## ONE CUT
 
-![Real MandateOS Demo states: delegation, Research revoke preview, blocked Scraper and surviving Operations.](docs/media/demo-cascade.gif)
+![Authority illustration: Root delegates to Research and independent Operations. Research is revoked; Data and Scraper remain locally Active but effectively Blocked. Operations remains Active. No transaction is represented.](docs/media/one-cut.svg)
 
-**SIMULATED DEMO — no transactions.** The GIF joins six actual browser captures. [Try the interaction](https://mandateos-protocol.vercel.app/) · [Still image](docs/media/demo-cascade-still.png).
-
-```text
-Treasury / Root
-├── Research       REVOKED
-│   └── Data       BLOCKED
-│       └── Scraper BLOCKED
-└── Operations     ACTIVE
-```
+**Authority semantics — an illustration, not a transaction receipt.** [Editable SVG](docs/media/one-cut.svg).
 
 **Scraper: locally Active, effectively Blocked.** Its account still exists, but its authority path crosses revoked Research. Operations has a different path and remains usable.
 
 These names illustrate an organization, not built-in AI agents. Demo also includes Analysis; the historical Devnet fixture has five mandates.
+
+### See ONE CUT in the product
+
+![Real MandateOS Demo states: delegation, Research revoke preview, blocked Scraper and surviving Operations.](docs/media/demo-cascade.gif)
+
+**SIMULATED DEMO — no transactions.** The GIF joins six actual browser captures. [Try the interaction](https://mandateos-protocol.vercel.app/) · [Still image](docs/media/demo-cascade-still.png).
 
 ## Verify the chain proof
 
@@ -98,6 +98,9 @@ The worker stops before signing when ancestry is blocked. Reconcile an unresolve
 
 ## Stack
 
+<details>
+<summary>Pinned technologies and testing tools</summary>
+
 Versions are pinned in the committed manifests, not claims about the latest releases.
 
 | Layer          | Implementation                                                                                |
@@ -107,6 +110,8 @@ Versions are pinned in the committed manifests, not claims about the latest rele
 | Web            | Next.js **16.3.8**, React **19.3.0**, Tailwind CSS **4.3.3**; static export.                  |
 | Infrastructure | Vercel static hosting; direct Solana Devnet RPC. No application backend, indexer or database. |
 | Tests          | Agave local validator; TypeScript / ts-mocha / Chai; focused SDK, worker and UI checks.       |
+
+</details>
 
 ## Quick start
 
@@ -200,9 +205,17 @@ Mainnet and production readiness are not claimed. These are plans, not delivery 
 
 ## Founder and Colosseum
 
-Built by **Esentay Alikhan**, a solo founder and KBTU student based in **Almaty, Kazakhstan**, for **Colosseum Crypto World's Fair 2026**.
+**Esentay Alikhan — Solo Founder & Builder**
 
-[Official project](https://colosseum.com/arena/projects/mandateos) · [Founder pitch](https://youtu.be/yPkFv8z8qeY) · [Technical demo](https://youtu.be/h_Qn1jujxw8) · [GitHub](https://github.com/luzzwaix).
+Information Technology student at **Kazakh-British Technical University (KBTU)**, based in **Almaty, Kazakhstan**.
+
+I build across AI, blockchain infrastructure and autonomous systems. I created MandateOS independently for Colosseum Crypto World's Fair 2026: from an idea to a Devnet MVP with a deployed program, TypeScript SDK, web application and verifiable transaction evidence.
+
+**Current focus:** validating developer demand, improving integrations and connecting with builders in the Solana ecosystem.
+
+**Connect:** [Telegram](https://t.me/luzzw22) · [X / Twitter](https://x.com/aqalix461) · [GitHub](https://github.com/luzzwaix)
+
+[Colosseum project](https://colosseum.com/arena/projects/mandateos) · [Founder pitch](https://youtu.be/yPkFv8z8qeY)
 
 ## Scope and security
 

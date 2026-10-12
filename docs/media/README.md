@@ -2,6 +2,8 @@
 
 These assets support documentation; they are not chain evidence.
 
+- `one-cut.svg`: hand-authored, editable vector diagram. Root forks into Research and independent Operations; Data and Scraper retain local Active status while their effective authority is Blocked. The branch cut is illustrative, not a fresh transaction. Graphite, ivory, restrained mint/red and a small violet Root border; system Segoe UI/Arial fonts only. No external fonts, scripts, balances or animation.
+
 - `hero.png`: genuine image-generation edit of the existing Authority Sculpture artwork. Conceptual Root → Research → Data → Scraper, with independent Operations. No balances or execution claims.
 - `developer-integration.png`: genuine image-generation edit of the existing Developer Integration artwork. Five distinct sculptural stages; arrows read left to right. External agent/LLM is an integrator component, not the reference worker.
 - `demo-cascade.gif`: six actual browser screenshots captured from the public production app on 2026-10-10. Try Demo → Delegate further → Trace Scraper → Preview Research revoke → Confirm demo revoke → inspect Operations. Each captured state is held for 2.5 seconds; no synthetic UI or transaction frames. 960 px wide, 17.5 seconds, 421 KB. Simulated, no transactions.
