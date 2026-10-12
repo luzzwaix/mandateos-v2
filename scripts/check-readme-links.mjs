@@ -4,6 +4,21 @@ import { resolve, sep } from "node:path";
 
 const root = process.cwd();
 const markdown = readFileSync(resolve(root, "README.md"), "utf8");
+function anchors(content) {
+  const seen = new Map();
+  return new Set(
+    [...content.matchAll(/^#{1,6}\s+(.+)$/gm)].map((match) => {
+      const slug = match[1]
+        .trim()
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}_\-\s]/gu, "")
+        .replace(/\s/g, "-");
+      const count = seen.get(slug) ?? 0;
+      seen.set(slug, count + 1);
+      return count ? `${slug}-${count}` : slug;
+    }),
+  );
+}
 const destinations = new Set([
   ...[...markdown.matchAll(/!?\[[^\]]*\]\(([^)\s]+)\)/g)].map((m) => m[1]),
   ...[...markdown.matchAll(/\b(?:src|href)="([^"]+)"/g)].map((m) => m[1]),
@@ -12,18 +27,29 @@ const results = await Promise.all(
   [...destinations].map(async (destination) => {
     try {
       if (!/^https?:\/\//.test(destination)) {
-        const file = resolve(root, decodeURIComponent(destination));
+        const [pathname, fragment] = destination.split("#");
+        const file = resolve(root, decodeURIComponent(pathname || "README.md"));
         if (!file.startsWith(root + sep)) throw Error("Path outside checkout");
         if (!statSync(file).isFile()) throw Error("Not a file");
-        return { destination, status: "local-file" };
+        if (fragment) {
+          if (!/\.md$/i.test(file))
+            throw Error("Unsupported local anchor target");
+          if (
+            !anchors(readFileSync(file, "utf8")).has(
+              decodeURIComponent(fragment),
+            )
+          )
+            throw Error("Missing Markdown heading anchor");
+        }
+        return {
+          destination,
+          status: fragment ? "local-anchor" : "local-file",
+        };
       }
       const response = await fetch(destination, {
         signal: AbortSignal.timeout(30000),
         redirect: "follow",
       });
-      const protectedPreview =
-        new URL(destination).hostname ===
-        "mandateos-v2-f984ud67a-luzzwaixs-projects.vercel.app";
       const login =
         new URL(response.url).hostname === "vercel.com" &&
         new URL(response.url).pathname.startsWith("/login");
@@ -36,12 +62,10 @@ const results = await Promise.all(
           retryAfter: response.headers.get("retry-after"),
         };
       if (!response.ok) throw Error(`HTTP ${response.status}`);
-      if (protectedPreview && !login)
-        throw Error("Preview authentication boundary changed; inspect again");
-      if (!protectedPreview && login) throw Error("Unexpected login redirect");
+      if (login) throw Error("Unexpected login redirect");
       return {
         destination,
-        status: protectedPreview ? "expected-authentication" : "http-ok",
+        status: "http-ok",
         httpStatus: response.status,
         finalUrl: response.url,
       };
