@@ -1,42 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="640" height="720" viewBox="0 0 640 720" role="img" aria-labelledby="title description">
-  <title id="title">ONE CUT — scoped financial authority</title>
-  <desc id="description">Treasury Root delegates to Research and independent Operations. Research delegates to Data, which delegates to Scraper. Research is revoked. Data and Scraper remain locally Active but are effectively Blocked. Operations remains Active. This is a semantic illustration, not transaction evidence.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1012" height="402" viewBox="0 0 1012 402" role="img" aria-labelledby="title description">
+  <title id="title">ONE CUT — revoke a branch, preserve independent authority</title>
+  <desc id="description">Root Treasury delegates to Research and independently to Operations. A single cut revokes Research. Its Data and Scraper descendants remain locally Active but are effectively Blocked. Operations stays connected to Root and Active. Semantic illustration only; no new transaction or execution is represented.</desc>
   <defs>
-    <marker id="blocked" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L6 4L1 7" fill="none" stroke="#d79b96" stroke-width="2"/></marker>
+    <marker id="blocked" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L6 4L1 7" fill="none" stroke="#c39b92" stroke-width="2"/></marker>
     <marker id="active" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1L6 4L1 7" fill="none" stroke="#b7d8bd" stroke-width="2"/></marker>
   </defs>
-  <rect x="1" y="1" width="638" height="718" rx="24" fill="#111918" stroke="#34423f" stroke-width="2"/>
+  <rect x="1" y="1" width="1010" height="400" rx="20" fill="#111918" stroke="#34423f" stroke-width="2"/>
   <g font-family="Segoe UI, Arial, sans-serif">
-    <!-- One source, two independent authority paths. No balances are illustrated. -->
-    <rect x="188" y="26" width="264" height="108" rx="18" fill="#ece8dd" stroke="#b8a7ce" stroke-width="2"/>
-    <text x="320" y="73" fill="#17201e" font-size="40" font-weight="700" text-anchor="middle">ROOT</text>
-    <text x="320" y="110" fill="#394640" font-size="28" text-anchor="middle">Treasury</text>
-    <path d="M320 134V165" fill="none" stroke="#b7d8bd" stroke-width="4"/>
-    <path d="M320 165C320 191 176 178 176 206" fill="none" stroke="#d79b96" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#blocked)"/>
-    <path d="M320 165C320 191 484 178 484 206" fill="none" stroke="#b7d8bd" stroke-width="4" marker-end="url(#active)"/>
-    <circle cx="320" cy="165" r="5" fill="#b7d8bd"/>
-    <!-- The cut crosses the Research edge, never the Operations edge. -->
-    <circle cx="236" cy="184" r="18" fill="#111918"/>
-    <path d="M226 174L246 194M246 174L226 194" stroke="#d79b96" stroke-width="4" stroke-linecap="round"/>
-    <rect x="32" y="210" width="286" height="100" rx="12" fill="#211e1d" stroke="#a3716d" stroke-width="2"/>
-    <text x="52" y="251" fill="#eee9df" font-size="36" font-weight="600">Research</text>
-    <text x="52" y="289" fill="#e5aea7" font-size="28" font-weight="600">REVOKED</text>
-    <path d="M176 310V352" fill="none" stroke="#b8847e" stroke-width="3" stroke-dasharray="6 6" marker-end="url(#blocked)"/>
-    <rect x="32" y="356" width="286" height="124" rx="12" fill="#181f1e" stroke="#59615b"/>
-    <path d="M33 374V462" stroke="#b8847e" stroke-width="3"/>
-    <text x="52" y="394" fill="#eee9df" font-size="36" font-weight="600">Data</text>
-    <text x="52" y="431" fill="#d7ddd3" font-size="28">Local Active</text>
-    <text x="52" y="467" fill="#e5aea7" font-size="28">Effective Blocked</text>
-    <path d="M176 480V522" fill="none" stroke="#b8847e" stroke-width="3" stroke-dasharray="6 6" marker-end="url(#blocked)"/>
-    <rect x="32" y="526" width="286" height="124" rx="12" fill="#181f1e" stroke="#59615b"/>
-    <path d="M33 544V632" stroke="#b8847e" stroke-width="3"/>
-    <text x="52" y="564" fill="#eee9df" font-size="36" font-weight="600">Scraper</text>
-    <text x="52" y="601" fill="#d7ddd3" font-size="28">Local Active</text>
-    <text x="52" y="637" fill="#e5aea7" font-size="28">Effective Blocked</text>
-    <rect x="350" y="210" width="258" height="146" rx="12" fill="#192b23" stroke="#8eb797" stroke-width="2"/>
-    <text x="370" y="251" fill="#eee9df" font-size="34" font-weight="600">Operations</text>
-    <text x="370" y="292" fill="#c3e2c8" font-size="30" font-weight="600">ACTIVE</text>
-    <text x="370" y="333" fill="#bed0be" font-size="27">Own Root path</text>
-    <text x="32" y="692" fill="#b9c4bd" font-size="24">SEMANTICS · NO TRANSACTIONS</text>
+    <!-- One authority source; the lower branch never passes through Research. -->
+    <rect x="32" y="148" width="164" height="102" rx="14" fill="#ece8dd" stroke="#b8a7ce" stroke-width="2"/>
+    <text x="114" y="194" fill="#17201e" font-size="34" font-weight="700" text-anchor="middle">ROOT</text>
+    <text x="114" y="226" fill="#394640" font-size="20" text-anchor="middle">Treasury</text>
+    <path d="M196 182H214C246 182 246 106 270 106H286" fill="none" stroke="#d79b96" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#blocked)"/>
+    <!-- Single cut: the link remains structurally recorded but is invalid authority. -->
+    <circle cx="244" cy="144" r="17" fill="#111918"/>
+    <path d="M233 133L255 155M255 133L233 155" fill="none" stroke="#e5aea7" stroke-width="4" stroke-linecap="round"/>
+    <rect x="286" y="54" width="202" height="104" rx="12" fill="#2b211f" stroke="#b17c76" stroke-width="2"/>
+    <text x="310" y="96" fill="#eee9df" font-size="28" font-weight="600">Research</text>
+    <text x="310" y="136" fill="#e5aea7" font-size="20" font-weight="600">REVOKED</text>
+    <path d="M488 106H532" fill="none" stroke="#aa8981" stroke-width="3" stroke-dasharray="5 6" marker-end="url(#blocked)"/>
+    <rect x="532" y="54" width="202" height="104" rx="12" fill="#17201e" stroke="#53625a"/>
+    <text x="556" y="96" fill="#eee9df" font-size="28" font-weight="600">Data</text>
+    <text x="556" y="136" fill="#d8b8af" font-size="20" font-weight="600">BLOCKED</text>
+    <path d="M734 106H778" fill="none" stroke="#aa8981" stroke-width="3" stroke-dasharray="5 6" marker-end="url(#blocked)"/>
+    <rect x="778" y="54" width="202" height="104" rx="12" fill="#17201e" stroke="#53625a"/>
+    <text x="802" y="96" fill="#eee9df" font-size="28" font-weight="600">Scraper</text>
+    <text x="802" y="136" fill="#d8b8af" font-size="20" font-weight="600">BLOCKED</text>
+    <text x="286" y="202" fill="#c9d1c6" font-size="20">Data + Scraper: local Active · effective Blocked</text>
+    <path d="M196 222H226C250 222 250 297 274 297H532" fill="none" stroke="#b7d8bd" stroke-width="4" marker-end="url(#active)"/>
+    <rect x="532" y="250" width="448" height="94" rx="12" fill="#192b23" stroke="#8eb797" stroke-width="2"/>
+    <text x="558" y="288" fill="#eee9df" font-size="28" font-weight="600">Operations</text>
+    <text x="876" y="288" fill="#c3e2c8" font-size="20" font-weight="600">ACTIVE</text>
+    <text x="558" y="322" fill="#bed0be" font-size="20">Independent Root branch</text>
+    <text x="32" y="378" fill="#b9c4bd" font-size="16">AUTHORITY ILLUSTRATION · NO TRANSACTIONS</text>
   </g>
 </svg>

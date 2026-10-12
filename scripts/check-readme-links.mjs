@@ -21,7 +21,9 @@ function anchors(content) {
 }
 const destinations = new Set([
   ...[...markdown.matchAll(/!?\[[^\]]*\]\(([^)\s]+)\)/g)].map((m) => m[1]),
-  ...[...markdown.matchAll(/\b(?:src|href)="([^"]+)"/g)].map((m) => m[1]),
+  ...[...markdown.matchAll(/\b(?:src|srcset|href)="([^"]+)"/g)].map(
+    (m) => m[1],
+  ),
 ]);
 const results = await Promise.all(
   [...destinations].map(async (destination) => {

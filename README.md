@@ -6,7 +6,7 @@
 
 Recursive financial authority for agent organizations, enforced on Solana. One treasury. Bounded delegation. One cut that blocks a branch while independent operations continue.
 
-`Solana Devnet` · `Rust / Anchor` · `TS SDK`
+[![Solana Devnet](https://img.shields.io/badge/Solana-Devnet-b7d8bd?style=flat-square&labelColor=17201e)](https://mandateos-protocol.vercel.app/app) [![Rust / Anchor](https://img.shields.io/badge/Rust-Anchor-b8a7ce?style=flat-square&labelColor=17201e)](programs/mandateos/src/lib.rs) [![TypeScript SDK](https://img.shields.io/badge/TypeScript-SDK-ece8dd?style=flat-square&labelColor=17201e)](packages/sdk/README.md) [![Colosseum 2026](https://img.shields.io/badge/Colosseum-2026-a4b8ac?style=flat-square&labelColor=17201e)](https://colosseum.com/arena/projects/mandateos)
 
 **[Live Demo](https://mandateos-protocol.vercel.app/) · [Technical Demo](https://youtu.be/h_Qn1jujxw8) · [Devnet Proof](#verify-the-chain-proof)**
 
@@ -32,7 +32,10 @@ Revocation releases unused branch authority to its parent; it does **not** itsel
 
 ## ONE CUT
 
-![Authority illustration: Root delegates to Research and independent Operations. Research is revoked; Data and Scraper remain locally Active but effectively Blocked. Operations remains Active. No transaction is represented.](docs/media/one-cut.svg)
+<picture>
+  <source media="(max-width: 600px)" srcset="docs/media/one-cut-mobile.svg">
+  <img src="docs/media/one-cut.svg" alt="Authority illustration: Root delegates to Research and independent Operations. One cut revokes Research. Data and Scraper remain locally Active but effectively Blocked; Operations remains Active. No transaction is represented.">
+</picture>
 
 **Authority semantics — an illustration, not a transaction receipt.** [Editable SVG](docs/media/one-cut.svg).
 
@@ -195,13 +198,39 @@ npm run check:secrets
 
 ## Roadmap
 
-Core, Arena and the developer surfaces above are implemented. **Next — planned, not yet verified or delivered:**
+The Devnet foundation is implemented. Later phases are proposed priorities, not completed milestones or delivery commitments.
 
-- Complete a fresh owner-controlled browser lifecycle with native wallet signing.
-- Harden dependency and operational security, then commission an independent security review.
-- Validate SDK integrations and customer needs with teams building multi-agent organizations.
+### Phase 01 — Devnet MVP
 
-Mainnet and production readiness are not claimed. These are plans, not delivery dates or evidence of adoption.
+**Implemented**
+
+- Recursive mandates, bounded delegation, scoped revocation and onchain ancestry enforcement.
+- Arena Lite, TypeScript SDK, web console and public read-only Devnet inspection.
+- Deployed program and historical finalized receipts for descendant denial, independent spending and settlement.
+
+### Phase 02 — End-to-end usability
+
+**Planned**
+
+- Complete and verify the native-wallet, owner-controlled browser lifecycle.
+- Exercise and harden existing transaction reconciliation, error handling and operator recovery across end-to-end flows.
+
+### Phase 03 — Developer adoption
+
+**Planned**
+
+- Add integration examples and validate SDK usage through developer pilots.
+- Gather feedback from multi-agent builders to improve onboarding, documentation and integrations.
+
+### Phase 04 — Security and production evaluation
+
+**Future — gated by validation**
+
+- Harden dependencies and operations; expand security-focused testing.
+- Seek an independent security audit and review authority trust assumptions and policy limitations.
+- Evaluate mainnet readiness only after usability, integration and security prerequisites are satisfied.
+
+No pilot, audit or mainnet milestone above is claimed as completed. No dates, funding or adoption are promised.
 
 ## Founder and Colosseum
 
